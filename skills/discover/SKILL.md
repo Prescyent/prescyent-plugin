@@ -13,18 +13,18 @@ background_safe: false
 
 # `/discover` — Prescyent entry point
 
-> `background_safe: false` is load-bearing. Phase 2 uses widget elicitation
-> (`mcp__visualize__show_widget` when available) and `AskUserQuestion` as the
-> fallback. Both require the foreground main thread. Do not move into a
-> background `Task`.
+> `background_safe: false` is load-bearing. Phase 2 elicits scope conversationally;
+> the host (Cowork) may infer an elicitation form, others fall back to plain prose
+> or `AskUserQuestion`. Either rendering requires the foreground main thread.
+> Do not move into a background `Task`.
 
 You are running the buyer's first encounter with Prescyent. The deliverable is a one-page assessment rendered inline in chat — no drive writes, no scaffolding, no storage selection. The assessment IS the deliverable.
 
-Every user-visible string passes the voice gauntlet at `../kb-builder/references/voice-rules.md` before emit. No banned words. Word budgets hold (orientation ≤80, scope ≤120, status ≤30, errors ≤20 + one recovery step).
+Every user-visible string passes the voice gauntlet at `../kb-builder/references/voice-rules.md` before emit. No banned words. Word budgets hold (orientation ≤120, scope ≤120, status ≤30, errors ≤20 + one recovery step).
 
-**Empty-response contract:** every `AskUserQuestion` site aborts on empty input. Print `AskUserQuestion returned empty — aborting before any side effects` and exit. No silent defaults, no writes, no subagent dispatch. Single documented exception: Phase 2 fallback Q4 (`verbatim_pain`) where empty means "skip" and is logged as `verbatim_pain: null`.
+**Empty-response contract:** every elicitation site aborts on empty input. Print `Phase 2 returned empty — aborting before any side effects` and exit. No silent defaults, no writes, no subagent dispatch. Single documented exception: the optional `verbatim_pain` field, where empty means "skip" and is logged as `verbatim_pain: null`.
 
-If the widget elicitation form is dismissed with `submitted: false` AND `company_name` empty, apply the same contract — log and exit.
+If the user submits a Cowork elicitation form via Skip with `company_name` empty, apply the same contract — log and exit.
 
 ---
 
@@ -40,33 +40,56 @@ Coverage gaps surface in the final report — Phase 5's Coverage table names wha
 
 ---
 
-## Phase 2 — Single widget form
+## Phase 2 — Settings + scope confirmation
 
-Use the form spec at `references/widget-form-spec.md`. Five fields, one submit.
+This phase mirrors `partner-built/brand-voice/skills/discover-brand/SKILL.md` Steps 1 + 3. **Do not explicitly call `mcp__visualize__show_widget`.** Cowork infers elicitation rendering from natural-language scope-confirmation prompts when the visualize MCP is loaded — same way brand-voice's polished form appears without any widget code in their skill. In Claude Code or any host without inferred elicitation, the same prose falls back to plain text or `AskUserQuestion`.
 
-### 2a. Render the form
+### 2a. Check settings file
 
-If `mcp__visualize__show_widget` is available:
+Read `.claude/prescyent.local.md` if it exists. Extract:
 
-- Dispatch the form per the spec.
-- Read responses via `mcp__cowork__read_widget_context`.
+- Company name
+- User role (`founder`, `cfo`, `ops`, `sales`, `marketing`, `product`, `other`)
+- Buyer intent (`ai-readiness`, `capture-senior-knowledge`, `claude-actually-useful`, `other`)
+- Search depth (`standard` or `deep`) — default `standard`
+- Known doc locations or primary pain points (optional)
 
-If `mcp__visualize__show_widget` is NOT available (Claude Code, headless runs, older Cowork):
+A template lives at `settings/prescyent.local.md.example` — point users at it on first run if they didn't know it existed.
 
-- Fall back to sequential `AskUserQuestion` calls — five questions in field order. Each call applies the empty-response contract EXCEPT Q4 (`verbatim_pain`), where empty = skip = `null`.
+If the settings file exists AND has at minimum `company_name` + `user_role`, **skip Phase 2b** and proceed directly to Phase 2c.
 
-### 2b. Argument pre-seed
+### 2b. Confirm scope with the user
+
+If no settings file exists, or critical fields are missing, confirm scope. Keep this brief — one block of questions, not a serialized questionnaire. Phrase conversationally so Cowork can infer the elicitation pattern (and any host can fall back to plain prose):
+
+> Quick scope check before I run the audit:
+>
+> - **Company name?**
+> - **Your role?** (Founder / CEO, CFO / Finance lead, Head of Ops, Sales / GTM lead, Marketing lead, Product / Engineering lead, Other)
+> - **What brought you here today?** (Understand AI readiness / Capture senior knowledge before someone leaves / Make Claude actually useful for the team / Something else)
+> - **Anything specific been frustrating that I should prioritize?** (optional)
+> - **Search depth?** (Standard — top 10–15 sources / Deep — broader sweep)
+
+If Cowork renders this as an elicitation form, the answers arrive on a single line per the spec ("Brand discovery details — Company: …"). Parse the line. If a host renders it as prose, parse the user's natural-language reply against the same field shape.
+
+If the reply doesn't surface a company name, prompt once more for just that:
+
+> One more — what's the company called? I need it to label the report.
+
+Empty response = abort cleanly per the empty-response contract.
+
+### 2c. Argument pre-seed
 
 If `$ARGUMENTS` contains:
 
-- `depth:standard` or `depth:deep` — pre-seed `depth`; skip the corresponding question.
+- `depth:standard` or `depth:deep` — pre-seed `depth`; skip the corresponding question in 2b.
 - `role:<value>` — pre-seed `user_role`; skip that question. Valid values: `founder`, `cfo`, `ops`, `sales`, `marketing`, `product`, `other`.
 
 Pre-seeded fields skip the empty-response contract.
 
-### 2c. Build the orchestrator state
+### 2d. Build discovery_scope
 
-After the form returns (or AskUserQuestion fallback completes), build `discovery_scope`:
+After Phase 2a (settings) or Phase 2b (scope confirmation) completes, build:
 
 ```jsonc
 {
@@ -77,7 +100,8 @@ After the form returns (or AskUserQuestion fallback completes), build `discovery
   "verbatim_pain": "Sales reps don't update HubSpot.",
   "depth": "standard",
   "today_date": "2026-04-29",
-  "user_email": "<from session>"
+  "user_email": "<from session>",
+  "known_locations": []  // optional, from settings file
 }
 ```
 
@@ -278,9 +302,9 @@ Offer three independent options. The user picks any combination. Format:
 > 2. **Email it to tyler@prescyent.ai.** I'll draft (never send) an email with the report attached. You review in your drafts folder.
 > 3. **Build a living wiki from this.** Chain into `/kb-build --from-discover` and turn this assessment into the context layer every future Claude session reads from.
 >
-> Pick any. None of them write anywhere without explicit consent.
+> Pick any (reply "1", "1 and 3", "all", or "skip"). None of them write anywhere without explicit consent.
 
-Use `AskUserQuestion` with a multi-select if available (options: 1, 2, 3, none). Empty-response contract applies — empty = abort cleanly, do not silently default to "none."
+Plain text reply — do not use `AskUserQuestion`. Cowork may infer an elicitation form here too if the prose looks like a multi-select question; that's fine. Parse the user's reply against options 1, 2, 3, "all", "skip"/"none". Empty response = abort cleanly per the empty-response contract.
 
 If the user replies "none" or "skip", go directly to Phase 7.
 
@@ -315,11 +339,15 @@ If the user picks Option 3, control transfers to `/kb-build` and Phase 7 below i
 
 If the user picked Option 3 in Phase 6, skip this phase — `/kb-build` owns the next moment.
 
-Otherwise emit a closing handoff (≤60 words, voice-checked):
+Otherwise emit a closing handoff (≤80 words, voice-checked):
 
 > Your assessment is in your chat. When you want to turn this into a living wiki — the same context every future Claude session will read from — run `/kb-build`.
 >
 > That's the **Map** + **Build** step. **Deliver** is what we do together once the wiki is in your hands.
+>
+> Want to skip the scope questions next time? Save your answers at `.claude/prescyent.local.md` — there's a template at `settings/prescyent.local.md.example` in this plugin.
+
+The settings-file hint only emits IF Phase 2b actually ran (the user answered scope questions in this session). If Phase 2a hit and the settings file already existed, drop the third paragraph.
 
 If `mcp__plugins__suggest_plugin_install` is available, also surface a plugin-install card pointing at `prescyent-plugin` (the Tier 1 entry is the same plugin in v0.3-alpha — the card just nudges the user to keep going).
 
@@ -348,7 +376,7 @@ Pass all six — ship. Fail one — rewrite.
   > Your connectors didn't surface enough signal for a useful read. Connect more tools — or run `/kb-build` to capture knowledge directly from your team via interview.
 - **Render script (`render-report.py`) fails:** save the markdown anyway. Surface the markdown path and the stderr. Skip Phase 5c HTML and continue with markdown-only display.
 - **`mcp__cowork__create_artifact` unavailable:** fall back to inline markdown code block (Phase 5c).
-- **`mcp__visualize__show_widget` unavailable:** fall back to sequential AskUserQuestion calls (Phase 2).
+- **Cowork inferred elicitation unavailable** (Claude Code, headless runs, host without the visualize MCP loaded): the Phase 2b prose renders as a single chat block — the user replies in natural language, parser handles the same field shape.
 - **`mcp__cowork__request_cowork_directory` unavailable AND user picked Option 1:** print the sandbox path and tell the user to copy manually:
   > I can't request drive access in this session. Copy the report from `{HTML_PATH}` if you want a local copy.
 
@@ -370,8 +398,8 @@ The deliverable IS the chat-rendered assessment. Everything beyond is opt-in.
 ## Reference files
 
 - `references/orientation-copy.md` — the LOCKED Phase 1 message
-- `references/widget-form-spec.md` — the Phase 2 form definition + show_widget invocation shape
 - `references/subagent-output-contract.md` — the JSON contract every audit subagent returns
 - `references/ai-readiness-rubric.md` — 8-dimension scoring rubric for synthesis
 - `references/report-template.html` — Prescyent dark-mode HTML shell used by `render-report.py`
 - `scripts/render-report.py` — markdown → HTML renderer
+- `../../settings/prescyent.local.md.example` — per-project settings template buyers can copy to skip Phase 2b on subsequent runs

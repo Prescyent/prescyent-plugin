@@ -1,0 +1,76 @@
+# Prescyent — Local Settings (example)
+
+> Copy this file to `.claude/prescyent.local.md` in your project (or working folder) and fill in the values that apply. The `/discover` skill reads it at Phase 2a; if `Company Name` and `Your Role` are filled in, the skill skips the scope-confirmation questions and runs the audit directly.
+>
+> Empty fields fall back to defaults or get asked at runtime. Delete sections you don't want to set.
+
+---
+
+## Company
+
+**Company name:** Acme Corp
+
+---
+
+## Caller
+
+**Your role:** founder
+
+> Pick one: `founder`, `cfo`, `ops`, `sales`, `marketing`, `product`, `other`
+
+**Buyer intent:** ai-readiness
+
+> Pick one:
+> - `ai-readiness` — understand current AI readiness
+> - `capture-senior-knowledge` — capture senior knowledge before someone leaves
+> - `claude-actually-useful` — make Claude actually useful for the team
+> - `other`
+
+---
+
+## Search
+
+**Depth:** standard
+
+> Pick one:
+> - `standard` — top 10–15 sources, faster
+> - `deep` — broader sweep, slower
+
+**Max sources:** 15
+
+---
+
+## Known starting points (optional)
+
+If there are specific docs, folders, or systems Prescyent should prioritize, list them. Bullet format. Skip the section entirely if you'd rather Prescyent cast a wide net.
+
+- HubSpot deal pipeline (especially `Qualified` → `Closed Won` stages)
+- Drive: `Sales Playbook 2026` folder
+- Notion: `Operations` workspace, "How we run sales" page
+- Fathom: last 30 days of customer calls
+
+---
+
+## Primary pain (optional)
+
+What's been frustrating? One paragraph max. The audit subagents calibrate against this — they prioritize findings that match the pain you describe.
+
+> Sales reps don't update HubSpot, leadership flies blind on pipeline. We've added reminders, automated tasks, and 1:1 reviews. Nothing sticks.
+
+---
+
+## Off-limits (optional)
+
+Spaces or sources Prescyent should NOT read. Bullet format.
+
+- Anything tagged `legal-restricted`
+- HR transcripts from exit interviews
+- `Board minutes` folder in Drive
+
+---
+
+## Notes for the next caller (optional)
+
+Free text. Anything you want future runs of `/discover` to know about your setup, your team, your goals.
+
+> We're a 40-person revops org. Two recent acquisitions still being integrated — Acme South (joined 2025) and Northwind (joined 2026). Their stacks haven't fully migrated; assume Salesforce data is fragmented.
