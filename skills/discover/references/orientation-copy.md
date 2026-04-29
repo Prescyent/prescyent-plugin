@@ -1,36 +1,29 @@
 # Orientation Copy — LOCKED
 
-The canonical Phase 1 orientation message for `/discover`. Voice-gauntlet-passed on 2026-04-29. Never auto-regenerate. If copy needs to change, edit here, re-run the gauntlet at `../../kb-builder/references/voice-rules.md`, and commit as a deliberate voice update.
+The canonical Phase 1 orientation message for `/discover`. Voice-gauntlet-passed on 2026-04-29. Plain text only — no placeholder substitution, no widget render, no connector picker. Never auto-regenerate. If copy needs to change, edit here, re-run the gauntlet at `../../kb-builder/references/voice-rules.md`, and commit as a deliberate voice update.
 
 ## The message
 
-> Your AI sessions feel generic because Claude doesn't know your company. Your senior people do — but that knowledge lives only in their heads. Prescyent fixes both.
+> Here's how Prescyent discovery works:
 >
-> I'll read what you've connected and bring back a one-page assessment of where AI is leaving value on the table — in about five minutes.
+> 1. **Read** — I'll read what you've connected to Cowork (Drive, Notion, HubSpot, Gmail, etc.) to understand how your company actually runs.
+> 2. **Audit** — Four agents work in parallel: GTM systems, knowledge & docs, communications, and AI stack. Each one grades your readiness on its slice.
+> 3. **Report** — You get a one-page assessment with the top 3 AI opportunities, where you're losing time today, and what to fix first.
+> 4. **Next** — Save the report, draft a follow-up email, or chain to `/kb-build` to turn it into a living wiki. Nothing writes anywhere without your explicit consent.
 >
-> **Connected:** {doc_platforms}. **Supplementary:** {comms_intel_crm}. **Not connected:** {missing_named}.
->
-> Discover → Map → Build → Deliver. Ready when you are.
-
-## Substitution rules
-
-The three placeholders are filled at render time from `connectors_detected`:
-
-- `{doc_platforms}` — comma-separated list of connected document platforms (Drive, OneDrive, SharePoint, Notion, Confluence, Box, Dropbox). If empty, write `none yet`.
-- `{comms_intel_crm}` — comma-separated list of connected supplementary platforms (Gmail, Outlook, Slack, Teams, Fathom, Granola, Gong, HubSpot, Salesforce, Linear, Jira, etc.). If empty, write `none yet`.
-- `{missing_named}` — up to 5 supported-but-unconnected platforms, friendly names, comma-separated. If 0, omit the entire `**Not connected:** ...` line. Pick the most-likely-to-help missing platforms (favor doc platforms first, then CRM, then comms).
+> The audit usually takes 4–6 minutes. Ready to start?
 
 ## Why this message
 
-- **First sentence re-sells the promise.** "Generic outputs" is the pain the buyer already feels. "Senior people knowledge in their heads" is the second pain. "Prescyent fixes both" is the framing.
-- **Second sentence sets the deliverable.** "One-page assessment", "five minutes", "where AI is leaving value on the table" — all exec-language outcomes, no process narration, no subagent names.
-- **Third line names what's connected.** Connector inventory builds trust ("you're reading my actual data") and primes coverage expectations.
-- **Fourth line names the verb quartet.** Discover → Map → Build → Deliver, in full, locked order. Never shorten. Never reorder. This sets buyer expectation that Prescyent is an outcome partner, not a diagnosis vendor.
-- **Final line is consent.** "Ready when you are" — plain text, not `AskUserQuestion`. The user replies "yes", "go", or asks a question. Either way, they're committed before any subagent dispatches.
+- **Mirrors brand-voice's `/discover-brand` orientation pattern** (partner-built/brand-voice/skills/discover-brand/SKILL.md). Four numbered bullets covering what we're doing, how it works, what they get, what comes next. Plain text. Conversational close.
+- **No FUD opener.** Drops "Your AI sessions feel generic because Claude doesn't know your company." Buyers who installed the plugin don't need to be re-sold; they need expectations set.
+- **No verb-quartet vagueness.** Drops "Discover → Map → Build → Deliver. Ready when you are." That closer left "ready for what?" hanging. New closer is concrete: "The audit usually takes 4–6 minutes. Ready to start?"
+- **No connector picker.** The previous flow called `mcp__mcp-registry__list_connectors`, which renders Cowork's connector-management UI panel as a side effect. Coverage gaps now surface in the final report's Coverage table instead of pre-listing.
+- **Final line is consent.** Plain text reply, not `AskUserQuestion`. The user types "yes", "go", or asks a question. Either way, they're committed before any subagent dispatches.
 
 ## Word count
 
-72 words (excluding placeholders). Under the 80-word orientation budget per voice rules.
+~110 words (excluding header). Matches brand-voice's discover-brand orientation length.
 
 ## Banned-word check
 

@@ -1,18 +1,19 @@
 ---
 name: discover
 description: >
-  Tier 0 entry point for the Prescyent plugin. Reads the user's connected Cowork
-  tools, fans out four audit subagents in parallel, and returns a one-page AI
-  readiness assessment inline in chat. No drive writes unless the user opts in.
-  Invoke when the user asks to "set me up", "where do I start", "onboard me",
-  "audit my company", "AI readiness check", "what's our readiness", "we bought
-  Claude — now what?", "run discovery", or just installs the plugin.
+  Reads the user's connected Cowork tools (Drive, Notion, HubSpot, Gmail, etc.)
+  and produces a one-page AI readiness assessment inline in chat in about five
+  minutes. Fans out four audit subagents in parallel. No drive writes unless
+  the user opts in. Invoke when the user asks to "set me up", "where do I
+  start", "onboard me", "audit my company", "AI readiness check", "what's our
+  readiness", "we bought Claude — now what?", "run discovery", or just
+  installs the plugin.
 background_safe: false
 ---
 
-# `/discover` — Prescyent Tier 0 Entry Point
+# `/discover` — Prescyent entry point
 
-> `background_safe: false` is load-bearing. This skill uses widget elicitation
+> `background_safe: false` is load-bearing. Phase 2 uses widget elicitation
 > (`mcp__visualize__show_widget` when available) and `AskUserQuestion` as the
 > fallback. Both require the foreground main thread. Do not move into a
 > background `Task`.
@@ -27,50 +28,15 @@ If the widget elicitation form is dismissed with `submitted: false` AND `company
 
 ---
 
-## Phase 1 — Orient + connector inventory
+## Phase 1 — Orient the user
 
-### 1a. Read connected MCPs
+Emit the message at `references/orientation-copy.md` verbatim. Plain text only — no widget, no connector picker, no panel render. Do not call `mcp__mcp-registry__list_connectors` (it pops a UI surface in Cowork). Do not paraphrase. Do not prepend "Welcome!" or similar. Do not append process notes or subagent names.
 
-If `mcp__mcp-registry__list_connectors` is available (Cowork host), call it once. Otherwise, run `/mcp list` via Bash and parse the output. If neither produces data, proceed with `connectors_detected = []` — orientation still emits, just with empty lists.
+After the orientation lands, wait for the user to acknowledge with plain text ("yes", "go", "continue"). **Do NOT use `AskUserQuestion` here** — keep it conversational. The orientation ends with "Ready to start?" which the user replies to.
 
-Classify every detected connector into one of four buckets:
+If the user replies with a question instead of go-ahead, answer it briefly and wait again. Do not auto-proceed.
 
-| Bucket | Purpose | Example platforms |
-|---|---|---|
-| `doc_platforms` | Where docs live (primary signal) | Google Drive, OneDrive, SharePoint, Notion, Confluence, Box, Dropbox |
-| `comms_platforms` | Email + chat + calendar (supplementary) | Gmail, Outlook, Slack, Teams, Google Chat, Google Calendar |
-| `intel_platforms` | Conversation + meeting intel (supplementary) | Fathom, Granola, Gong, Otter, Chorus |
-| `crm_systems` | CRM, project trackers, ticketing (supplementary) | HubSpot, Salesforce, Pipedrive, Linear, Jira, Asana, Zendesk |
-
-Build three rendering lists from those buckets:
-
-- `doc_platforms` — connected document platforms, friendly names, comma-separated.
-- `comms_intel_crm` — connected comms + intel + CRM platforms, friendly names, comma-separated.
-- `missing_named` — supported-but-unconnected platforms, capped at 5, picking the most-likely-to-help (favor doc platforms first, then CRM, then comms).
-
-If a list is empty, render `none yet` instead of an empty string.
-
-### 1b. Render the LOCKED orientation message
-
-Emit the message at `references/orientation-copy.md` verbatim, with the three placeholders substituted. Do not paraphrase. Do not prepend "Welcome!" or similar. Do not append process notes or subagent names.
-
-### 1c. Coverage gates
-
-Run these gates BEFORE moving to Phase 2:
-
-- **Zero connectors detected** — stop. Emit (≤30 words):
-
-  > No connectors are active in this session. Connect at least one — Drive, Gmail, Slack, HubSpot, or Notion are good starting points — then re-run `/discover`.
-
-- **Zero document platforms but 1+ supplementary** — warn (proceed):
-
-  > No document storage is connected. Discovery will run on what's available, but expect coverage gaps where docs would normally help.
-
-- **Single connector total** — warn (proceed):
-
-  > Only one tool is connected. Discovery works best with two or more — connect another for a richer read.
-
-After the gates, wait for the user to acknowledge with plain text ("yes", "go", "continue"). **Do NOT use `AskUserQuestion` here** — keep it conversational. The orientation message ends with "Ready when you are." which the user replies to.
+Coverage gaps surface in the final report — Phase 5's Coverage table names what was actually read, and the failure mode at the bottom of this file handles the zero-findings case.
 
 ---
 
@@ -111,8 +77,7 @@ After the form returns (or AskUserQuestion fallback completes), build `discovery
   "verbatim_pain": "Sales reps don't update HubSpot.",
   "depth": "standard",
   "today_date": "2026-04-29",
-  "user_email": "<from session>",
-  "connectors_detected": [...]   // from Phase 1
+  "user_email": "<from session>"
 }
 ```
 
@@ -122,14 +87,14 @@ After the form returns (or AskUserQuestion fallback completes), build `discovery
 
 ## Phase 3 — Subagent fan-out
 
-Dispatch the four audit subagents IN PARALLEL via the `Task` tool. **Single message, four tool calls.** Do not serialize.
+Dispatch the four audit subagents IN PARALLEL via the `Task` tool. **Single message, four tool calls.** Do not serialize. Always dispatch all four — each subagent discovers what's available in its own category and surfaces gaps in `coverage_gaps[]`. No pre-filtering by connectivity.
 
 For each subagent, the Task `prompt` includes verbatim:
 
 - `company_name` and `today_date` from `discovery_scope`.
 - `user_role`, `buyer_intent`, `verbatim_pain` (so each subagent prioritizes findings against the specific pain — verbatim_pain is calibration text, not classification input).
 - `depth` (`standard` vs `deep` — deep raises the records_analyzed targets in the JSON contract).
-- The slice of `connectors_detected` mapped to this subagent's category, with specific platform names.
+- The category slice it owns (see mapping below). The subagent itself enumerates which platforms in that slice are actually connected.
 - The path to the JSON contract: `skills/discover/references/subagent-output-contract.md`.
 - Instruction to return JSON only, no prose, no preamble.
 
@@ -140,9 +105,9 @@ For each subagent, the Task `prompt` includes verbatim:
 | `audit-systems` | `~~crm`, `~~project-tracker`, `~~ticketing` |
 | `audit-knowledge` | `~~cloud-storage`, `~~wiki` |
 | `audit-comms` | `~~email`, `~~chat`, `~~calendar`, `~~meeting-intel` |
-| `audit-stack` | All detected connectors (catalog-only against the AI-readiness rubric) |
+| `audit-stack` | All connectors visible in the session (catalog-only against the AI-readiness rubric) |
 
-If a subagent's category has zero connectors, **skip dispatching that subagent entirely** — log it in `coverage_gaps` at synthesis. Do not dispatch a subagent with empty input; it'll just return null findings.
+If a subagent finds no connected tools in its category, it returns null findings and populates `coverage_gaps[]`. Synthesis at Phase 5 surfaces those gaps in the Coverage table and the Coverage Gaps section.
 
 ### Status update during dispatch
 
