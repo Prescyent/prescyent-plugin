@@ -280,17 +280,33 @@ def render_markdown_block(body: str) -> str:
     return "".join(parts)
 
 
+_SAFE_LINK_SCHEMES = ("http://", "https://", "mailto:", "#", "/")
+_SCHEME_RE = re.compile(r"^[a-z][a-z0-9+.\-]*:", re.IGNORECASE)
+
+
+def _safe_link_replace(match: re.Match) -> str:
+    """Render a markdown link as HTML, dropping unsafe URL schemes.
+
+    Only `http://`, `https://`, `mailto:`, and scheme-less (relative or
+    fragment) hrefs render as anchors. Everything else (notably
+    `javascript:` and `data:`) renders as plain link text — the URL is
+    discarded. Defense-in-depth against attacker-controlled markdown
+    surviving the audit-subagent → synthesis chain.
+    """
+    text, url = match.group(1), match.group(2).strip()
+    url_lower = url.lower()
+    if url_lower.startswith(_SAFE_LINK_SCHEMES) or not _SCHEME_RE.match(url_lower):
+        return f'<a href="{url}">{text}</a>'
+    return text
+
+
 def inline_md(text: str) -> str:
     """Inline markdown → HTML (bold, italic, code, links). Escapes HTML first."""
     out = html.escape(text)
     out = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", out)
     out = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"<em>\1</em>", out)
     out = re.sub(r"`(.+?)`", r"<code>\1</code>", out)
-    out = re.sub(
-        r"\[([^\]]+)\]\(([^)]+)\)",
-        r'<a href="\2">\1</a>',
-        out,
-    )
+    out = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", _safe_link_replace, out)
     return out
 
 
