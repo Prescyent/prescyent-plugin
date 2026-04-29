@@ -1,0 +1,31 @@
+{
+  "name": "prescyent",
+  "owner": {
+    "name": "Prescyent",
+    "email": "tyler@prescyent.ai",
+    "url": "https://prescyent.ai"
+  },
+  "metadata": {
+    "description": "Prescyent productized plugin ladder. Discover how your company works, map it, build the context layer, and deliver outcomes — all inside your own AI workspace.",
+    "pluginRoot": "."
+  },
+  "plugins": [
+    {
+      "name": "prescyent-plugin",
+      "source": "./",
+      "description": "Your AI sessions feel generic because Claude doesn't know your company. Your senior people do — but that knowledge lives only in their heads. Prescyent fixes both. Connect your tools (HubSpot, Drive, Gmail, Slack, Notion) and the plugin runs a discovery against your actual data, returning a one-page AI readiness assessment in your chat in about five minutes. Then, when you're ready, it builds a living wiki on your own drive — interviewing your senior people to capture the work nobody wrote down — that every future Claude session reads from. Discover → Map → Build → Deliver.",
+      "keywords": [
+        "discover",
+        "discovery",
+        "knowledge-base",
+        "kb-builder",
+        "ai-readiness",
+        "enterprise",
+        "mid-market",
+        "cowork",
+        "claude-code",
+        "consulting"
+      ]
+    }
+  ]
+}

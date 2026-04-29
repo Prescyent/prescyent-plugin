@@ -1,0 +1,30 @@
+# Dev artifacts that belong in the mothership repo (prescyent/plugin-dev/)
+# Never commit these to the public plugin repo.
+CLAUDE.md
+STATUS.md
+ROUTER.md
+V0.3-REBUILD-PLAN.md
+*-PLAN.md
+*-REBUILD-PLAN.md
+plans/
+plugin-dev/
+
+# Vendored reference materials
+_references/
+
+# Claude Code session memory
+.remember/
+
+# Common file-system / build artifacts
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.env.local
+node_modules/
+
+# Plugin runtime artifacts (created by the plugin at run-time, not source)
+prescyent-audits/
+.partial-*.json

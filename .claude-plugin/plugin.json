@@ -1,0 +1,33 @@
+{
+  "name": "prescyent-plugin",
+  "description": "Your AI sessions feel generic because Claude doesn't know your company. Your senior people do — but that knowledge lives only in their heads. Prescyent fixes both. Connect your tools (HubSpot, Drive, Gmail, Slack, Notion) and the plugin runs a discovery against your actual data, returning a one-page AI readiness assessment in your chat in about five minutes. Then, when you're ready, it builds a living wiki on your own drive — interviewing your senior people to capture the work nobody wrote down — that every future Claude session reads from. Discover → Map → Build → Deliver.",
+  "author": {
+    "name": "Prescyent",
+    "email": "tyler@prescyent.ai",
+    "url": "https://prescyent.ai"
+  },
+  "homepage": "https://prescyent.ai",
+  "repository": "https://github.com/Prescyent/prescyent-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "discover",
+    "discovery",
+    "knowledge-base",
+    "kb-builder",
+    "ai-readiness",
+    "enterprise",
+    "mid-market",
+    "cowork",
+    "claude-code",
+    "consulting",
+    "prescyent"
+  ],
+  "userConfig": {
+    "kb_root_label": {
+      "type": "string",
+      "title": "KB Root Folder Name",
+      "description": "Folder name inside your Shared drives / OneDrive root that contains your knowledge base. Default: prescyent-kb",
+      "default": "prescyent-kb"
+    }
+  }
+}

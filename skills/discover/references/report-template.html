@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>{{COMPANY_NAME}} — AI Discovery Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08090d;
+    --bg-card: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.08);
+    --text: #e6e8ec;
+    --text-dim: rgba(230,232,236,0.62);
+    --text-mute: rgba(230,232,236,0.38);
+    --accent-purple: #a78bfa;
+    --accent-cyan: #22d3ee;
+    --accent-green: #34d399;
+    --accent-amber: #fbbf24;
+    --accent-rose: #fb7185;
+  }
+  html { font-size: 18px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    line-height: 1.6;
+    font-feature-settings: 'tnum', 'cv11';
+    -webkit-font-smoothing: antialiased;
+  }
+  .ambient-orb {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .ambient-orb.one { top: -200px; left: -200px; background: var(--accent-purple); }
+  .ambient-orb.two { bottom: -200px; right: -200px; background: var(--accent-cyan); }
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 2rem 6rem;
+  }
+  .hero {
+    text-align: left;
+    margin-bottom: 5rem;
+  }
+  .hero .eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4.25rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    margin: 0 0 1rem;
+    background: linear-gradient(120deg, #ffffff 0%, var(--accent-purple) 50%, var(--accent-cyan) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero .subhead {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 48rem;
+  }
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 2.5rem 0 4rem;
+  }
+  .score-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .score-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(167,139,250,0.35);
+  }
+  .score-card .label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-mute);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .score-card .value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin: 0.5rem 0;
+    font-feature-settings: 'tnum';
+  }
+  .score-card .meta {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+  .score-overall { border-color: rgba(34,211,238,0.35); }
+  .score-overall .value {
+    background: linear-gradient(120deg, var(--accent-purple), var(--accent-cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  section {
+    margin-bottom: 4rem;
+  }
+  section h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  section h2 .score-badge {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    background: rgba(34,211,238,0.08);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .finding {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .finding:last-child { border-bottom: none; }
+  .finding .tag {
+    flex-shrink: 0;
+    width: 78px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.25rem 0;
+    text-align: center;
+    border-radius: 6px;
+    height: fit-content;
+  }
+  .tag-critical { background: rgba(251,113,133,0.15); color: var(--accent-rose); }
+  .tag-high { background: rgba(251,191,36,0.15); color: var(--accent-amber); }
+  .tag-medium { background: rgba(34,211,238,0.12); color: var(--accent-cyan); }
+  .tag-low { background: rgba(255,255,255,0.05); color: var(--text-mute); }
+  .finding .body h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.02rem;
+    font-weight: 700;
+  }
+  .finding .body p {
+    margin: 0.35rem 0;
+    color: var(--text-dim);
+  }
+  .finding .body .rec {
+    margin-top: 0.5rem;
+    padding: 0.6rem 0.9rem;
+    border-left: 2px solid var(--accent-green);
+    background: rgba(52,211,153,0.05);
+    border-radius: 4px;
+    font-size: 0.95rem;
+  }
+  .opportunities {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  .opp {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    position: relative;
+  }
+  .opp .rank {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: rgba(167,139,250,0.2);
+  }
+  .opp h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding-right: 3rem;
+  }
+  .opp p { color: var(--text-dim); margin: 0.4rem 0; font-size: 0.95rem; }
+  .opp .meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .opp .meta span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+  }
+  .cta {
+    margin-top: 4rem;
+    padding: 2.5rem;
+    background: linear-gradient(120deg, rgba(167,139,250,0.08), rgba(34,211,238,0.08));
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 16px;
+    text-align: center;
+  }
+  .cta h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0 0 0.75rem;
+  }
+  .cta p { color: var(--text-dim); max-width: 38rem; margin: 0 auto 1.5rem; }
+  .cta a {
+    display: inline-block;
+    padding: 0.85rem 1.5rem;
+    background: linear-gradient(120deg, var(--accent-purple), var(--accent-cyan));
+    color: #0a0b10;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: transform 0.2s ease;
+  }
+  .cta a:hover { transform: translateY(-1px); }
+  footer {
+    margin-top: 6rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text-mute);
+    text-align: center;
+  }
+  footer a { color: var(--accent-cyan); text-decoration: none; }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  @media (max-width: 640px) {
+    .container { padding: 3rem 1.25rem 4rem; }
+    .finding { flex-direction: column; gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="ambient-orb one"></div>
+<div class="ambient-orb two"></div>
+<div class="container">
+
+  <section class="hero reveal">
+    <div class="eyebrow">Prescyent AI Discovery Audit · {{AUDIT_DATE}}</div>
+    <h1>{{COMPANY_NAME}}</h1>
+    <p class="subhead">{{EXECUTIVE_SUMMARY_LEAD}}</p>
+  </section>
+
+  <div class="score-grid reveal">
+    <div class="score-card score-overall">
+      <div class="label">Overall Readiness</div>
+      <div class="value">{{OVERALL_SCORE}}</div>
+      <div class="meta">{{OVERALL_INTERPRETATION}}</div>
+    </div>
+    {{#SCORECARDS}}
+    <div class="score-card">
+      <div class="label">{{LABEL}}</div>
+      <div class="value">{{VALUE}}</div>
+      <div class="meta">{{META}}</div>
+    </div>
+    {{/SCORECARDS}}
+  </div>
+
+  <section class="reveal">
+    <h2>Executive Summary</h2>
+    <div class="card">
+      {{EXECUTIVE_BULLETS}}
+    </div>
+  </section>
+
+  {{#SECTIONS}}
+  <section class="reveal">
+    <h2>{{SECTION_TITLE}} <span class="score-badge">{{SECTION_SCORE}}/10</span></h2>
+    <div class="card">
+      {{SECTION_FINDINGS}}
+    </div>
+  </section>
+  {{/SECTIONS}}
+
+  <section class="reveal">
+    <h2>Top 3 AI Opportunities</h2>
+    <div class="opportunities">
+      {{OPPORTUNITIES}}
+    </div>
+  </section>
+
+  <section class="reveal">
+    <h2>Next Steps</h2>
+    <div class="card">
+      {{NEXT_STEPS}}
+    </div>
+  </section>
+
+  {{#COVERAGE_GAPS}}
+  <section class="reveal">
+    <h2>Coverage Gaps</h2>
+    <div class="card">
+      {{COVERAGE_GAPS_CONTENT}}
+    </div>
+  </section>
+  {{/COVERAGE_GAPS}}
+
+  {{#OPEN_QUESTIONS}}
+  <section class="reveal">
+    <h2>Open Questions</h2>
+    <div class="card">
+      {{OPEN_QUESTIONS_CONTENT}}
+    </div>
+  </section>
+  {{/OPEN_QUESTIONS}}
+
+  <div class="cta reveal">
+    <h2>Ready for the next step?</h2>
+    <p>The audit surfaces where your team is stuck. The Prescyent Knowledge Base Builder takes this output and builds the context layer that makes every future Claude session actually useful for your company.</p>
+    <a href="https://prescyent.ai/kb-builder">See the Knowledge Base Builder →</a>
+  </div>
+
+  <footer>
+    <p>Generated by <a href="https://prescyent.ai">Prescyent Discovery Audit</a> v{{PLUGIN_VERSION}} · {{AUDIT_DATE}} · Review before sharing externally.</p>
+    <p>Built on Anthropic Claude Cowork · Apache 2.0 · <a href="https://github.com/prescyent-ai/discovery-audit">GitHub</a></p>
+  </footer>
+</div>
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
