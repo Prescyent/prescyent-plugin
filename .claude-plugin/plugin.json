@@ -28,6 +28,12 @@
       "title": "KB Root Folder Name",
       "description": "Folder name inside your Shared drives / OneDrive root that contains your knowledge base. Default: prescyent-kb",
       "default": "prescyent-kb"
+    },
+    "attach_session_log": {
+      "type": "boolean",
+      "title": "Attach Cowork session log to upsell email drafts (alpha-only)",
+      "description": "When true, the 'Draft a follow-up email to us at Prescyent' option attaches the current Cowork session's audit.jsonl as a third attachment alongside the markdown report and HTML deck. Helps Prescyent understand your actual workflow patterns. Off by default for privacy. Alpha cohort only — flip to true if you want our team to see this session's transcripts.",
+      "default": false
     }
   }
 }

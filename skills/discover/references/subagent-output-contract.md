@@ -285,7 +285,22 @@ The master `discover` skill produces this structured JSON at Phase 5a. Both rend
 
   "path_forward": "The audit findings point at one structural pattern: every AI tool at {company} operates without a persistent context layer accessible to the team. The fix is finishing what you started — a single wiki on the Drive that every AI tool reads from, mined from your connectors, kept current automatically.",
 
-  "tyler_brief": "Baseline Payments has a v5.0.0 structured wiki on the Drive that almost no founder builds. Their AI stack is A-grade. The bottleneck is that every workflow runs through Tyler personally instead of through deterministic automation. Three immediate wins (zombie pipeline disconnect, Granola→Gmail loop, calendar-invite generator) free up ~7 hrs/week. The bigger move is finishing the KB so Marc, JS, and Matt operate from the same canonical source. Founder, ready for Phase 1 plugins.",
+  "tyler_brief": "Baseline Payments has a v5.0.0 structured wiki on the Drive that almost no founder builds. Their AI stack is A-grade. The bottleneck is that every workflow runs through Tyler personally instead of through deterministic automation. Three immediate wins (zombie pipeline disconnect, Granola→Gmail loop, calendar-invite generator) free up ~7 hrs/week. The bigger move is finishing the knowledge base so Marc, JS, and Matt operate from the same canonical source. Founder, ready for Phase 1 plugins.",
+
+  "company_industry": "B2B payments processor",
+
+  "kb_explainer": {
+    "what_it_is": "A single source on your Drive that every AI tool reads from. Karpathy-style — structured pages your team writes once, that compound across every Claude session, every employee, every quarter.",
+    "why_now_for_company": "The audit found that every AI workflow at Baseline currently flows through one human (you) instead of through a shared knowledge layer the team can self-serve. A knowledge base directly fixes that — the post-call email loop needs your tone-of-voice and customer-segment patterns to draft from; the Esker pipeline report needs Virginie's review pattern documented; the calendar-invite factory needs your meeting-cadence doctrine. Without it, every workflow on the roadmap above runs cold every time.",
+    "what_youd_build": [
+      "Esker pipeline doctrine — so the Monday report draft has context for stage hygiene + Virginie's review pattern.",
+      "Customer onboarding patterns — so support ticket triage knows when to escalate to Elsy/Georgina.",
+      "Sales playbook — so post-call drafts match your team's voice and competitive positioning.",
+      "Calendar admin doctrine — so the invite-generator skill knows your internal vs external attendee patterns."
+    ],
+    "how_kb_build_does_it": "Mining subagents read your connectors. They distill what's already there into typed pages. Then `/kb-interview` adds the parts that only live in your team's heads — 30-min voice conversations with your senior team that fill the gaps. The whole thing takes about a week."
+  },
+
 
   "coverage": [
     {"category": "GTM & Systems", "platforms": "HubSpot", "records_analyzed": "200 deals · 100 contacts · 10 tickets · 101 owners", "confidence": "High"},
@@ -343,11 +358,18 @@ The master `discover` skill produces this structured JSON at Phase 5a. Both rend
 
 - **`the_answer`** — Minto Level 1. ONE contestable sentence. ≤60 words. Specific enough that someone could disagree. No hedging.
 - **`scores`** — split scoring (v0.5 change). `stack` = 1-10 grade of the AI tool surface; `workflow_integration` = 1-10 grade of how those tools wire into deterministic workflows; `overall` = 0-100 weighted (`stack × 4 + workflow_integration × 6`). The split scoring resolves the v0.4 "A-grade stack + 62/100" contradiction.
-- **`wins_top_3`** — exactly 3 entries. Each ≤50 words combined across `headline` + `one_liner` + `ai_mechanism`. The `ai_mechanism` field is mandatory and must name a concrete Prescyent ladder rung (skill / scheduled task / custom plugin / durable agent).
+- **`wins_top_3`** — exactly 3 entries. Each ≤50 words combined across `headline` + `one_liner` + `ai_mechanism`. The `ai_mechanism` field is mandatory and must name a concrete Prescyent ladder rung (skill / scheduled task / custom plugin / durable agent). Body copy uses we-tense ("we'd want to...", "we're considering...") not Tyler-singular ("I help...").
+- **`why_now`** — boil-the-ocean framing. ≤100 words. **Do NOT name Garry Tan** in this field — the buyer deck never names him. **Do NOT date-stamp** the framing (no "May 2026", no "Q2 2026", no "this month"). v0.6 (EM-30): the buyer deck must read fresh in any quarter. Use timeless openers ("Today is the inflection moment"; "Right now is where companies split"; "We're at the moment AI strategies are bifurcating").
 - **`losing_time`** — 3-5 entries. Each ≤40 words combined. The `ai_fix` field is mandatory.
 - **`roadmap`** — exactly 4 entries (now-3mo / 3-6mo / 6-12mo / 12mo+). Each ≤50 words. Foaster-style ladder.
-- **`lanes`** — exactly 3 entries (DIY / Light-touch / Full). No pricing in body copy. `cta_label` drives the button text.
-- **`tyler_brief`** — 100-word executive brief that lands at the top of the analyst markdown. Buyer can copy/paste into a lead email.
+- **`lanes`** — exactly 3 entries (DIY / Light-touch / Full). No pricing in body copy. `cta_label` drives the button text. Body copy spells out "knowledge base" before any "KB" abbreviation.
+- **`tyler_brief`** — 100-word executive brief that lands at the top of the analyst markdown. Spell out "knowledge base" first mention.
+- **`company_industry`** (v0.6, EM-37) — short string describing what the company does (e.g., "B2B payments processor", "marina management SaaS", "regional construction GC"). Audit-stack subagent infers this from connector signals (HubSpot org details, domain analysis, Drive folder names). Used by `draft-upsell-email` as the company-introduction seed when writing to tyler@prescyent.ai who has no prior context.
+- **`kb_explainer`** (v0.6, EM-39) — object with four fields used by Phase 5g to render the knowledge-base explainer between the inline hook and Phase 6 elicitation:
+  - `what_it_is` — 1-2 sentence plain-English definition. Spells out "knowledge base" verbatim.
+  - `why_now_for_company` — 2-3 sentence explanation tied to the audit's specific findings. Pulls from `the_answer` + the highest-cost `losing_time` entry.
+  - `what_youd_build` — array of 3-4 specific KB page topics tailored to this company. Each derived from a `wins_top_3[].ai_mechanism` or a high-surprise `dimensions[].findings[].headline`.
+  - `how_kb_build_does_it` — 2-3 sentence explanation of the `/kb-build` mining + `/kb-interview` voice-conversation flow. Persona-tailored on `user_role` (founder/cfo → "your senior team"; sales → "your top reps + closers"; ops → "your process owners").
 - **`dimensions`** — 4 entries, one per audit category. Each finding has `severity` + `surprise` + `headline` + `recommendation`.
 - **`tan_attribution_footnote`** — appears ONLY in the analyst markdown's footnote. Never named in the buyer deck. Buyer copy uses the zero-sum vs positive-sum idea without the attribution.
 

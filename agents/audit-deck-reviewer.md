@@ -105,8 +105,9 @@ For every entry in `wins_top_3` (from synthesizer JSON), the corresponding rende
 ### MISSING_AI_FIX
 For every entry in `losing_time` (from synthesizer JSON), the corresponding rendered pain row must contain a non-empty `.ai-fix` span. If any pain is missing the AI-fix translation, hard-fail.
 
-### APPENDIX_OPEN_BY_DEFAULT
-The appendix `<details>` element must NOT have the `open` attribute. Buyer should expand on demand.
+### ~~APPENDIX_OPEN_BY_DEFAULT~~ (removed v0.6)
+
+Removed in v0.6 (EM-32). The appendix is no longer a `<details>` collapse — it renders as a normal `<section>` below the footer signoff so deep readers see the data without hunting for a click affordance. The check is moot.
 
 ### TAN_NAME_IN_BUYER_COPY
 The string "Garry Tan" or "Tan" (as a name) must NOT appear anywhere in the rendered HTML body. Tan attribution lives in the analyst markdown footnote only.

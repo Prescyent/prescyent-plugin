@@ -33,7 +33,30 @@ Plus optional **Phase 3 — Reset**, gated by `--reset` in `$ARGUMENTS`.
 
 ## Phase 0 — Preflight capture
 
-### 0a. Argument parsing
+### 0a. Cowork project session check (v0.6, EM-38)
+
+`/kb-build` writes intermediate artifacts to the Cowork session's working folder AND mines content to the user's drive. It needs a Cowork PROJECT session, not a one-shot Cowork chat.
+
+Inspect the current working directory:
+
+- If `cwd` matches the pattern `*/local-agent-mode-sessions/*/local_*/outputs` AND there's no `.cowork-project` marker (or equivalent project metadata) up the tree, treat as a one-shot session and abort.
+- If `cwd` is inside a Cowork project's working folder (the user explicitly opened the session inside a project from the Cowork UI), continue.
+
+When aborting, emit (≤80 words):
+
+> `/kb-build` needs a Cowork project session to run cleanly. The skill writes 13 folders of mined content to your drive AND uses the Cowork session's working folder for intermediate artifacts. A one-shot chat doesn't give it that.
+>
+> Open a new Cowork session inside a Cowork project (Projects sidebar → your project → New session), then re-run:
+>
+>     /kb-build --from-discover {discover_md_path if present, else nothing}
+>
+> This protects you from running out of token budget halfway through and from polluting your chat sandbox with wiki files.
+
+Then return cleanly. Do not proceed to 0b.
+
+The check is heuristic — Cowork's project-vs-chat distinction may not always be cleanly inferrable from cwd. Err on the side of WARNING (continue with a one-line note) rather than blocking when the heuristic is uncertain. Hard abort only when we're confident the session is a one-shot chat.
+
+### 0b. Argument parsing
 
 Parse `$ARGUMENTS`:
 
@@ -42,7 +65,7 @@ Parse `$ARGUMENTS`:
 - `only:<a>,<b>` — dispatch only the named mining subagents.
 - `skip:<a>` — dispatch every mining subagent except the named ones.
 
-### 0b. Existing preflight check
+### 0c. Existing preflight check
 
 Resolve the staging path: `~/.prescyent/<slug>/preflight.md` (slug derived from preliminary `company_name` if known, otherwise from `--from-discover` path or `_pending` placeholder).
 
@@ -50,7 +73,7 @@ Resolve the KB-root path via `python3 skills/kb-builder/scripts/storage.py --tes
 
 If the KB-root preflight exists but the staging-dir preflight does not, that's the join-existing-KB case — capture only `user_email`, `user_role`, append to `joining_users[]` in the existing preflight, and continue.
 
-### 0c. Seed from `--from-discover`
+### 0d. Seed from `--from-discover`
 
 If `--from-discover <path>` was provided:
 
@@ -73,7 +96,7 @@ If the discovery markdown is missing or malformed, surface (≤30 words):
 
 Then exit cleanly.
 
-### 0d. Capture remaining fields via widget
+### 0e. Capture remaining fields via widget
 
 Determine which preflight fields are still missing. Always-required fields not derivable from `--from-discover`:
 
@@ -139,11 +162,11 @@ If `mcp__visualize__show_widget` is available, render a single form for the miss
 
 If `mcp__visualize__show_widget` is unavailable, fall back to sequential `AskUserQuestion` calls for the missing fields. Each one applies the empty-response contract.
 
-### 0e. Derive the slug
+### 0f. Derive the slug
 
 `company_slug` derives from `company_name`: lowercase, replace `[^a-z0-9-]+` with `-`, strip leading/trailing hyphens, collapse runs of `-` (use `slug_email`-style canonicalization if needed for email-derived slugs — see `scripts/storage.py::slug_email`).
 
-### 0f. Write the preflight
+### 0g. Write the preflight
 
 Write to `~/.prescyent/<company_slug>/preflight.md` with the full schema at `references/preflight-schema.md`. Include:
 

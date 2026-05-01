@@ -68,7 +68,7 @@ def mailto_url(company: str, topic_suffix: str = "discovery audit follow-up") ->
     return f"mailto:{TYLER_EMAIL}?subject={subject}"
 
 
-def cta_buttons_inner(company: str, primary_label: str = "Email Tyler", ghost_label: str = "Book 30 min") -> str:
+def cta_buttons_inner(company: str, primary_label: str = "Email us", ghost_label: str = "Book 30 min") -> str:
     """Just the two anchor buttons — caller wraps in a .cta-row div as needed."""
     return (
         f'<a class="cta primary" href="{mailto_url(company)}">'
@@ -82,7 +82,7 @@ def cta_buttons_inner(company: str, primary_label: str = "Email Tyler", ghost_la
     )
 
 
-def cta_row_html(company: str, *, extra_class: str = "", primary_label: str = "Email Tyler", ghost_label: str = "Book 30 min") -> str:
+def cta_row_html(company: str, *, extra_class: str = "", primary_label: str = "Email us", ghost_label: str = "Book 30 min") -> str:
     classes = "cta-row" + (f" {extra_class}" if extra_class else "")
     return f'<div class="{classes}">{cta_buttons_inner(company, primary_label, ghost_label)}</div>'
 
@@ -185,7 +185,7 @@ def build_mid_cta(data: dict) -> str:
     company = data.get("company_name", "")
     return (
         '<div class="banner-cta reveal">'
-        '<div class="copy">Ready to ship these three? I help companies move from problem to deployed automation in days, not quarters.</div>'
+        '<div class="copy">Ready to ship these three? We help companies move from problem to deployed automation in days, not quarters.</div>'
         f"{cta_row_html(company)}"
         "</div>"
     )
@@ -427,11 +427,15 @@ def build_appendix(data: dict) -> str:
         + _gaps_html(gaps)
         + _open_questions_html(qs)
     )
+    # v0.6 (EM-32): appendix is no longer a collapsed <details> element.
+    # It renders as a normal <section> below the footer signoff so deep
+    # readers see the data without hunting for a click affordance.
     return (
-        '<details class="appendix reveal">'
-        "<summary>The detail (per-dimension findings, conflicts, gaps, open questions)</summary>"
+        '<section class="appendix reveal">'
+        '<h2 class="section appendix-title">The detail</h2>'
+        '<p class="appendix-subtitle">Per-dimension findings, conflicts, gaps, and open questions.</p>'
         f'<div class="appendix-body">{body}</div>'
-        "</details>"
+        "</section>"
     )
 
 
@@ -442,10 +446,10 @@ def build_footer(data: dict) -> str:
         '<div class="reveal"><div class="eyebrow">Why this audit?</div></div>'
         '<h2 class="reveal delay-1">Two reasons.</h2>'
         '<p class="close-lede reveal delay-2">'
-        f"<strong>First</strong>, this is the picture I'd want before deciding what to do with AI at {esc(company)}. The roadmap above is the bigger move — building the persistent context layer that compounds across every Claude session, every employee, every quarter."
+        f"<strong>First</strong>, this is the picture we'd want before deciding what to do with AI at {esc(company)}. The roadmap above is the bigger move — building the persistent context layer that compounds across every Claude session, every employee, every quarter."
         "</p>"
         '<p class="close-lede reveal delay-3">'
-        "<strong>Second</strong>, as a practical example. I built this audit in about five minutes using the same tools I'd help your team turn into a system. The medium is the message."
+        "<strong>Second</strong>, as a practical example. We built this audit in about five minutes using the same tools we'd help your team turn into a system. The medium is the message."
         "</p>"
         f'{cta_row_html(company, extra_class="reveal delay-4")}'
         '<div class="sign-off reveal delay-5">'

@@ -208,7 +208,8 @@
   }
   .cta.primary {
     background: var(--grad-primary);
-    color: #0b0d12;
+    color: #000;
+    font-weight: 800;
     border: 1px solid transparent;
   }
   .cta.primary:hover { transform: translateY(-1px); }
@@ -504,38 +505,29 @@
     align-self: flex-start;
   }
 
-  /* ---------- Appendix (collapsed) ---------- */
+  /* ---------- Appendix (always visible, post-footer) ---------- */
+  /* v0.6 (EM-32): appendix is no longer a <details> collapse.
+     Renders as a normal section below the footer for deep readers. */
   .appendix {
-    margin: 2rem 0 3rem;
+    margin: 4rem 0 0;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .appendix-title {
+    color: var(--text-dim);
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .appendix-subtitle {
+    color: var(--text-mute);
+    font-size: 0.92rem;
+    margin: 0 0 1.75rem;
+  }
+  .appendix-body {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 0;
-    overflow: hidden;
-  }
-  .appendix > summary {
-    cursor: pointer;
-    padding: 1.25rem 1.75rem;
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: var(--text);
-    list-style: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .appendix > summary::-webkit-details-marker { display: none; }
-  .appendix > summary::after {
-    content: '▾';
-    color: var(--text-mute);
-    transition: transform 0.2s ease;
-  }
-  .appendix[open] > summary::after { transform: rotate(180deg); }
-  .appendix > summary:hover { background: var(--bg-card-hover); }
-  .appendix-body {
-    padding: 1.5rem 1.75rem 2rem;
-    border-top: 1px solid var(--border);
+    padding: 1.75rem 1.75rem 2rem;
   }
   .appendix-body h3 {
     font-size: 1.1rem;
@@ -697,9 +689,9 @@
 
 {{LANES_HTML}}
 
-{{APPENDIX_HTML}}
-
 {{FOOTER_HTML}}
+
+{{APPENDIX_HTML}}
 
 </div>
 <script>

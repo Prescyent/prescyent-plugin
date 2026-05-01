@@ -53,7 +53,7 @@
       "evidence": "Michael & Son thread on April 30 produced nine separate emails in three hours for one 30-min pre-game."
     }
   ],
-  "why_now": "May 2026 is the inflection moment. Companies are splitting into two AI plays — use AI to do the same things slightly cheaper, or use AI to do things that were impossible last quarter. The companies pulling ahead aren't cutting headcount. They're running outbound motions no human team could sustain, building knowledge layers that compound, shipping product before competitors notice. Baseline has the connector surface to play that game. What's missing is the wiring.",
+  "why_now": "Today is the inflection moment. Companies are splitting into two AI plays — use AI to do the same things slightly cheaper, or use AI to do things that were impossible last quarter. The companies pulling ahead aren't cutting headcount. They're running outbound motions no human team could sustain, building knowledge layers that compound, shipping product before competitors notice. Baseline has the connector surface to play that game. What's missing is the wiring.",
   "losing_time": [
     {
       "headline": "You author every external calendar invite by hand.",
@@ -109,25 +109,37 @@
   "lanes": [
     {
       "name": "DIY",
-      "headline": "Run /kb-build now",
-      "body": "Free, ~20 min. Mining subagents read your connectors and scaffold the wiki. You own everything.",
+      "headline": "Start your knowledge base with /kb-build",
+      "body": "Free, ~20 min. Mining subagents read your connectors and scaffold the KB. You own everything.",
       "cta_label": "Free path"
     },
     {
       "name": "Light-touch",
-      "headline": "Have Tyler build your KB",
-      "body": "Skip the learning curve. Tyler builds the foundation, hands it back, supports your team through the first month.",
-      "cta_label": "Talk to Tyler"
+      "headline": "Have us build your knowledge base",
+      "body": "Skip the learning curve. We build the foundation, hand it back, support your team through the first month.",
+      "cta_label": "Talk to us"
     },
     {
       "name": "Full",
       "headline": "Engage Prescyent for the complete discovery",
-      "body": "Two-layer audit. Voice-agent interviews with your team. Custom plugin built around your workflows.",
-      "cta_label": "Talk to Tyler"
+      "body": "Two-layer audit. Voice-agent interviews with your team. Custom plugin built around how you actually run.",
+      "cta_label": "Talk to us"
     }
   ],
-  "path_forward": "The audit findings point at one structural pattern: every AI tool at Baseline operates without a persistent context layer accessible to the team. The fix is finishing what you started — a single wiki on the Drive that every AI tool reads from, mined from your connectors, kept current automatically.",
-  "tyler_brief": "Baseline Payments has a v5.0.0 structured wiki on the Drive that almost no founder builds. Their AI stack is A-grade. The bottleneck is that every workflow runs through Tyler personally instead of through deterministic automation. Three immediate wins (zombie pipeline disconnect, Granola→Gmail loop, calendar-invite generator) free up ~7 hrs/week. The bigger move is finishing the KB so Marc, JS, and Matt operate from the same canonical source. Founder, ready for Phase 1 plugins.",
+  "path_forward": "The audit findings point at one structural pattern: every AI tool at Baseline operates without a persistent context layer accessible to the team. The fix is finishing what you started — a single knowledge base on the Drive that every AI tool reads from, mined from your connectors, kept current automatically.",
+  "tyler_brief": "Baseline Payments has a v5.0.0 structured knowledge base on the Drive that almost no founder builds. Their AI stack is A-grade. The bottleneck is that every workflow runs through Tyler personally instead of through deterministic automation. Three immediate wins (zombie pipeline disconnect, Granola→Gmail loop, calendar-invite generator) free up ~7 hrs/week. The bigger move is finishing the KB so Marc, JS, and Matt operate from the same canonical source. Founder, ready for Phase 1 plugins.",
+  "company_industry": "B2B payments processor — Canadian merchant services + payment infrastructure",
+  "kb_explainer": {
+    "what_it_is": "A single source on your Google Drive that every AI tool reads from. Karpathy-style — structured pages your team writes once, that compound across every Claude session, every employee, every quarter.",
+    "why_now_for_company": "The audit found that every AI workflow at Baseline currently flows through one human (you) instead of through a shared knowledge layer the team can self-serve. A knowledge base directly fixes that. Without it, every workflow on the roadmap above runs cold every time a new session starts.",
+    "what_youd_build": [
+      "Esker pipeline doctrine — so the Monday report draft has context for stage hygiene + Virginie's review pattern.",
+      "Customer onboarding patterns — so support ticket triage knows when to escalate to Elsy/Georgina.",
+      "Sales playbook — so post-call drafts match your team's voice and competitive positioning.",
+      "Calendar admin doctrine — so the invite-generator skill knows your internal vs external attendee patterns."
+    ],
+    "how_kb_build_does_it": "Mining subagents read your connectors. They distill what's already there into typed pages. Then `/kb-interview` adds the parts that only live in your team's heads — 30-min voice conversations with your senior team that fill the gaps. The whole thing takes about a week."
+  },
   "coverage": [
     {"category": "GTM & Systems", "platforms": "HubSpot", "records_analyzed": "200 deals · 100 contacts · 10 tickets · 101 owners", "confidence": "High"},
     {"category": "Knowledge & Docs", "platforms": "Google Drive · Notion", "records_analyzed": "127 Drive files · 47 Notion pages · 11 deep reads", "confidence": "Medium"},

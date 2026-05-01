@@ -202,11 +202,11 @@ If a subagent finds no connected tools in its category, it returns null findings
 
 ### Status update during dispatch
 
-Emit ONE status line (≤30 words) immediately after the parallel block:
+Emit ONE status line (≤40 words) immediately after the parallel block:
 
-> Discovery agents reading your data. Back in a minute or two with findings.
+> Discovery agents reading your data. Should be done in 8–10 min — go grab a coffee or high-five a friend.
 
-Do not narrate process. Do not name subagents. Do not stream sub-progress.
+Do not narrate process. Do not name subagents. Do not stream sub-progress. The 8–10 min estimate is the discover 4 dogfood wall-clock; previous "4–6 minutes" was wrong and lived in the orientation, where it set the user up to step away during the elicitation. Time estimate now lands AFTER form submission.
 
 ---
 
@@ -232,7 +232,7 @@ These questions:
 Question shapes that hit the bar:
 
 - **The "real game" question.** "Looking at where your AI tools point today, the data suggests you're optimizing for [observable]. Is that the actual 12-month strategy, or are you building toward something different?"
-- **The "constraint" question.** "If we 10x'd your AI workflow capacity tomorrow, what's the bottleneck that still hurts revenue? Pipeline, people, product, or process?"
+- **The "constraint" question.** "If we automated the busywork tomorrow, what bottleneck still hurts {Company} revenue? Pipeline, people, product, or process?" (Plain English. No "AI workflow capacity" jargon — Tyler 2026-05-01: *"AI workflow capacity, I don't think that really means a whole lot to people. I don't even know what AI workflow capacity is."*) Alternative shapes: "If your team got 10 hours back per person per week, what's the lever they couldn't pull yet?" / "If everything routine got handled by Claude tomorrow, what's the constraint that still slows you down?"
 - **The "willingness" question.** "How much org-design change can absorb in the next 90 days? Optimize inside current workflows, or rebuild?"
 
 Question shapes that DO NOT hit the bar (these are tactical triage — DO NOT use):
@@ -286,7 +286,7 @@ Required fields:
 - `the_answer` — Minto Level 1. ONE contestable sentence. ≤60 words.
 - `scores` — split scoring: `stack` (1-10 grade of AI tool surface), `workflow_integration` (1-10 grade of how tools wire into deterministic workflows), `overall` (0-100 weighted: `stack × 4 + workflow_integration × 6`), `interpretation` (one-line tied to overall band).
 - `wins_top_3` — exactly 3 entries. Each `{rank, headline, one_liner, ai_mechanism, impact_metric, effort, impact, confidence, surprise, evidence}`. The `ai_mechanism` field is mandatory and names a concrete Prescyent ladder rung (Claude skill / scheduled task / custom plugin / durable agent). Total word budget per win ≤50 words across `headline + one_liner + ai_mechanism`.
-- `why_now` — boil-the-ocean framing tied to May 2026. ≤100 words. **Do NOT name Garry Tan in this field** — the buyer deck never names him. The zero-sum vs positive-sum idea stands on its own without attribution.
+- `why_now` — boil-the-ocean framing. ≤100 words. **Do NOT name Garry Tan in this field** — the buyer deck never names him. **Do NOT date-stamp the framing** (no "May 2026", no "Q2 2026", no "this month"). v0.6 change (EM-30): the buyer deck must read fresh in any quarter. Use timeless openers: "Today is the inflection moment", "Right now is where companies split", "We're at the moment AI strategies are bifurcating." The zero-sum vs positive-sum idea stands on its own.
 - `losing_time` — 3-5 entries. Each `{headline, one_liner, time_cost, ai_fix}`. The `ai_fix` field is mandatory — names the AI mechanism that solves this pain.
 - `roadmap` — exactly 4 entries (now-3mo / 3-6mo / 6-12mo / 12mo+). Each `{window, title, body, accent}` with accent ∈ {`green`, `cyan`, `purple`, `brass`}.
 - `lanes` — exactly 3 entries (DIY / Light-touch / Full). Each `{name, headline, body, cta_label}`. **No pricing in body copy.**
@@ -402,11 +402,38 @@ After the artifact renders, print the contestable answer + Top 3 wins as inline 
 > 2. {wins_top_3[1].headline}
 > 3. {wins_top_3[2].headline}
 
+### 5g. Knowledge-base explainer (v0.6 — EM-39)
+
+Before Phase 6 fires the next-step elicitation, emit a 4-paragraph explainer in chat that introduces what a knowledge base is, why it specifically helps THIS company, what they'd build, and how `/kb-build` does it. Each paragraph pulls from synthesizer JSON fields — no hard-coded copy. Persona-tailored.
+
+```markdown
+**What's a knowledge base?**
+
+A single source on your {storage — Drive / OneDrive} that every AI tool reads from. Karpathy-style — structured pages your team writes once, that compound across every Claude session, every employee, every quarter.
+
+**Why now for {company_name}?**
+
+The audit found {pull from `the_answer`'s second clause + the highest-cost `losing_time` entry — 1-2 sentences}. A knowledge base directly fixes that — {specific reasoning tied to audit data: e.g., "your post-call email loop needs a place to read your tone-of-voice and your customer-segment patterns from"}. Without it, every workflow on the roadmap above runs cold every time.
+
+**What you'd build:**
+
+- {KB page 1 — derived from wins_top_3[0].ai_mechanism + the underlying pain it solves. e.g., "Esker pipeline doctrine — so the Monday report draft has context for stage hygiene + Virginie's review pattern"}
+- {KB page 2 — same pattern for wins_top_3[1]}
+- {KB page 3 — same pattern for wins_top_3[2]}
+- {KB page 4 — pulled from the highest-surprise dimension finding, e.g., "Customer onboarding patterns — so support ticket triage knows when to escalate to Elsy/Georgina"}
+
+**How `/kb-build` does it:**
+
+Mining subagents read your connectors. They distill what's already there into typed pages. Then `/kb-interview` adds the parts that only live in your team's heads — 30-min voice conversations with {role-aware list: founder/cfo → "your senior team"; sales → "your top reps + closers"; ops → "your process owners"} that fill the gaps. The whole thing takes about a week.
+```
+
+The synthesizer fills these placeholders during Phase 5a; the explainer ships as part of the synthesis output (new field `kb_explainer` in the JSON contract — see updated subagent-output-contract.md). If `kb_explainer` is empty (synthesizer didn't generate it), Phase 5g emits a generic shorter version instead, then continues to Phase 6.
+
 ---
 
 ## Phase 6 — Recommended next step + secondary options (elicitation)
 
-Frame the path forward as the recommended action with two secondary options. The KB build is the recommended next step — the report's "Path forward" + "How to climb the ladder" sections sold the user on it.
+Frame building the knowledge base as the recommended action. The Phase 5g explainer above sold the user on what a knowledge base is and why it fixes their specific pain — Phase 6 closes the loop with three paths.
 
 Render Phase 6 as an elicitation form. Title: `"Next step"`. Submit label: `"Go"`. Skip label: `"Skip — close the audit"`.
 
@@ -414,25 +441,70 @@ Render Phase 6 as an elicitation form. Title: `"Next step"`. Submit label: `"Go"
 
 | Field key | Question | Type | Options (recommended pre-selected) |
 |---|---|---|---|
-| `primary_action` | Ready to chain into `/kb-build`? | plain pills | Yes — chain into /kb-build now (recommended); Yes — but later, save the audit first; No — close the audit here |
-| `secondary_actions` | Anything else you want me to do with this report? | plain pills, multi-select | Save markdown + HTML to my drive; Draft a follow-up email to tyler@prescyent.ai; Send to a teammate (paste their email below) |
+| `primary_action` | Ready to build your knowledge base? | plain pills | Yes — open `/kb-build` in a new session (recommended); Yes — chain inline (I have token room); Yes — save the audit first, I'll start later; No — close the audit here |
+| `secondary_actions` | Anything else you want us to do with this report? | plain pills, multi-select | Save markdown + HTML to my drive; Draft a follow-up email to us at Prescyent; Send to a teammate (paste their email below) |
 | `teammate_email` | Teammate email (optional) | textarea | (free text, only used if "Send to a teammate" is selected) |
+
+**v0.6 change (EM-31, EM-38, EM-29):**
+
+- Question 1 spells out "knowledge base" instead of using the `KB` abbreviation.
+- Recommended primary action is now `"Yes — open /kb-build in a new session"` — NOT inline chain. `/kb-build` is token-heavy (mining subagents + graph synthesis); chaining inline can push a Cowork session past 500K tokens. Opening in a new Cowork project session (with a dedicated working folder) keeps each phase tractable AND gives `/kb-build` a real folder to write the wiki into.
+- Inline chain stays available as a secondary opt-in for users who explicitly know they have token room.
+- "Anything else you want me to do" → "Anything else you want us to do" (we-tense per EM-29).
+- "Draft a follow-up email to tyler@prescyent.ai" → "Draft a follow-up email to us at Prescyent" (we-tense + drops the bare email address from buyer-facing copy).
 
 If `mcp__visualize__show_widget` is unavailable, fall back to plain text:
 
-> The path forward is `/kb-build` — the audit's "How to climb the ladder" section makes the case. Reply with one of:
+> The path forward is `/kb-build` — the audit's "How to climb the ladder" + the explainer above make the case. Reply with one of:
 >
-> - "go" — chain into /kb-build now (recommended)
+> - "go" — open `/kb-build` in a new Cowork project session (recommended). I'll save the audit + give you a paste-able prompt.
+> - "inline" — chain `/kb-build` here (heads up: this Cowork session is already token-heavy)
 > - "save" — save markdown + HTML to my drive
-> - "email" — draft a follow-up email to tyler@prescyent.ai
+> - "email" — draft a follow-up email to us at Prescyent
 > - "send to {email}" — send to a teammate
 > - "skip" — close the audit here
 
 Empty response = abort cleanly per the empty-response contract.
 
-If `primary_action = "Yes — chain into /kb-build now"`, transfer control to `/kb-build --from-discover {MD_PATH}` and skip Phase 7. The `/kb-build` command parses the markdown's YAML frontmatter for `company_name`, `company_slug`, `user_role`, then asks only for the storage target and KB root label.
+### Primary action — Open `/kb-build` in a new session (recommended)
 
-If the user picks `"No — close the audit here"`, go directly to Phase 7.
+If `primary_action = "Yes — open /kb-build in a new session"`:
+
+1. Confirm the markdown report is saved at `{MD_PATH}` (Phase 5b already wrote it).
+2. If the user did NOT also pick the "Save markdown + HTML to my drive" secondary action, surface a one-line nudge: `"Save the audit to your drive too — your future Cowork session won't have access to this Cowork sandbox."` Then run the save flow (request directory consent, write files).
+3. Emit the seed-prompt handoff message:
+
+   ```
+   The audit is saved at {drive_path}. To build your knowledge base:
+   
+   1. Open a new Cowork session inside a Cowork PROJECT (not a one-off chat). Projects give /kb-build a real working folder it can write the wiki into.
+   2. Paste this prompt:
+   
+      /kb-build --from-discover {drive_path}
+   
+   That hands /kb-build the audit context — company name, role, scope — so it skips the preflight and goes straight to scaffolding.
+   ```
+
+4. End the Phase 6 flow. Phase 7 (closing handoff) can still emit the settings-file hint if Phase 2c ran.
+
+### Primary action — Chain inline (secondary opt-in)
+
+If `primary_action = "Yes — chain inline (I have token room)"`:
+
+1. Surface a one-line warning: `"Heads up — /kb-build runs mining subagents + graph synthesis. If this session is past 200K tokens, you may hit limits. Switch to a new session if anything stalls."`
+2. Invoke `/kb-build --from-discover {MD_PATH}`. Control transfers to `/kb-build`; Phase 7 below is skipped.
+
+### Primary action — Save first, start later
+
+If `primary_action = "Yes — save the audit first, I'll start later"`:
+
+1. Run the save-to-drive flow.
+2. Emit the same seed-prompt handoff as the recommended path (so the user has the exact paste-text when they're ready).
+3. End Phase 6. Phase 7 fires.
+
+### "No — close the audit here"
+
+Go directly to Phase 7.
 
 ### Option — Save to drive
 
@@ -442,49 +514,49 @@ If `secondary_actions` includes `"Save markdown + HTML to my drive"`:
 - If granted, write `{HTML_PATH}` and `{MD_PATH}` to the granted folder as `prescyent-discovery-{slug}-{date}.{html,md}`.
 - If declined, surface ("Saved to chat only — re-run later when you're ready") and skip.
 
-### Option — Draft email to tyler@prescyent.ai
+### Option — Draft email to us at Prescyent
 
-If `secondary_actions` includes `"Draft a follow-up email to tyler@prescyent.ai"`:
+If `secondary_actions` includes `"Draft a follow-up email to us at Prescyent"`:
 
 Chain to `skills/draft-upsell-email/SKILL.md`. Pass these inputs:
 
 - `company_name`
+- `company_industry` — pulled from the synthesizer's company-context inference (audit-stack subagent populates from connector signals).
 - `report_path_html` — the drive path if Save was also selected, else the sandbox path
 - `report_path_md` — same logic
+- `session_audit_log_path` — passed only if `userConfig.attach_session_log == true`. Path to the current Cowork session's `audit.jsonl`.
 - `the_answer` — the Minto Level 1 sentence
-- `top_3_moves` — the ranked Top 3 from synthesis (use `wins_top_3` shape)
+- `wins_top_3` — the ranked Top 3 from synthesis
 - `overall_score` — integer 0–100
-- `tyler_brief` — the 100-word executive brief (pre-populated email body candidate)
+- `tyler_brief` — the 100-word executive brief (seed for the email body — `draft-upsell-email` rewrites into buyer-frame voice with company introduction prepended)
 
-`draft-upsell-email` handles email-MCP detection, drafting, attachment fallback, and never sends.
+`draft-upsell-email` (v0.6, EM-36 + EM-37) attaches `report_path_md` + `report_path_html` to the draft. If `session_audit_log_path` was passed, attaches that too. Body is rewritten in buyer-frame voice: 1-2 sentence company introduction, then "we're considering acting on these three…" framing, closing with "Open to a 30-min call to discuss whether your engagement model fits this stage of the work" + booking link. Skill never sends; draft lands in user's mail-MCP draft folder.
 
 ### Option — Send to teammate
 
 If `secondary_actions` includes `"Send to a teammate"` AND `teammate_email` is non-empty:
 
-Chain to `skills/draft-upsell-email/SKILL.md` with the teammate email as the `to` field. Same drafting flow. Never sends.
-
-### Primary action — Chain to `/kb-build`
-
-If `primary_action = "Yes — chain into /kb-build now"`:
-
-Invoke `/kb-build --from-discover {MD_PATH}`. Control transfers to `/kb-build`; Phase 7 below is skipped.
+Chain to `skills/draft-upsell-email/SKILL.md` with the teammate email as the `to` field. Same drafting flow + same attachments (md + html; audit log NOT attached when sending to a teammate, regardless of `attach_session_log` flag — the audit log is for Prescyent dogfood only). Never sends.
 
 ---
 
 ## Phase 7 — Closing handoff
 
-If the user picked `"Yes — chain into /kb-build now"` in Phase 6, skip this phase.
+If the user picked `"Yes — chain inline (I have token room)"` in Phase 6, skip this phase — `/kb-build` owns the next moment.
 
 Otherwise emit a closing handoff (≤90 words, voice-checked):
 
-> Your custom audit page is above. The path forward is `/kb-build` — turn this into a living wiki every Claude session reads from. Run `/kb-build --from-discover {MD_PATH}` when you're ready.
+> Your custom audit page is above. The path forward is `/kb-build` — turn this into a living knowledge base every Claude session reads from. Open a new Cowork project session and paste:
 >
-> That's the **Map** + **Build** step. **Deliver** is what we do together once the wiki is in your hands.
+>     /kb-build --from-discover {MD_PATH}
+>
+> That's the **Map** + **Build** step. **Deliver** is what we do together once the knowledge base is in your hands.
 >
 > Want to skip the scope questions next time? Save your answers at `.claude/prescyent.local.md` — there's a template at `settings/prescyent.local.md.example` in this plugin.
 
 The settings-file hint only emits IF Phase 2c actually ran (the user answered scope questions in this session). If Phase 2a hit and the settings file already existed, drop the third paragraph.
+
+**v0.6 change (EM-31 + EM-38):** "wiki" replaced with "knowledge base" (first mention spells it out; subsequent mentions in the same paragraph can abbreviate). Closing handoff now points at opening a new Cowork project session for `/kb-build`, matching the Phase 6 recommended primary-action flow.
 
 If `mcp__plugins__suggest_plugin_install` is available, also surface a plugin-install card pointing at `prescyent-plugin`.
 
