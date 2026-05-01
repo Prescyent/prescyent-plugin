@@ -13,7 +13,7 @@
     {
       "name": "prescyent-plugin",
       "source": "./",
-      "description": "Your AI sessions feel generic because Claude doesn't know your company. Your senior people do — but that knowledge lives only in their heads. Prescyent fixes both. Connect your tools (HubSpot, Drive, Gmail, Slack, Notion) and the plugin runs a discovery against your actual data, returning a one-page AI readiness assessment in your chat in about five minutes. Then, when you're ready, it builds a living wiki on your own drive — interviewing your senior people to capture the work nobody wrote down — that every future Claude session reads from. Discover → Map → Build → Deliver.",
+      "description": "Connect your tools (HubSpot, Drive, Gmail, Notion, Fathom, etc.) and run /discover. Four agents read your actual data in parallel and produce a one-page AI readiness audit inline in your chat in about five minutes. The report grades your company on eight dimensions, names the top three moves you can make this week, and points at the path forward. Then run /kb-build to scaffold a living wiki on your own drive — interviewing your senior people to capture the work nobody wrote down — that every future Claude, ChatGPT, or agent session reads from.",
       "keywords": [
         "discover",
         "discovery",

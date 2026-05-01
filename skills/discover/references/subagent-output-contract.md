@@ -1,23 +1,29 @@
 # Subagent Output Contract
 
-**contract_version: "2.0"**
+**contract_version: "2.1"**
 
-Every subagent (`audit-systems`, `audit-knowledge`, `audit-comms`, `audit-stack`) MUST return output in this exact format. The master `audit` skill synthesizes by parsing this contract.
+Every subagent (`audit-systems`, `audit-knowledge`, `audit-comms`, `audit-stack`) MUST return output in this exact format. The master `discover` skill synthesizes by parsing this contract.
 
-## What changed vs. v1.0
+## What changed vs. v2.0
 
-- Added top-level `contract_version` field.
-- Added top-level `behavioral_trace_findings[]` (cap 10 per subagent) — patterns inferred from how data is used, not what's recorded.
-- Added top-level `sor_pointers{}` — field → authoritative system map.
-- Added per-finding `classification` (`public | internal | confidential | restricted`, default `internal`).
-- Added per-finding `framework_indexes{}` with optional `pcf`, `bian`, `togaf`, `zachman` keys.
+- Added per-finding `surprise_factor` (`Low | Medium | High`). Drives Minto-pyramid sorting at synthesis: HIGH-surprise findings go in the top-of-report Hero / "Where you're losing time" sections; LOW-surprise findings (CRM hygiene basics, common patterns the user almost certainly already knows) go in the appendix detail.
+- Added per-opportunity `surprise_factor` with the same values + meaning.
+- Bumped contract version 2.0 → 2.1.
+
+## What changed vs. v1.0 (still applies in 2.1)
+
+- Top-level `contract_version` field.
+- Top-level `behavioral_trace_findings[]` (cap 10 per subagent) — patterns inferred from how data is used, not what's recorded.
+- Top-level `sor_pointers{}` — field → authoritative system map.
+- Per-finding `classification` (`public | internal | confidential | restricted`, default `internal`).
+- Per-finding `framework_indexes{}` with optional `pcf`, `bian`, `togaf`, `zachman` keys.
 - `audit-stack` additionally emits a top-level `classification_surface{}` map: connector → classification tier.
 
 ## Contract
 
 ```json
 {
-  "contract_version": "2.0",
+  "contract_version": "2.1",
   "subagent": "audit-systems | audit-knowledge | audit-comms | audit-stack",
   "company_name": "string",
   "connectors_used": ["HubSpot", "OneDrive", "..."],
@@ -42,6 +48,7 @@ Every subagent (`audit-systems`, `audit-knowledge`, `audit-comms`, `audit-stack`
       "detail": "Of 612 open deals, 412 (67%) have no close_date. Stage hygiene is breaking forecast accuracy.",
       "severity": "Critical | High | Medium | Low",
       "confidence": "High | Medium | Low",
+      "surprise_factor": "Low | Medium | High",
       "data_source": "HubSpot deals API, pulled 2026-04-16",
       "recommendation": "Enforce close_date on stage change via HubSpot Workflow. 1-day fix.",
       "effort": "Low | Medium | High",
@@ -69,7 +76,8 @@ Every subagent (`audit-systems`, `audit-knowledge`, `audit-comms`, `audit-stack`
       "why_now": "Fathom is connected. HubSpot deal notes are 80% empty. Template exists in the Prescyent gtm-wizards plugin.",
       "effort": "Low | Medium | High",
       "impact": "Low | Medium | High",
-      "confidence": "High | Medium | Low"
+      "confidence": "High | Medium | Low",
+      "surprise_factor": "Low | Medium | High"
     }
   ],
   "coverage_gaps": [
@@ -94,6 +102,11 @@ Every subagent (`audit-systems`, `audit-knowledge`, `audit-comms`, `audit-stack`
 - **`sor_pointers{}`** — object mapping field name → authoritative system (e.g., `"deal_count": "hubspot.deals"`). The KB is a *derived* source-of-truth; HRIS/ERP/CRM are *authoritative*. Omit the key entirely if the subagent has no SOR claims.
 - **`classification`** (per finding) — default `internal`. Synthesis drops `restricted` findings entirely and withholds `confidential` unless the user opts in.
 - **`framework_indexes{}`** (per finding) — all four keys optional; default `null`. Only fill if obvious. The kb-graph subagent fills the rest downstream.
+- **`surprise_factor`** (per finding + per opportunity) — required.
+  - **High** = the finding required cross-source synthesis or contradicts a stated position. The user almost certainly does NOT know this. Example: "audit-knowledge cross-referenced Drive ownership patterns with Notion bot count and discovered the canonical wiki is single-author with no redundancy backup, despite Setup Guide claiming team-wide adoption."
+  - **Medium** = volume-driven discovery — counts, percentages, or stale-records that the user might know exist but hasn't quantified. Example: "536 open deals in pipelines named DO NOT USE."
+  - **Low** = obvious / known patterns the user almost certainly already knows. Example: "Notion contains a wiki." Synthesis demotes Low findings to the appendix detail.
+  - Bias the scale toward Medium. Reserve High for findings that genuinely surprise. Reserve Low for findings the user could have written without us.
 
 ## audit-stack addendum
 

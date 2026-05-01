@@ -28,7 +28,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-PLUGIN_VERSION = "0.2.0"
+PLUGIN_VERSION = "0.4.0"
 
 SEVERITY_CLASS = {
     "critical": "tag-critical",
@@ -48,84 +48,147 @@ def load_template(script_dir: Path) -> str:
 def parse_markdown(md: str) -> dict:
     """Parse the synthesized audit markdown into structured fields.
 
-    Expected shape (loose — we tolerate deviation):
+    Expected shape (v0.4 Minto pyramid — loose, we tolerate deviation):
 
-        # {Company} — AI Discovery Audit
-        Date: YYYY-MM-DD
-        Audit scope: ...
-        Overall AI Readiness Score: NN
+        # {Company}
+        **AI Readiness Audit · YYYY-MM-DD · {Standard|Deep}**
 
-        ## Executive Summary
+        ## The answer
+        > {Minto Level 1 sentence}
+        **Overall AI Readiness Score: NN** · {one-line interpretation}
+
+        ## Top 3 moves
+        1. **{headline}** — ...
+        2. **{headline}** — ...
+        3. **{headline}** — ...
+
+        ## Why this matters now
+        {boil-the-ocean framing paragraphs}
+
+        ## Where you're losing time today
+        - **{blind spot}** — ...
+
+        ## The path forward
+        {KB Builder upsell paragraphs}
+
+        ## The detail
+        ### Coverage
+        | ... |
+        ### GTM & Systems Readiness — N/10
+        - ...
+        ### Knowledge & Document Readiness — N/10
+        - ...
+        ### Communications Readiness — N/10
+        - ...
+        ### AI Stack Readiness — N/10
+        - ...
+        ### Conflicts Between Sources
+        ### Coverage Gaps
+        ### Open Questions
+
+        ## Recommended next steps
         1. ...
-        2. ...
-        3. ...
 
-        ## GTM & Systems Readiness — N/10
-        ...
-
-        ## Knowledge & Document Readiness — N/10
-        ...
-
-        ## Communications Readiness — N/10
-        ...
-
-        ## AI Stack Readiness — N/10
-        ...
-
-        ## Top 3 AI Opportunities
-        1. ...
-        2. ...
-        3. ...
-
-        ## Recommended Next Steps
-        ...
-
-        ## Coverage Gaps
-        ...
-
-        ## Open Questions
-        ...
+    The parser also tolerates the legacy v0.3 shape (Executive Summary +
+    per-dimension H2s + Top 3 Opportunities at the bottom) — older reports
+    still render correctly.
     """
     data: dict = {
         "audit_date": date.today().isoformat(),
+        "depth": "Standard",
         "overall_score": "—",
         "overall_interpretation": "",
-        "executive_bullets_html": "",
+        "the_answer_html": "",
+        "top_3_moves_html": "",
+        "why_now_html": "",
+        "where_losing_time_html": "",
+        "path_forward_html": "",
+        "executive_bullets_html": "",  # legacy fallback
         "sections": [],
-        "opportunities_html": "",
+        "opportunities_html": "",  # legacy fallback
         "next_steps_html": "",
         "coverage_gaps_html": "",
         "open_questions_html": "",
+        "conflicts_html": "",
+        "coverage_table_html": "",
         "scorecards": [],
     }
 
     # Overall score
-    m = re.search(r"Overall AI Readiness Score:\s*(\d{1,3})", md, re.IGNORECASE)
+    m = re.search(r"Overall AI Readiness Score(?:[*:\s]+)(\d{1,3})", md, re.IGNORECASE)
     if m:
         data["overall_score"] = m.group(1)
         data["overall_interpretation"] = interpret_score(int(m.group(1)))
 
     # Date
-    m = re.search(r"^Date:\s*(\d{4}-\d{2}-\d{2})", md, re.MULTILINE)
+    m = re.search(r"(?:^Date:\s*|·\s*)(\d{4}-\d{2}-\d{2})", md, re.MULTILINE)
     if m:
         data["audit_date"] = m.group(1)
 
-    # Section bodies by H2
+    # Depth
+    m = re.search(r"·\s*(Standard|Deep)\s*(?:scope|·|$)", md, re.IGNORECASE | re.MULTILINE)
+    if m:
+        data["depth"] = m.group(1).capitalize()
+
+    # H2 sections (Minto-level)
     h2_blocks = split_by_heading(md, "##")
 
     for title, body in h2_blocks.items():
-        lower = title.lower()
-        if "executive summary" in lower:
-            data["executive_bullets_html"] = render_bullets(body)
-        elif "opportunities" in lower:
-            data["opportunities_html"] = render_opportunities(body)
-        elif "next steps" in lower:
+        lower = title.lower().strip()
+        if lower.startswith("the answer"):
+            data["the_answer_html"] = render_blockquote_or_paragraph(body)
+        elif lower.startswith("top 3 moves") or lower.startswith("top 3 ai opportunities"):
+            data["top_3_moves_html"] = render_opportunities(body)
+            # legacy alias
+            if not data["opportunities_html"]:
+                data["opportunities_html"] = data["top_3_moves_html"]
+        elif lower.startswith("why this matters now"):
+            data["why_now_html"] = render_markdown_block(body)
+        elif lower.startswith("where you're losing time") or lower.startswith("where you are losing time"):
+            data["where_losing_time_html"] = render_markdown_block(body)
+        elif lower.startswith("the path forward") or lower.startswith("path forward"):
+            data["path_forward_html"] = render_markdown_block(body)
+        elif lower.startswith("the detail") or lower.startswith("detail"):
+            # The Detail section contains H3 sub-sections — parse them
+            h3_blocks = split_by_heading(body, "###")
+            for h3_title, h3_body in h3_blocks.items():
+                h3_lower = h3_title.lower().strip()
+                if h3_lower.startswith("coverage") and "gaps" not in h3_lower:
+                    data["coverage_table_html"] = render_markdown_block(h3_body)
+                elif "conflicts" in h3_lower:
+                    data["conflicts_html"] = render_markdown_block(h3_body)
+                elif "coverage gaps" in h3_lower:
+                    data["coverage_gaps_html"] = render_markdown_block(h3_body)
+                elif "open questions" in h3_lower:
+                    data["open_questions_html"] = render_markdown_block(h3_body)
+                elif "readiness" in h3_lower:
+                    score = extract_section_score(h3_title)
+                    data["sections"].append({
+                        "title": strip_score(h3_title),
+                        "score": score,
+                        "findings_html": render_findings(h3_body),
+                    })
+                    data["scorecards"].append({
+                        "label": short_label(h3_title),
+                        "value": score or "—",
+                        "meta": "/10",
+                    })
+        elif lower.startswith("recommended next steps") or "next steps" in lower:
             data["next_steps_html"] = render_markdown_block(body)
-        elif "coverage gaps" in lower:
+        # Legacy v0.3 shape support
+        elif "executive summary" in lower:
+            data["executive_bullets_html"] = render_bullets(body)
+            if not data["the_answer_html"]:
+                data["the_answer_html"] = data["executive_bullets_html"]
+        elif "opportunities" in lower and not data["top_3_moves_html"]:
+            data["opportunities_html"] = render_opportunities(body)
+            data["top_3_moves_html"] = data["opportunities_html"]
+        elif "coverage gaps" in lower and not data["coverage_gaps_html"]:
             data["coverage_gaps_html"] = render_markdown_block(body)
-        elif "open questions" in lower:
+        elif "open questions" in lower and not data["open_questions_html"]:
             data["open_questions_html"] = render_markdown_block(body)
         elif "readiness" in lower:
+            # Legacy v0.3 — H2 readiness sections (we now expect them under H3 of "## The detail")
             score = extract_section_score(title)
             data["sections"].append({
                 "title": strip_score(title),
@@ -139,6 +202,22 @@ def parse_markdown(md: str) -> dict:
             })
 
     return data
+
+
+def render_blockquote_or_paragraph(body: str) -> str:
+    """Render the 'The answer' section. Prefer the blockquote content; fall back to first paragraph."""
+    quote_lines = []
+    for line in body.splitlines():
+        stripped = line.strip()
+        if stripped.startswith(">"):
+            quote_lines.append(stripped.lstrip(">").strip())
+        elif quote_lines:
+            break
+    if quote_lines:
+        text = " ".join(quote_lines)
+        return f'<blockquote class="answer">{inline_md(text)}</blockquote>'
+    # Fall back to the rest of the body
+    return render_markdown_block(body)
 
 
 def interpret_score(score: int) -> str:
@@ -322,9 +401,10 @@ def render_scorecards(cards: list[dict]) -> str:
 
 
 def render_sections(sections: list[dict]) -> str:
+    """Render per-dimension findings sections — landed under '## The detail' as H3 sub-sections."""
     return "".join(
-        f'<section class="reveal">'
-        f'<h2>{html.escape(s["title"])} <span class="score-badge">{html.escape(s["score"] or "—")}/10</span></h2>'
+        f'<section class="detail-section reveal">'
+        f'<h3>{html.escape(s["title"])} <span class="score-badge">{html.escape(s["score"] or "—")}/10</span></h3>'
         f'<div class="card">{s["findings_html"]}</div>'
         f"</section>"
         for s in sections
@@ -335,21 +415,42 @@ def build_html(template: str, company: str, data: dict) -> str:
     scorecards_html = render_scorecards(data["scorecards"])
     sections_html = render_sections(data["sections"])
 
-    # Extract executive summary lead from first bullet if present
-    lead_match = re.search(r"<li>(.+?)</li>", data["executive_bullets_html"])
-    lead = lead_match.group(1) if lead_match else "An AI readiness plan built from your actual data."
+    # Extract a one-line lead — prefer The Answer's blockquote text, fall back to first executive bullet
+    lead = "An AI readiness plan built from your actual data."
+    if data.get("the_answer_html"):
+        m = re.search(r"<blockquote[^>]*>(.+?)</blockquote>", data["the_answer_html"], re.DOTALL)
+        if m:
+            lead = m.group(1).strip()
+    if lead == "An AI readiness plan built from your actual data." and data.get("executive_bullets_html"):
+        m = re.search(r"<li>(.+?)</li>", data["executive_bullets_html"])
+        if m:
+            lead = m.group(1)
+
+    # URL-encode the company name for the mailto subject
+    import urllib.parse
+    deck_topic = urllib.parse.quote(f"{company} discovery audit follow-up")
 
     # Use simple token substitution (not Mustache — avoid dependencies)
     out = template
     out = out.replace("{{COMPANY_NAME}}", html.escape(company))
     out = out.replace("{{AUDIT_DATE}}", html.escape(data["audit_date"]))
+    out = out.replace("{{DEPTH}}", html.escape(data.get("depth", "Standard")))
     out = out.replace("{{OVERALL_SCORE}}", html.escape(str(data["overall_score"])))
     out = out.replace("{{OVERALL_INTERPRETATION}}", html.escape(data["overall_interpretation"]))
     out = out.replace("{{EXECUTIVE_SUMMARY_LEAD}}", lead)
+    out = out.replace("{{THE_ANSWER}}", data.get("the_answer_html") or data.get("executive_bullets_html") or "")
+    out = out.replace("{{TOP_3_MOVES}}", data.get("top_3_moves_html") or data.get("opportunities_html") or "")
+    out = out.replace("{{WHY_NOW}}", data.get("why_now_html", ""))
+    out = out.replace("{{WHERE_LOSING_TIME}}", data.get("where_losing_time_html", ""))
+    out = out.replace("{{PATH_FORWARD}}", data.get("path_forward_html", ""))
+    out = out.replace("{{COVERAGE_TABLE}}", data.get("coverage_table_html", ""))
+    out = out.replace("{{CONFLICTS}}", data.get("conflicts_html", ""))
+    # Legacy aliases
     out = out.replace("{{EXECUTIVE_BULLETS}}", data["executive_bullets_html"])
-    out = out.replace("{{OPPORTUNITIES}}", data["opportunities_html"])
+    out = out.replace("{{OPPORTUNITIES}}", data["opportunities_html"] or data.get("top_3_moves_html", ""))
     out = out.replace("{{NEXT_STEPS}}", data["next_steps_html"])
     out = out.replace("{{PLUGIN_VERSION}}", PLUGIN_VERSION)
+    out = out.replace("{{DECK_TOPIC_URL}}", deck_topic)
 
     # Sections: replace the Mustache-style SECTIONS block with rendered HTML.
     out = re.sub(
@@ -366,6 +467,22 @@ def build_html(template: str, company: str, data: dict) -> str:
         out,
         flags=re.DOTALL,
     )
+
+    # Why-now conditional
+    _conditional_block(out_ref := [out], "WHY_NOW_BLOCK", data.get("why_now_html"))
+    out = out_ref[0]
+
+    # Where-losing-time conditional
+    _conditional_block(out_ref := [out], "WHERE_LOSING_TIME_BLOCK", data.get("where_losing_time_html"))
+    out = out_ref[0]
+
+    # Path-forward conditional
+    _conditional_block(out_ref := [out], "PATH_FORWARD_BLOCK", data.get("path_forward_html"))
+    out = out_ref[0]
+
+    # Conflicts conditional
+    _conditional_block(out_ref := [out], "CONFLICTS_BLOCK", data.get("conflicts_html"))
+    out = out_ref[0]
 
     # Coverage gaps conditional
     if data["coverage_gaps_html"]:
@@ -392,6 +509,19 @@ def build_html(template: str, company: str, data: dict) -> str:
         out = re.sub(r"\{\{#OPEN_QUESTIONS\}\}.*?\{\{/OPEN_QUESTIONS\}\}", "", out, flags=re.DOTALL)
 
     return out
+
+
+def _conditional_block(out_ref: list, marker: str, has_content) -> None:
+    """In-place: keep the inner block if has_content is truthy, else strip it.
+
+    Templates use {{#MARKER}}...{{/MARKER}} as the conditional fence.
+    """
+    pattern_keep = rf"\{{\{{#{marker}\}}\}}(.*?)\{{\{{/{marker}\}}\}}"
+    pattern_drop = rf"\{{\{{#{marker}\}}\}}.*?\{{\{{/{marker}\}}\}}"
+    if has_content:
+        out_ref[0] = re.sub(pattern_keep, r"\1", out_ref[0], flags=re.DOTALL)
+    else:
+        out_ref[0] = re.sub(pattern_drop, "", out_ref[0], flags=re.DOTALL)
 
 
 def main() -> int:
