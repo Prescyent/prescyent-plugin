@@ -28,6 +28,18 @@ Your output must conform to `skills/discover/references/subagent-output-contract
 - `~~cloud-storage` — Google Drive, OneDrive, SharePoint, Box, Dropbox
 - `~~wiki` — Notion, Confluence, Guru, Coda, Slite
 
+## Tool-call discipline (v0.5)
+
+Cowork enforces a ~25K-token ceiling on every tool result. Don't filesystem-spelunk on overflow — re-issue the call with tighter parameters. Hard limits:
+
+- Drive `search_files` / `list_recent_files`: `pageSize: 50` max. Use `parentId =` filters to scope to specific folders. Don't pull file content for every result — title + ownership + modified-time first, then drill into top candidates.
+- Drive `download_file_content` / `read_file_content`: pull at most 10 deep reads per audit. Score wiki structure from manifest + structure first; pull body text only for the 5-10 most-cited or most-recent files.
+- Notion `notion-search`: `pageSize: 25` max. Use `query` to scope, not full-corpus pulls.
+- Notion `notion-fetch`: page IDs only. **Do NOT pass `notion-get-teams` UUIDs to `notion-fetch`** — team IDs are not page IDs and the call returns 404. Use team IDs only for filter scoping.
+- Notion `notion-get-users`, `notion-get-teams`: cheap calls, run once.
+
+If a tool call returns "exceeds maximum allowed tokens": do NOT read the saved tool-result file via `mcp__workspace__bash`. Re-issue the call with smaller `pageSize` / narrower scope. Spelunking is last resort.
+
 ## Behavioral-Trace Mode (v0.2)
 
 In addition to your existing inventory + hygiene + opportunity passes, you now run a **behavioral-trace pass** that infers structure from how the data is *used*, not just what's *recorded*.

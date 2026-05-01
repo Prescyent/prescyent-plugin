@@ -1,0 +1,246 @@
+{
+  "contract_version": "2.2",
+  "plugin_version": "0.5.0",
+  "company_name": "Baseline Payments",
+  "company_slug": "baseline-payments",
+  "audit_date": "2026-05-01",
+  "depth": "Deep",
+  "user_role": "founder",
+  "user_email": "tyler@baselinepayments.com",
+  "unconnected_tools": "Koncert, Trumpet",
+  "the_answer": "Your AI stack is already an A-grade. The bullshit you want eliminated isn't a tooling problem; it's an integration problem you happen to be the only person solving.",
+  "scores": {
+    "stack": 8,
+    "workflow_integration": 4,
+    "overall": 56,
+    "interpretation": "Tools present, plumbing missing. Three connector workflows pulled out of your seat give you back ~7 hrs/week."
+  },
+  "wins_top_3": [
+    {
+      "rank": 1,
+      "headline": "Disconnect the JetPay zombie sign-up feed.",
+      "one_liner": "815 of your 1,149 open deals (71%) sit in pipelines explicitly labeled DO NOT USE.",
+      "ai_mechanism": "One-hour HubSpot Workflows audit. Zero code.",
+      "impact_metric": "~3 hrs/week back",
+      "effort": "Low",
+      "impact": "High",
+      "confidence": "High",
+      "surprise": "High",
+      "evidence": "142 of 200 sampled open deals sit in pipelines named Jetpay Registration New - DO NOT USE. New records arrived today."
+    },
+    {
+      "rank": 2,
+      "headline": "Build the Granola → Gmail-draft + HubSpot-note loop.",
+      "one_liner": "26 Fathom recordings in 30 days, zero CRM writebacks. The wiki has the playbook; the connectors are wired.",
+      "ai_mechanism": "A Claude skill triggered by Fathom recap that drafts the email + writes the CRM note.",
+      "impact_metric": "~1.5 hrs/week back",
+      "effort": "Low",
+      "impact": "High",
+      "confidence": "High",
+      "surprise": "Medium",
+      "evidence": "Four manual post-call recap emails authored within 7 minutes of the Fathom recap landing."
+    },
+    {
+      "rank": 3,
+      "headline": "Replace the calendar-invite-email factory with a one-line generator.",
+      "one_liner": "38 calendar-admin email threads in 30 days, all authored manually, all structurally identical.",
+      "ai_mechanism": "A Claude skill that fires the right batch from one line of input.",
+      "impact_metric": "~2.5 hrs/week back",
+      "effort": "Low",
+      "impact": "High",
+      "confidence": "High",
+      "surprise": "High",
+      "evidence": "Michael & Son thread on April 30 produced nine separate emails in three hours for one 30-min pre-game."
+    }
+  ],
+  "why_now": "May 2026 is the inflection moment. Companies are splitting into two AI plays — use AI to do the same things slightly cheaper, or use AI to do things that were impossible last quarter. The companies pulling ahead aren't cutting headcount. They're running outbound motions no human team could sustain, building knowledge layers that compound, shipping product before competitors notice. Baseline has the connector surface to play that game. What's missing is the wiring.",
+  "losing_time": [
+    {
+      "headline": "You author every external calendar invite by hand.",
+      "one_liner": "38 invite-cancel-reschedule threads in 30 days. Michael & Son alone produced nine emails for one 30-minute call.",
+      "time_cost": "2.5 hrs/week",
+      "ai_fix": "a Claude skill that drafts the right batch from one line of input"
+    },
+    {
+      "headline": "You re-author post-call emails Fathom already wrote you.",
+      "one_liner": "Fathom recap arrives at 21:34, your manual email goes at 21:41. Same content, different voice.",
+      "time_cost": "1.5 hrs/week",
+      "ai_fix": "a scheduled task that drafts the follow-up the moment Fathom recap lands"
+    },
+    {
+      "headline": "Your Esker pipeline report is a 90-min biweekly task that's already a deterministic query.",
+      "one_liner": "Pull HubSpot Esker pipeline, filter to Needs Analysis+, format as ranked list, email.",
+      "time_cost": "1.5 hrs/week",
+      "ai_fix": "a Cowork scheduled task that runs Monday 8am and drops the formatted draft in your inbox"
+    },
+    {
+      "headline": "Merchants email you for hardware and account changes that should never touch your inbox.",
+      "one_liner": "Osprey, Sea Air, RVYC, Pacific Backlot — all sent terminal/account requests directly to tyler@.",
+      "time_cost": "0.75 hrs/week",
+      "ai_fix": "Gmail AI triage that auto-routes hardware/account requests to elsy@ / georgina@"
+    }
+  ],
+  "roadmap": [
+    {
+      "window": "Now → 3 months",
+      "title": "Quick wins",
+      "body": "Ship the 3 wins above. Plus: a knowledge base on the Drive that every AI tool reads from. Replace stale Notion doctrine with the canonical wiki.",
+      "accent": "green"
+    },
+    {
+      "window": "3 → 6 months",
+      "title": "Skills layer",
+      "body": "Custom skills for your top 5 recurring workflows: pipeline reports, post-call recap drafts, calendar admin, ticket intake, weekly research digests. Your personal cookbook.",
+      "accent": "cyan"
+    },
+    {
+      "window": "6 → 12 months",
+      "title": "Scheduled tasks",
+      "body": "Skills run on cron. Esker drafts arrive Monday 8am. Daily competitive scan in your inbox at 7am. Weekly pipeline hygiene check. You wake up to drafts, not work.",
+      "accent": "purple"
+    },
+    {
+      "window": "12 months+",
+      "title": "Durable agents",
+      "body": "Cloud-deployed agents triggered by real-world events. New ticket → AI-drafted response in 30 sec. New deal stage → CRM enrichment + research brief. Work happens before you sit down.",
+      "accent": "brass"
+    }
+  ],
+  "lanes": [
+    {
+      "name": "DIY",
+      "headline": "Run /kb-build now",
+      "body": "Free, ~20 min. Mining subagents read your connectors and scaffold the wiki. You own everything.",
+      "cta_label": "Free path"
+    },
+    {
+      "name": "Light-touch",
+      "headline": "Have Tyler build your KB",
+      "body": "Skip the learning curve. Tyler builds the foundation, hands it back, supports your team through the first month.",
+      "cta_label": "Talk to Tyler"
+    },
+    {
+      "name": "Full",
+      "headline": "Engage Prescyent for the complete discovery",
+      "body": "Two-layer audit. Voice-agent interviews with your team. Custom plugin built around your workflows.",
+      "cta_label": "Talk to Tyler"
+    }
+  ],
+  "path_forward": "The audit findings point at one structural pattern: every AI tool at Baseline operates without a persistent context layer accessible to the team. The fix is finishing what you started — a single wiki on the Drive that every AI tool reads from, mined from your connectors, kept current automatically.",
+  "tyler_brief": "Baseline Payments has a v5.0.0 structured wiki on the Drive that almost no founder builds. Their AI stack is A-grade. The bottleneck is that every workflow runs through Tyler personally instead of through deterministic automation. Three immediate wins (zombie pipeline disconnect, Granola→Gmail loop, calendar-invite generator) free up ~7 hrs/week. The bigger move is finishing the KB so Marc, JS, and Matt operate from the same canonical source. Founder, ready for Phase 1 plugins.",
+  "coverage": [
+    {"category": "GTM & Systems", "platforms": "HubSpot", "records_analyzed": "200 deals · 100 contacts · 10 tickets · 101 owners", "confidence": "High"},
+    {"category": "Knowledge & Docs", "platforms": "Google Drive · Notion", "records_analyzed": "127 Drive files · 47 Notion pages · 11 deep reads", "confidence": "Medium"},
+    {"category": "Communications", "platforms": "Gmail · Calendar · Chat · Fathom · Granola", "records_analyzed": "100+ threads · 41 meetings · 82 chat spaces · 26 Fathom recordings", "confidence": "High"},
+    {"category": "Stack", "platforms": "11 connectors visible", "records_analyzed": "Catalog scored across rubric · 2 unconnected adjacencies", "confidence": "High"}
+  ],
+  "dimensions": [
+    {
+      "title": "GTM & Systems Readiness",
+      "score": 4,
+      "findings": [
+        {
+          "severity": "Critical",
+          "surprise": "High",
+          "headline": "Two pipelines labeled DO NOT USE hold ~815 of 1,149 open deals (71%).",
+          "recommendation": "Audit HubSpot Workflows for any create-deal action targeting pipeline IDs 10112334 or 2123176. Disable. Migrate any real records to a clean Onboarding pipeline."
+        },
+        {
+          "severity": "Critical",
+          "surprise": "High",
+          "headline": "65% of open Baseline Sales deals have a close date in the past while still open.",
+          "recommendation": "HubSpot Workflow that nudges the owner with an AI-drafted re-engagement context when closedate passes and stage is open. Two-hour build."
+        },
+        {
+          "severity": "High",
+          "surprise": "High",
+          "headline": "71% of open Baseline Sales deals have no amount populated. Tracked won revenue reflects fewer than 60% of actual won deals.",
+          "recommendation": "Require amount on stage change to Proposal. One-time historical enrichment from payment-processor data."
+        }
+      ]
+    },
+    {
+      "title": "Knowledge & Document Readiness",
+      "score": 7,
+      "findings": [
+        {
+          "severity": "High",
+          "surprise": "High",
+          "headline": "The Baseline Wiki (v5.0.0 on the Drive) is the most AI-ready knowledge artifact in your stack.",
+          "recommendation": "Keep building. Promote canonical Drive wiki via /wiki:review pass on superseded Notion pages."
+        },
+        {
+          "severity": "Medium",
+          "surprise": "Medium",
+          "headline": "15+ Notion pages carry SUPERSEDED banners but are still searchable. Team is reading stale doctrine.",
+          "recommendation": "Run /wiki:review to add hard-redirect banners on Notion + one Notion index page linking the nine Drive knowledge files."
+        }
+      ]
+    },
+    {
+      "title": "Communications Readiness",
+      "score": 5,
+      "findings": [
+        {
+          "severity": "High",
+          "surprise": "High",
+          "headline": "38% of email volume is calendar admin you author manually.",
+          "recommendation": "Subsumed by Top 3 move #3 — Claude skill replaces the calendar-invite factory."
+        },
+        {
+          "severity": "High",
+          "surprise": "Medium",
+          "headline": "You are running Fathom AND Granola simultaneously on the same meetings.",
+          "recommendation": "Pick Granola as primary transcript SOR (semantic search), use Fathom for person/identity enrichment only. Document the SOR split."
+        }
+      ]
+    },
+    {
+      "title": "AI Stack Readiness",
+      "score": 7,
+      "findings": [
+        {
+          "severity": "High",
+          "surprise": "Medium",
+          "headline": "Gmail send scope not granted. Current automation ceiling is draft-and-review.",
+          "recommendation": "This is the right starting point. Use it for two weeks, calibrate trust, then decide whether to grant send for low-risk categories."
+        },
+        {
+          "severity": "High",
+          "surprise": "High",
+          "headline": "Trumpet (digital sales room) is unconnected. Buyer engagement data — the highest-intent signal in B2B payments — is fully siloed.",
+          "recommendation": "Configure Trumpet's native HubSpot integration. 30-minute setup."
+        }
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "topic": "Doctrine source-of-truth",
+      "summary": "Drive wiki says Sandler/NEPQ. Notion superseded pages still surface Challenger framing in search.",
+      "recommendation": "Adopt Drive as canonical; add hard-redirect banners on Notion.",
+      "needed_decision": "30-min /wiki:review session this week."
+    },
+    {
+      "topic": "Meeting-intel source-of-truth",
+      "summary": "Fathom and Granola both running on the same meetings.",
+      "recommendation": "Granola primary for transcripts; Fathom secondary for person/identity.",
+      "needed_decision": "One decision; the SOR split is documented after that."
+    }
+  ],
+  "coverage_gaps": [
+    {"gap": "Koncert (out of scope)", "impact": "SDR call activity siloed.", "fix": "Configure Koncert native HubSpot sync (Matt owns)."},
+    {"gap": "Trumpet (out of scope)", "impact": "Buyer engagement signal siloed.", "fix": "Configure Trumpet native HubSpot integration."},
+    {"gap": "HubSpot TEAMS / SEATS / JOB_TITLES", "impact": "Org-chart and seat analysis unavailable.", "fix": "Reauthorize the HubSpot MCP with crm.schemas.read and settings.users.read."}
+  ],
+  "open_questions": [
+    {
+      "question": "Are the HubSpot email nurture sequences actually live, or documented intent only?",
+      "recommended_answer": "Spend five minutes in HubSpot > Sequences. If documented but not deployed, this is a one-step deployment of an already-written automation.",
+      "needed_decision": "Confirm and either deploy or formally retire the documented sequences."
+    }
+  ],
+  "next_steps_role_aware": "Review the Top 3 wins with your senior team this week. The zombie-pipeline fix is the single highest-surprise finding — disconnect before the next pipeline review.",
+  "next_steps_connector_aware": "Connect Trumpet to HubSpot via the native integration. Buyer engagement data is the highest-intent signal in B2B payments and it's currently siloed.",
+  "tan_attribution_footnote": "The zero-sum vs positive-sum framing comes from Garry Tan's February 2026 essay on AI strategy bifurcation."
+}

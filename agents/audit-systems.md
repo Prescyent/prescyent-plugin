@@ -35,6 +35,20 @@ From `CONNECTORS.md`:
 
 The master skill passes you the specific platform mappings in the prompt (e.g., `~~crm → HubSpot`). If a category isn't mapped, skip it and flag it in `coverage_gaps`.
 
+## Tool-call discipline (v0.5)
+
+Cowork enforces a ~25K-token ceiling on every tool result. Subagents that overrun get an error pointing at a saved-to-disk fallback file. Don't filesystem-spelunk on overflow — re-issue the call with tighter parameters. Hard limits per tool family:
+
+- HubSpot `search_crm_objects`: `limit: 100` max per call. `properties` array ≤8 fields. Paginate with `after` cursor if needed.
+- HubSpot `get_crm_objects` / `list_objects`: `limit: 100` max.
+- HubSpot `get_organization_details`, `get_user_details`: include only the slices you need; permissions errors are normal, log them as `coverage_gaps` and continue.
+- Calendar `list_events`: `pageSize: 25` max. Date range ≤30 days unless absolutely necessary.
+- Drive `search_files` / `list_recent_files`: `pageSize: 50` max. Use `parentId =` filters to scope.
+- Notion `notion-search`, `notion-fetch`: `pageSize: 25` max.
+- Gmail `search_threads`: 30-day query window per call. Don't pull thread bodies for every result — scan subject+snippet first.
+
+If a tool call returns "exceeds maximum allowed tokens": do NOT default to reading the saved tool-result file via `mcp__workspace__bash`. Re-issue the call with smaller `limit` / tighter `properties` / narrower date range. Spelunking is the last resort, not the first.
+
 ## Behavioral-Trace Mode (v0.2)
 
 In addition to your existing inventory + hygiene + opportunity passes, you now run a **behavioral-trace pass** that infers structure from how the data is *used*, not just what's *recorded*.

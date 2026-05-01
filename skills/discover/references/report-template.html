@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>{{COMPANY_NAME}} · AI Readiness Audit · Prescyent</title>
 
-<!-- Favicons (site root assets — staged at prescyent.ai by deploy script) -->
 <link rel="icon" type="image/svg+xml" href="https://prescyent.ai/favicon.svg">
 <link rel="icon" type="image/png" sizes="180x180" href="https://prescyent.ai/apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://prescyent.ai/apple-touch-icon.png">
@@ -13,19 +12,17 @@
 <meta name="theme-color" content="#08090d">
 <meta name="robots" content="noindex, nofollow">
 
-<!-- OG / iMessage / Slack preview -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Prescyent">
 <meta property="og:title" content="{{COMPANY_NAME}} · AI Readiness Audit">
-<meta property="og:description" content="{{EXECUTIVE_SUMMARY_LEAD}}">
+<meta property="og:description" content="{{OG_DESCRIPTION}}">
 <meta property="og:image" content="https://prescyent.ai/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
-<!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{COMPANY_NAME}} · AI Readiness Audit">
-<meta name="twitter:description" content="{{EXECUTIVE_SUMMARY_LEAD}}">
+<meta name="twitter:description" content="{{OG_DESCRIPTION}}">
 <meta name="twitter:image" content="https://prescyent.ai/og-image.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -83,7 +80,7 @@
   /* ---------- Hero ---------- */
   .hero {
     text-align: left;
-    margin-bottom: 3.5rem;
+    margin-bottom: 3rem;
   }
   .hero .eyebrow {
     font-size: 0.78rem;
@@ -91,7 +88,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--text-mute);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
   .hero h1 {
     font-size: clamp(2.75rem, 6vw, 4.75rem);
@@ -111,13 +108,13 @@
     letter-spacing: 0.02em;
   }
 
-  /* ---------- The Answer ---------- */
+  /* ---------- The Answer + split scores ---------- */
   .answer-card {
     background: linear-gradient(135deg, rgba(167,139,250,0.08), rgba(34,211,238,0.05));
     border: 1px solid rgba(167,139,250,0.25);
     border-radius: 20px;
     padding: 2.5rem 2.5rem 2rem;
-    margin-bottom: 4rem;
+    margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
   }
@@ -146,315 +143,535 @@
     color: var(--text);
   }
   .score-row {
-    display: flex;
-    align-items: baseline;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr;
     gap: 1.5rem;
+    align-items: end;
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
   }
-  .score-big {
-    font-size: 4rem;
+  @media (max-width: 720px) {
+    .score-row { grid-template-columns: 1fr; gap: 1rem; }
+  }
+  .score-cell .label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 0.4rem;
+  }
+  .score-cell .value {
+    font-size: 2.5rem;
     font-weight: 900;
     line-height: 1;
+    color: var(--text);
+    font-feature-settings: 'tnum';
+  }
+  .score-cell.overall .value {
     background: var(--grad-primary);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-feature-settings: 'tnum';
-  }
-  .score-big-suffix {
-    color: var(--text-mute);
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-  .score-interpretation {
-    flex: 1;
-    color: var(--text-dim);
-    font-size: 1rem;
-  }
-
-  /* ---------- Top 3 Moves ---------- */
-  .moves-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.25rem;
-  }
-  .opp {
-    background: var(--bg-card);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.75rem;
-    position: relative;
-    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-  }
-  .opp:hover {
-    transform: translateY(-2px);
-    border-color: var(--border-strong);
-    background: var(--bg-card-hover);
-  }
-  .opp .rank {
-    position: absolute;
-    top: 1rem;
-    right: 1.25rem;
     font-size: 3rem;
-    font-weight: 900;
-    color: rgba(167,139,250,0.18);
-    line-height: 1;
-    font-feature-settings: 'tnum';
   }
-  .opp h3 {
-    margin: 0 0 0.75rem;
-    font-size: 1.08rem;
-    font-weight: 700;
-    padding-right: 3rem;
-    line-height: 1.3;
-  }
-  .opp p { color: var(--text-dim); margin: 0.4rem 0; font-size: 0.95rem; }
-  .opp .meta {
-    display: flex;
-    gap: 0.4rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-  }
-  .opp .meta span {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    background: rgba(255,255,255,0.05);
-    color: var(--text-dim);
-  }
-
-  /* ---------- Section common ---------- */
-  section {
-    margin-bottom: 4.5rem;
-  }
-  section.detail-section {
-    margin-bottom: 2.5rem;
-  }
-  section h2 {
-    font-size: 1.65rem;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    margin: 0 0 1.5rem;
-    display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-  }
-  section h2 .score-badge {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--accent-cyan);
-    background: rgba(34,211,238,0.08);
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  section h3 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin: 0 0 1rem;
-  }
-  .card {
-    background: var(--bg-card);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.5rem 1.75rem;
-    margin-bottom: 1rem;
-  }
-  .card p { color: var(--text-dim); }
-  .card ul { padding-left: 1.25rem; color: var(--text-dim); }
-  .card ul li { margin-bottom: 0.4rem; }
-  .card table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
-  .card th { text-align: left; padding: 0.5rem 0.75rem; color: var(--text-mute); font-weight: 600; border-bottom: 1px solid var(--border); }
-  .card td { padding: 0.5rem 0.75rem; color: var(--text-dim); border-bottom: 1px solid var(--border); }
-
-  /* ---------- Findings (in The Detail) ---------- */
-  .finding {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .finding:last-child { border-bottom: none; }
-  .finding .tag {
-    flex-shrink: 0;
-    width: 78px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0.25rem 0;
-    text-align: center;
-    border-radius: 6px;
-    height: fit-content;
-  }
-  .tag-critical { background: rgba(251,113,133,0.15); color: var(--accent-rose); }
-  .tag-high { background: rgba(251,191,36,0.15); color: var(--accent-amber); }
-  .tag-medium { background: rgba(34,211,238,0.12); color: var(--accent-cyan); }
-  .tag-low { background: rgba(255,255,255,0.05); color: var(--text-mute); }
-  .finding .body h3 {
-    margin: 0 0 0.35rem;
-    font-size: 1.02rem;
-    font-weight: 700;
-  }
-  .finding .body p {
-    margin: 0.35rem 0;
-    color: var(--text-dim);
-  }
-  .finding .body .rec {
-    margin-top: 0.5rem;
-    padding: 0.6rem 0.9rem;
-    border-left: 2px solid var(--accent-green);
-    background: rgba(52,211,153,0.05);
-    border-radius: 4px;
-    font-size: 0.95rem;
-  }
-
-  /* ---------- The Detail wrapper ---------- */
-  .detail-wrapper {
-    margin-top: 5rem;
-    padding-top: 3rem;
-    border-top: 1px solid var(--border);
-  }
-  .detail-wrapper > h2 {
-    font-size: 1.1rem;
+  .score-cell .value-suffix {
     color: var(--text-mute);
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    font-weight: 700;
-    margin-bottom: 2.5rem;
-  }
-
-  /* ---------- Footer (canonical Prescyent deck close) ---------- */
-  #signoff {
-    margin-top: 6rem;
-    padding-top: 4rem;
-    border-top: 1px solid var(--border);
-  }
-  .close-content {
-    max-width: 62ch;
-    margin: 0 auto;
-    text-align: left;
-  }
-  .close-content .eyebrow {
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    margin-bottom: 0.75rem;
-  }
-  .close-content h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 0 0 1.5rem;
-    background: linear-gradient(120deg, #ffffff 0%, var(--accent-brass) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .close-lede {
     font-size: 1.15rem;
-    color: var(--text-dim);
-    margin: 1rem 0;
+    font-weight: 700;
   }
-  .close-lede strong { color: var(--text); font-weight: 700; }
+  .score-cell .interpretation {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  /* ---------- CTA rows ---------- */
   .cta-row {
     display: flex;
-    gap: 1rem;
     flex-wrap: wrap;
-    margin-top: 2.25rem;
+    gap: 0.85rem;
+    margin: 1.25rem 0 4rem;
   }
+  .cta-row.centered { justify-content: center; }
   .cta {
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.85rem 1.4rem;
-    border-radius: 10px;
-    font-weight: 600;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
     text-decoration: none;
-    font-size: 0.98rem;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   }
-  .cta:active { transform: scale(0.98); }
-  .cta:focus-visible { outline: 2px solid var(--accent-purple); outline-offset: 3px; }
   .cta.primary {
     background: var(--grad-primary);
-    color: #0a0b10;
+    color: #0b0d12;
+    border: 1px solid transparent;
   }
-  .cta.primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba(167,139,250,0.35);
-  }
+  .cta.primary:hover { transform: translateY(-1px); }
   .cta.ghost {
-    background: var(--bg-card);
+    background: transparent;
     color: var(--text);
     border: 1px solid var(--border-strong);
   }
-  .cta.ghost:hover {
-    transform: translateY(-1px);
-    border-color: var(--accent-purple);
+  .cta.ghost:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .cta .icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .cta .arrow { transition: transform 0.2s ease; }
+  .cta:hover .arrow { transform: translateX(3px); }
+
+  /* ---------- Mid-page banner CTA ---------- */
+  .banner-cta {
+    background: linear-gradient(135deg, rgba(34,211,238,0.07), rgba(167,139,250,0.04));
+    border: 1px solid rgba(34,211,238,0.22);
+    border-radius: 18px;
+    padding: 1.75rem 2rem;
+    margin: 1rem 0 4rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.25rem;
+    align-items: center;
+  }
+  @media (max-width: 720px) { .banner-cta { grid-template-columns: 1fr; } }
+  .banner-cta .copy {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+  .banner-cta .cta-row { margin: 0; }
+
+  /* ---------- Section headings ---------- */
+  h2.section {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin: 0 0 1.5rem;
+  }
+
+  /* ---------- The 3 wins ---------- */
+  .wins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .win {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem 1.5rem;
+    position: relative;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .win:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
     background: var(--bg-card-hover);
   }
-  .cta .icon {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    stroke-width: 1.75;
-    fill: none;
-  }
-  .cta .arrow {
+  .win .rank {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
     font-family: 'JetBrains Mono', monospace;
-    font-weight: 500;
-    margin-left: 0.1rem;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: rgba(167,139,250,0.18);
+    line-height: 1;
   }
-  .sign-off {
-    margin-top: 3rem;
+  .win h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 0.85rem;
+    padding-right: 2.5rem;
+  }
+  .win .one-liner {
+    font-size: 0.97rem;
+    color: var(--text-dim);
+    margin: 0 0 1.25rem;
+    line-height: 1.55;
+  }
+  .win .ai-mechanism {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--accent-cyan);
+    margin: 0 0 0.85rem;
+    line-height: 1.4;
+  }
+  .win .ai-mechanism::before {
+    content: '→ ';
+    color: var(--accent-cyan);
+  }
+  .win .impact {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent-brass);
+    padding: 0.4rem 0.7rem;
+    border: 1px solid rgba(212,175,120,0.3);
+    border-radius: 8px;
+    background: rgba(212,175,120,0.06);
+  }
+
+  /* ---------- Why now ---------- */
+  .why-now {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 2.25rem;
+    margin-bottom: 4rem;
+    line-height: 1.65;
+    color: var(--text-dim);
+    font-size: 1.02rem;
+  }
+  .why-now strong { color: var(--text); }
+  .why-now .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  @media (max-width: 720px) { .why-now .split { grid-template-columns: 1fr; } }
+  .why-now .split-item {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding-left: 1.25rem;
+    position: relative;
+  }
+  .why-now .split-item::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent-cyan);
+    font-weight: 700;
+  }
+
+  /* ---------- Losing time ---------- */
+  .pain-list { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 4rem; }
+  .pain-row {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.4rem 1.6rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+  .pain-row .pain-headline {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.4;
+  }
+  .pain-row .pain-detail {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    margin: 0;
+    line-height: 1.55;
+  }
+  .pain-row .pain-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .pain-row .time-cost {
+    color: var(--accent-rose);
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .pain-row .ai-fix {
+    color: var(--accent-cyan);
+    font-style: italic;
+  }
+  .pain-row .ai-fix::before {
+    content: '→ AI fixes this with: ';
+    font-style: normal;
+    color: var(--text-mute);
+    font-weight: 600;
+  }
+
+  /* ---------- Roadmap timeline ---------- */
+  .roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .roadmap-step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.4rem;
+    position: relative;
+  }
+  .roadmap-step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+  }
+  .roadmap-step.green::before { background: var(--accent-green); }
+  .roadmap-step.cyan::before { background: var(--accent-cyan); }
+  .roadmap-step.purple::before { background: var(--accent-purple); }
+  .roadmap-step.brass::before { background: var(--accent-brass); }
+  .roadmap-step .window {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 0.6rem;
+  }
+  .roadmap-step h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0 0 0.7rem;
+    color: var(--text);
+  }
+  .roadmap-step .body {
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin: 0;
+  }
+  .roadmap-footnote {
+    font-size: 0.92rem;
+    color: var(--text-mute);
+    font-style: italic;
+    margin: 0 0 4rem;
+    padding: 0 0.5rem;
+  }
+
+  /* ---------- Lanes ---------- */
+  .lanes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 4rem;
+  }
+  .lane {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .lane.featured {
+    border-color: rgba(167,139,250,0.35);
+    background: linear-gradient(135deg, rgba(167,139,250,0.08), rgba(34,211,238,0.04));
+  }
+  .lane .lane-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .lane.featured .lane-name { color: var(--accent-purple); }
+  .lane h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.35;
+  }
+  .lane .lane-body {
+    font-size: 0.94rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin: 0;
+    flex: 1;
+  }
+  .lane .lane-cta {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+  }
+
+  /* ---------- Appendix (collapsed) ---------- */
+  .appendix {
+    margin: 2rem 0 3rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+  }
+  .appendix > summary {
+    cursor: pointer;
+    padding: 1.25rem 1.75rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .appendix > summary::-webkit-details-marker { display: none; }
+  .appendix > summary::after {
+    content: '▾';
+    color: var(--text-mute);
+    transition: transform 0.2s ease;
+  }
+  .appendix[open] > summary::after { transform: rotate(180deg); }
+  .appendix > summary:hover { background: var(--bg-card-hover); }
+  .appendix-body {
+    padding: 1.5rem 1.75rem 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .appendix-body h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.85rem;
+    color: var(--text);
+  }
+  .appendix-body h3:first-child { margin-top: 0; }
+  .appendix-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    font-size: 0.92rem;
+  }
+  .appendix-body th, .appendix-body td {
+    text-align: left;
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .appendix-body th {
+    color: var(--text-mute);
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .appendix-body td { color: var(--text-dim); }
+  .appendix-body .dimension {
+    margin: 1.25rem 0;
+    padding: 1rem 1.2rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .appendix-body .dimension-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.85rem;
+  }
+  .appendix-body .dimension-header h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+  }
+  .appendix-body .score-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent-brass);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    background: rgba(212,175,120,0.08);
+    border: 1px solid rgba(212,175,120,0.2);
+  }
+  .appendix-body .finding {
+    margin: 0.6rem 0;
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .appendix-body .finding .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+  .appendix-body .finding .tag-critical { background: rgba(251,113,133,0.15); color: var(--accent-rose); }
+  .appendix-body .finding .tag-high { background: rgba(251,191,36,0.15); color: var(--accent-amber); }
+  .appendix-body .finding .tag-medium { background: rgba(34,211,238,0.12); color: var(--accent-cyan); }
+  .appendix-body .finding .tag-low { background: rgba(255,255,255,0.06); color: var(--text-mute); }
+  .appendix-body .finding strong { color: var(--text); }
+  .appendix-body .finding .recommendation {
+    display: block;
+    margin-top: 0.3rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  /* ---------- Footer ---------- */
+  #signoff {
+    margin-top: 5rem;
+    padding-top: 4rem;
+    border-top: 1px solid var(--border);
+  }
+  #signoff .eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 1rem;
+  }
+  #signoff h2 {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.25rem;
+  }
+  #signoff .close-lede {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+    max-width: 720px;
+    margin: 0 0 1rem;
+  }
+  #signoff .close-lede strong { color: var(--text); }
+  #signoff .sign-off {
+    margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
   }
-  .sig-name {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .sig-sub {
-    margin-top: 0.25rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--text-mute);
-  }
-  .sig-sub a {
-    color: var(--text-dim);
-    text-decoration: underline;
-    text-decoration-style: dashed;
-    text-underline-offset: 3px;
-  }
-  .sig-sub a:hover { color: var(--accent-purple); }
+  #signoff .sig-name { font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+  #signoff .sig-sub { color: var(--text-mute); font-size: 0.9rem; }
+  #signoff a { color: var(--accent-cyan); text-decoration: none; }
+  #signoff a:hover { text-decoration: underline; }
 
-  /* ---------- Reveal-on-scroll ---------- */
-  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  /* ---------- Reveal animation ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
   .reveal.in { opacity: 1; transform: translateY(0); }
   .reveal.delay-1 { transition-delay: 0.08s; }
   .reveal.delay-2 { transition-delay: 0.16s; }
   .reveal.delay-3 { transition-delay: 0.24s; }
   .reveal.delay-4 { transition-delay: 0.32s; }
-  .reveal.delay-5 { transition-delay: 0.40s; }
-
-  @media (max-width: 640px) {
-    .container { padding: 3rem 1.25rem 4rem; }
-    .answer-card { padding: 1.75rem 1.5rem; }
-    .score-row { flex-direction: column; gap: 0.75rem; }
-    .finding { flex-direction: column; gap: 0.5rem; }
-    .cta-row { flex-direction: column; align-items: stretch; }
-    .cta { justify-content: center; }
-  }
+  .reveal.delay-5 { transition-delay: 0.4s; }
 </style>
 </head>
 <body>
@@ -462,149 +679,27 @@
 <div class="ambient-orb two"></div>
 <div class="container">
 
-  <!-- HERO -->
-  <section class="hero reveal">
-    <div class="eyebrow">Prescyent · AI Readiness Audit</div>
-    <h1>{{COMPANY_NAME}}</h1>
-    <p class="meta">{{AUDIT_DATE}} · {{DEPTH}} scope</p>
-  </section>
+{{HERO_HTML}}
 
-  <!-- THE ANSWER (Minto Level 1) + SCORE -->
-  <section class="answer-card reveal delay-1">
-    <div class="label">The answer</div>
-    {{THE_ANSWER}}
-    <div class="score-row">
-      <div>
-        <span class="score-big">{{OVERALL_SCORE}}</span><span class="score-big-suffix">/100</span>
-      </div>
-      <div class="score-interpretation">{{OVERALL_INTERPRETATION}}</div>
-    </div>
-  </section>
+{{ANSWER_HTML}}
 
-  <!-- TOP 3 MOVES (Minto Level 2 — moved up from old slot 7) -->
-  <section class="reveal">
-    <h2>Top 3 moves</h2>
-    <div class="moves-grid">
-      {{TOP_3_MOVES}}
-    </div>
-  </section>
+{{HERO_CTA_HTML}}
 
-  <!-- WHY THIS MATTERS NOW (boil-the-ocean framing) -->
-  {{#WHY_NOW_BLOCK}}
-  <section class="reveal">
-    <h2>Why this matters now</h2>
-    <div class="card">
-      {{WHY_NOW}}
-    </div>
-  </section>
-  {{/WHY_NOW_BLOCK}}
+{{WINS_HTML}}
 
-  <!-- WHERE YOU'RE LOSING TIME TODAY -->
-  {{#WHERE_LOSING_TIME_BLOCK}}
-  <section class="reveal">
-    <h2>Where you're losing time today</h2>
-    <div class="card">
-      {{WHERE_LOSING_TIME}}
-    </div>
-  </section>
-  {{/WHERE_LOSING_TIME_BLOCK}}
+{{MID_CTA_HTML}}
 
-  <!-- THE PATH FORWARD (sells the KB Builder upsell) -->
-  {{#PATH_FORWARD_BLOCK}}
-  <section class="reveal">
-    <h2>The path forward</h2>
-    <div class="card">
-      {{PATH_FORWARD}}
-    </div>
-  </section>
-  {{/PATH_FORWARD_BLOCK}}
+{{WHY_NOW_HTML}}
 
-  <!-- THE DETAIL (appendix — per-dimension scores, full findings, gaps, open questions) -->
-  <div class="detail-wrapper">
-    <h2>The detail</h2>
+{{LOSING_TIME_HTML}}
 
-    <section class="detail-section reveal">
-      <h3>Coverage</h3>
-      <div class="card">
-        {{COVERAGE_TABLE}}
-      </div>
-    </section>
+{{ROADMAP_HTML}}
 
-    {{#SECTIONS}}
-    <section class="detail-section reveal">
-      <h3>{{SECTION_TITLE}} <span class="score-badge">{{SECTION_SCORE}}/10</span></h3>
-      <div class="card">
-        {{SECTION_FINDINGS}}
-      </div>
-    </section>
-    {{/SECTIONS}}
+{{LANES_HTML}}
 
-    {{#CONFLICTS_BLOCK}}
-    <section class="detail-section reveal">
-      <h3>Conflicts between sources</h3>
-      <div class="card">
-        {{CONFLICTS}}
-      </div>
-    </section>
-    {{/CONFLICTS_BLOCK}}
+{{APPENDIX_HTML}}
 
-    {{#COVERAGE_GAPS}}
-    <section class="detail-section reveal">
-      <h3>Coverage gaps</h3>
-      <div class="card">
-        {{COVERAGE_GAPS_CONTENT}}
-      </div>
-    </section>
-    {{/COVERAGE_GAPS}}
-
-    {{#OPEN_QUESTIONS}}
-    <section class="detail-section reveal">
-      <h3>Open questions</h3>
-      <div class="card">
-        {{OPEN_QUESTIONS_CONTENT}}
-      </div>
-    </section>
-    {{/OPEN_QUESTIONS}}
-
-    <section class="detail-section reveal">
-      <h3>Recommended next steps</h3>
-      <div class="card">
-        {{NEXT_STEPS}}
-      </div>
-    </section>
-  </div>
-
-  <!-- CANONICAL FOOTER — Prescyent deck close (per references/shared/deck-footer-pattern.md) -->
-  <section id="signoff">
-    <div class="close-content">
-      <div class="reveal">
-        <div class="eyebrow">Why this audit?</div>
-      </div>
-      <h2 class="reveal delay-1">Two reasons.</h2>
-      <p class="close-lede reveal delay-2">
-        <strong>First</strong>, this is the picture I'd want before deciding what to do with AI at {{COMPANY_NAME}}. The path forward section above is the bigger move — building the persistent context layer that compounds across every future Claude session, every employee, every quarter.
-      </p>
-      <p class="close-lede reveal delay-3">
-        <strong>Second</strong>, as a practical example. I built this audit in about five minutes, using the same tools I'd help your team turn into a system. The medium is the message.
-      </p>
-
-      <div class="cta-row reveal delay-4">
-        <a class="cta primary" href="mailto:tyler@prescyent.ai?subject={{DECK_TOPIC_URL}}">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
-          Email Tyler <span class="arrow">→</span>
-        </a>
-        <a class="cta ghost" href="https://calendar.app.google/wwabJHCKHufyqW7Q6" target="_blank" rel="noopener">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
-          Book time with Tyler <span class="arrow">↗</span>
-        </a>
-      </div>
-
-      <div class="sign-off reveal delay-5">
-        <div class="sig-name">Tyler Massey</div>
-        <div class="sig-sub">Prescyent · <a href="https://prescyent.ai" target="_blank" rel="noopener">prescyent.ai</a> · tyler@prescyent.ai · Generated v{{PLUGIN_VERSION}}</div>
-      </div>
-    </div>
-  </section>
+{{FOOTER_HTML}}
 
 </div>
 <script>

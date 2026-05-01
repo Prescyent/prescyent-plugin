@@ -19,9 +19,9 @@ background_safe: false
 > aren't loaded. Either rendering requires the foreground main thread.
 > Do not move into a background `Task`.
 
-You are running the buyer's first encounter with Prescyent. The deliverable is a one-page assessment rendered inline in chat — no drive writes, no scaffolding, no storage selection. The assessment IS the deliverable.
+You are running the buyer's first encounter with Prescyent. The deliverable is a buyer-facing marketing-style HTML deck rendered inline in chat as a Cowork artifact, plus an analyst-grade markdown report saved alongside. No drive writes unless the user opts in.
 
-Every user-visible string passes the voice gauntlet at `../kb-builder/references/voice-rules.md` before emit. No banned words. Word budgets hold (orientation ≤120, scope ≤120, status ≤30, errors ≤20 + one recovery step).
+Every user-visible string passes the voice gauntlet at `../kb-builder/references/voice-rules.md` before emit. No banned words. Word budgets hold (orientation ≤155, scope ≤120, status ≤30, errors ≤20 + one recovery step).
 
 **Empty-response contract:** every elicitation site aborts on empty input. Print `Phase 2 returned empty — aborting before any side effects` and exit. No silent defaults, no writes, no subagent dispatch. Single documented exception: the optional `verbatim_pain` field, where empty means "skip" and is logged as `verbatim_pain: null`.
 
@@ -33,15 +33,11 @@ If the user submits a Cowork elicitation form via Skip with `company_name` empty
 
 Emit the message at `references/orientation-copy.md` verbatim. Plain text only — no widget, no connector picker, no panel render. Do not call `mcp__mcp-registry__list_connectors` (it pops a UI surface in Cowork). Do not paraphrase. Do not prepend "Welcome!" or similar. Do not append process notes or subagent names.
 
-**Do not pause for user acknowledgment after the orientation.** Move directly to Phase 2 in the same turn. The elicitation form IS the gate — the user submits, skips, or asks a question. This mirrors brand-voice's `/discover-brand`, which emits orientation prose and immediately renders the elicitation without waiting for "go." Tyler validated this UX 2026-05-01: an explicit "Ready to start?" → reply "go" → form is one extra step the user shouldn't have to take.
-
-Coverage gaps surface in the final report — Phase 5's Coverage table names what was actually read, and the failure mode at the bottom of this file handles the zero-findings case.
+**Do not pause for user acknowledgment after the orientation.** Move directly to Phase 2 in the same turn. The elicitation form IS the gate — the user submits, skips, or asks a question.
 
 ---
 
 ## Phase 2 — Settings + pre-detection + elicitation form
-
-Brand-voice's `/discover-brand` runtime explicitly invokes `mcp__visualize__read_me({modules: ["elicitation"]})` then `mcp__visualize__show_widget` to render the polished form. We do the same here — explicit invocation, deterministic. We also pre-detect everything we can before showing the form, because Tyler's ethos is "don't make me re-explain who I am" (the doctor's-office paperwork problem).
 
 ### 2a. Check settings file (silent)
 
@@ -49,7 +45,6 @@ Read `.claude/prescyent.local.md` if it exists. Extract:
 
 - Company name
 - User role (`founder`, `cfo`, `ops`, `sales`, `marketing`, `product`, `other`)
-- Buyer intent (`ai-readiness`, `capture-senior-knowledge`, `claude-actually-useful`, `other`)
 - Search depth (`standard` or `deep`) — default `standard`
 - Known doc locations or primary pain points (optional)
 
@@ -63,8 +58,8 @@ Before rendering the elicitation form, attempt to pre-populate the answers we'd 
 
 **Company candidates** — collect up to 3, ranked by confidence:
 
-1. **Email domain.** `mcp__41c208e8…__get_identity` returns the authenticated Fathom email. Domain → company candidate. (e.g. `tyler@hernandocapital.co` → "Hernando Capital".)
-2. **Connected MCP scopes.** Some connectors expose org / workspace name (HubSpot `get_organization_details`, Notion `notion-get-teams`). Each unique org name = a candidate.
+1. **Email domain.** `mcp__41c208e8…__get_identity` returns the authenticated Fathom email. Domain → company candidate.
+2. **Connected MCP scopes.** HubSpot `get_organization_details`, Notion `notion-get-teams`. Each unique org name = a candidate.
 3. **Recent calendar attendees.** `list_events` last 30 days → most-frequent external domain → candidate company name.
 4. **Working folder name.** Cowork session's working folder may be named after a company.
 5. **Settings-file leftover.** If `prescyent.local.md` partial-exists with a `company_name` field but missing `user_role`, treat the stored name as a candidate.
@@ -91,29 +86,36 @@ When `mcp__visualize__show_widget` is in the tool list, render the form via the 
 mcp__visualize__read_me({modules: ["elicitation"]})
 ```
 
-The response is the canonical contract: required CSS class names (`elicit`, `elicit-group`, `elicit-question`, `elicit-pills`, `elicit-pill`, `elicit-textarea`), required data attributes (`data-name`, `data-multi`, `data-value`, `data-other`), the four option formats (plain pills, cards, preview tiles, sliders/dates), the locked header SVG (File anthropicon), and the submit payload format. Build the HTML against this spec — don't guess the shape.
+The response is the canonical contract: required CSS class names, required data attributes, the four option formats, the locked header SVG, and the submit payload format. Build the HTML against this spec — don't guess the shape.
 
-**Step 2 — Build the elicitation HTML** with seven `.elicit-group` blocks. Header title: `"Discovery details"`. Submit label: `"Run discovery"`. Skip label: `"Skip — use defaults"`.
+**Step 2 — Build the elicitation HTML** with **six** `.elicit-group` blocks. Header title: `"Discovery details"`. Submit label: `"Run discovery"`. Skip label: `"Skip — use defaults"`.
 
-The seven questions, in render order:
+The six questions, in render order:
 
 | # | Field (`data-name`) | Question | Type | Options |
 |---|---|---|---|---|
 | 1 | `company_name` | Whose company are we discovering? | plain pills | {Pre-detected candidates from Phase 2b — up to 3}; Other |
 | 2 | `user_role` | Which describes you best? | plain pills | Founder / CEO; CFO / Finance lead; Head of Ops; Sales / GTM lead; Marketing lead; Product / Engineering lead; Other |
-| 3 | `buyer_intent` | What brought you here today? | card pills (icon + subtitle) | Understand AI readiness; Capture senior knowledge before someone leaves; Make Claude actually useful for the team; Something else |
-| 4 | `connectors_in_scope` | Which platforms should I search? | card pills, multi-select | One card per detected connector with friendly name + one-line subtitle (e.g. "Notion — Wiki, playbooks, briefs"; "HubSpot — CRM, deals, contacts"; "Fathom — Sales call transcripts"; "Gmail — Sent emails, voice samples"). All cards pre-selected. |
-| 5 | `unconnected_tools` | Other tools you use that aren't connected here? | textarea | Free text. Placeholder: "e.g. Google Chat, Slack, Salesforce, Linear — I'll flag what I can't reach so you can decide whether to connect them." |
-| 6 | `verbatim_pain` | Anything specific been frustrating? (Optional) | textarea | Free text |
-| 7 | `depth` | How deep should the search go? | plain pills | Standard — top 10–15 sources, ~5 min, fits a Pro session; Deep — broader sweep, ~10–15 min, best on Team plan |
+| 3 | `connectors_in_scope` | Which platforms should I search? | card pills, multi-select | One card per detected connector with friendly name + one-line subtitle (e.g. "Notion — Wiki, playbooks, briefs"; "HubSpot — CRM, deals, contacts"; "Fathom — Sales call transcripts"; "Gmail — Sent emails, voice samples") |
+| 4 | `unconnected_tools` | Other tools you use that aren't connected here? | textarea | Free text. Placeholder: "e.g. Google Chat, Slack, Salesforce, Linear — I'll flag what I can't reach so you can decide whether to connect them." |
+| 5 | `verbatim_pain` | Anything specific been frustrating? (Optional) | textarea | Free text |
+| 6 | `depth` | How deep should the search go? | plain pills | Standard — top 10–15 sources, ~5 min, fits a Pro session; Deep — broader sweep, ~10–15 min, best on Team plan |
+
+**Title text rules:**
+
+- Q1 — exact title text: `"Whose company are we discovering?"`. No parenthetical decoration.
+- Q3 — exact title text: `"Which platforms should I search?"`. No parenthetical decoration. The pre-selection behavior (every card starts selected, user deselects to exclude) is a UI behavior — do NOT echo it as title text. The inference layer should NOT add "(All pre-selected — deselect any to skip.)" or similar; render the title verbatim.
+- Q6 — exact title text: `"How deep should the search go?"`. The Pro/Team framing lives in the option labels, not the title.
 
 For Q1, pre-select the highest-confidence pre-detected candidate if Phase 2b found one. If multiple candidates emerged, render them all as un-selected pills so the user picks.
 
-For Q4, the connector list comes from a low-cost lookup at form-build time — call `mcp__mcp-registry__list_connectors` ONCE during HTML construction (not as a separate UI render). Use the returned list to populate Q4's pills with friendly names + subtitles. **This is the only call to `list_connectors` in the flow** — its UI side effect lands inside the elicitation form, not as a separate panel.
+For Q3, the connector list comes from a low-cost lookup at form-build time — call `mcp__mcp-registry__list_connectors` ONCE during HTML construction (not as a separate UI render). Use the returned list to populate Q3's pills with friendly names + subtitles. Default state: every card starts selected. **This is the only call to `list_connectors` in the flow** — its UI side effect lands inside the elicitation form, not as a separate panel.
 
-If `mcp__mcp-registry__list_connectors` is unavailable, fall back to: emit Q4 as a textarea with placeholder "Which platforms should I search? (Drive, HubSpot, Notion, etc.)".
+If `mcp__mcp-registry__list_connectors` is unavailable, fall back to: emit Q3 as a textarea with placeholder "Which platforms should I search? (Drive, HubSpot, Notion, etc.)".
 
-For Q7, pre-select Standard. The Pro/Team framing is in the option label itself — no separate copy required.
+For Q6, pre-select Standard.
+
+**v0.5 change:** Q3 from earlier rounds (`buyer_intent` — "What brought you here today?") is dropped. The skill's stated purpose IS AI readiness. The other intent options pulled users toward outcomes that other commands serve better (`/kb-interview` for senior knowledge capture, `/kb-build` for "make Claude useful"). `buyer_intent` is hard-coded to `ai-readiness` in the discovery_scope build at Phase 2f. Subagents no longer receive a buyer_intent field.
 
 **Step 3 — Render**:
 
@@ -127,22 +129,22 @@ mcp__visualize__show_widget({html: "<elicitation HTML built per the spec>"})
 mcp__cowork__read_widget_context()
 ```
 
-The response arrives as a single-line message per the spec. Parse the seven fields. If the user clicked Skip with `company_name` empty, apply the empty-response contract — log `Phase 2 returned empty — aborting before any side effects` and exit. No subagent dispatch.
+The response arrives as a single-line message per the spec. Parse the six fields. If the user clicked Skip with `company_name` empty, apply the empty-response contract — log `Phase 2 returned empty — aborting before any side effects` and exit. No subagent dispatch.
 
-**After parsing, surface a coverage warning if Q5 has content:**
+**After parsing, surface a coverage warning if Q4 has content:**
 
 If `unconnected_tools` is non-empty, emit (≤40 words):
 
 > Heads up — I won't be able to read what's in {unconnected_tools_list}. Discovery will run on what is connected; I'll flag specifically what's missing so you can decide whether to connect it for a richer audit next time.
 
-Do NOT stonewall. Do NOT block the run. Some users won't know how to connect tools. Some tools won't have MCPs. Run with what we have, log the gap, surface it in Coverage Gaps at synthesis.
+Do NOT stonewall. Do NOT block the run.
 
 ### 2d. Fallback when elicitation unavailable (Claude Code, headless)
 
 If `mcp__visualize__show_widget` is NOT in the tool list:
 
-- Fall back to sequential `AskUserQuestion` calls — seven questions in field order. Map the elicitation pill options 1:1 to AskUserQuestion options.
-- Each call applies the empty-response contract EXCEPT Q5 (`unconnected_tools`) and Q6 (`verbatim_pain`), where empty = skip = `null`.
+- Fall back to sequential `AskUserQuestion` calls — six questions in field order. Map the elicitation pill options 1:1 to AskUserQuestion options.
+- Each call applies the empty-response contract EXCEPT Q4 (`unconnected_tools`) and Q5 (`verbatim_pain`), where empty = skip = `null`.
 
 ### 2e. Argument pre-seed
 
@@ -162,7 +164,6 @@ After Phase 2a (settings hit) or Phase 2c/2d (elicitation/fallback) completes, b
   "company_name": "Acme",
   "company_slug": "acme",
   "user_role": "founder",
-  "buyer_intent": "ai-readiness",
   "connectors_in_scope": ["HubSpot", "Notion", "Drive", "Fathom", "Gmail"],
   "unconnected_tools": "Google Chat, Salesforce",
   "verbatim_pain": "Sales reps don't update HubSpot.",
@@ -179,15 +180,13 @@ After Phase 2a (settings hit) or Phase 2c/2d (elicitation/fallback) completes, b
 
 ## Phase 3 — Subagent fan-out
 
-Dispatch the four audit subagents IN PARALLEL via the `Task` tool. **Single message, four tool calls.** Do not serialize. Always dispatch all four — each subagent discovers what's available in its own category and surfaces gaps in `coverage_gaps[]`. No pre-filtering by connectivity.
+Dispatch the four audit subagents IN PARALLEL via the `Task` tool. **Single message, four tool calls.** Do not serialize. Always dispatch all four — each subagent discovers what's available in its own category and surfaces gaps in `coverage_gaps[]`.
 
 For each subagent, the Task `prompt` includes verbatim:
 
-- `company_name` and `today_date` from `discovery_scope`.
-- `user_role`, `buyer_intent`, `verbatim_pain` (so each subagent prioritizes findings against the specific pain — verbatim_pain is calibration text, not classification input).
-- `depth` (`standard` vs `deep` — deep raises the records_analyzed targets in the JSON contract).
-- The category slice it owns (see mapping below). The subagent itself enumerates which platforms in that slice are actually connected.
-- The path to the JSON contract: `skills/discover/references/subagent-output-contract.md`.
+- `company_name`, `today_date`, `user_role`, `verbatim_pain`, `depth` from `discovery_scope`.
+- The category slice it owns (see mapping below).
+- **The full subagent JSON contract spec, inlined into the prompt** (NOT a path reference). The contract block from `references/subagent-output-contract.md` § "Audit subagent contract" — paste verbatim into each subagent prompt. Subagents read the contract from the prompt, not from disk. (v0.5 change: previous versions referenced the contract by path; the path didn't resolve in Cowork's plugin sandbox and three subagents wasted tool calls hunting for it.)
 - Instruction to return JSON only, no prose, no preamble.
 
 ### Subagent → category mapping (from `CONNECTORS.md`)
@@ -199,7 +198,7 @@ For each subagent, the Task `prompt` includes verbatim:
 | `audit-comms` | `~~email`, `~~chat`, `~~calendar`, `~~meeting-intel` |
 | `audit-stack` | All connectors visible in the session (catalog-only against the AI-readiness rubric) |
 
-If a subagent finds no connected tools in its category, it returns null findings and populates `coverage_gaps[]`. Synthesis at Phase 5 surfaces those gaps in the Coverage table and the Coverage Gaps section.
+If a subagent finds no connected tools in its category, it returns null findings and populates `coverage_gaps[]`.
 
 ### Status update during dispatch
 
@@ -211,64 +210,95 @@ Do not narrate process. Do not name subagents. Do not stream sub-progress.
 
 ---
 
-## Phase 4 — Optional follow-up questions (elicitation)
+## Phase 4 — Strategic clarifications (elicitation)
 
-When all dispatched subagents return, parse each JSON. The aggregate has `findings[]`, `behavioral_trace_findings[]`, `opportunities[]`, `coverage_gaps[]`, and `open_questions[]` per subagent (per the contract at `references/subagent-output-contract.md`, contract_version 2.1).
+When all dispatched subagents return, parse each JSON. Aggregate `findings[]`, `behavioral_trace_findings[]`, `opportunities[]`, `coverage_gaps[]`, and `open_questions[]`.
 
-Scan for follow-up candidates: **conversational** clarifications the user can answer (NOT data they'd need to fetch from a system). Examples:
+**v0.5 change:** Phase 4 is no longer driven by subagent `open_questions[]`. Subagent open questions are tactical operations triage ("are these 815 records zombies or live?") — wrong altitude for a McKinsey/BCG-grade clarification moment. Subagent `open_questions[]` flow to the analyst markdown's Open Questions appendix, NOT to this elicitation.
 
-- "audit-comms found 12+ recurring meetings/week. What's actually happening in those — status, decisions, or working sessions?"
-- "audit-systems sees stale `Qualified` deals. Is `Qualified` the gate stage or a placeholder?"
-- "audit-systems found 536 deals in pipelines named DO NOT USE. Real prospects, zombies, or mix?"
+Instead: synthesizer drafts the contestable answer + Top 3 wins INTERNALLY first (in your reasoning, not yet emitted). Then generate exactly **3 strategic clarification questions** calibrated to that internal draft.
 
-Cap at **3 follow-ups total** across all subagents. Each subagent's `open_questions[]` carries a `recommended_answer` — that becomes the pre-selected pill default.
+### The strategic-question prompt
 
-### 4a. Render the follow-up elicitation form
+Operate as a Tier-1 strategy partner (McKinsey, BCG, Bain, Deloitte S&O, Accenture Strategy) parachuted into the business. You've reviewed the data. You've internally drafted the contestable answer + the Top 3 moves. You now want **3 questions that calibrate your final recommendation** before you write the report.
 
-If 1–3 follow-ups exist AND `mcp__visualize__show_widget` is available, render a second elicitation form. Title: `"Two quick clarifications"` (or "Three" if N=3). Submit label: `"Use these"`. Skip label: `"Skip — log as open questions"`.
+These questions:
 
-Each follow-up becomes one `.elicit-group` block. Use plain pills with the recommended_answer's `data-value` pre-selected. Always include an "Other / not sure" pill that maps to `null` (logged as open question).
+- Operate at the same altitude as the contestable answer (Minto Level 1).
+- Do NOT require the user to recall specific record counts or system minutiae.
+- Surface the user's strategic frame (zero-sum vs positive-sum AI play, willingness to absorb change, real strategic priority).
+- Help fork the report between zero-sum framings (small fix) and positive-sum framings (rebuild).
 
-Example structure for one follow-up:
+Question shapes that hit the bar:
 
-| Field key | Question | Type | Options |
+- **The "real game" question.** "Looking at where your AI tools point today, the data suggests you're optimizing for [observable]. Is that the actual 12-month strategy, or are you building toward something different?"
+- **The "constraint" question.** "If we 10x'd your AI workflow capacity tomorrow, what's the bottleneck that still hurts revenue? Pipeline, people, product, or process?"
+- **The "willingness" question.** "How much org-design change can absorb in the next 90 days? Optimize inside current workflows, or rebuild?"
+
+Question shapes that DO NOT hit the bar (these are tactical triage — DO NOT use):
+
+- "The 815 deals in DO NOT USE pipelines — what are they?" (operations question)
+- "Daily GTM Huddle ran 9 times in 30 days — what's happening on those calls?" (process question)
+- "Stale Qualified deals — gate stage or placeholder?" (admin question)
+
+### 4a. Render the strategic-clarification elicitation form
+
+If `mcp__visualize__show_widget` is available, render an elicitation form. Title: `"Three things to lock in"`. Submit label: `"Use these"`. Skip label: `"Skip — write the report as-is"`.
+
+Each clarification becomes one `.elicit-group` block. Use plain pills. The synthesizer's hypothesis (the answer it would write if no clarification came back) is the pre-selected pill default. Always include an "Other / not sure" pill that maps to `null`.
+
+Example structure:
+
+| Field key | Question | Type | Options (synthesizer hypothesis pre-selected) |
 |---|---|---|---|
-| `followup_1_pipelines_jetpay` | The 536 deals in pipelines named DO NOT USE — what are they? | plain pills | Real prospects we should migrate (recommended); Zombies — close lost in bulk; Mix — flag for review case-by-case; Not sure / log as open question |
+| `clarification_1_real_game` | The data points at workflow consolidation as the real game. Confirm? | plain pills | Yes — that's the play (recommended); Different — we're optimizing for headcount cost; Different — we're going for net-new revenue; Other / not sure |
 
 Render via the same explicit `mcp__visualize__read_me({modules: ["elicitation"]})` then `mcp__visualize__show_widget` pattern as Phase 2.
 
-Read responses via `mcp__cowork__read_widget_context()`. Parse. Incorporate into synthesis.
+Read responses via `mcp__cowork__read_widget_context()`. Parse. Incorporate into synthesis — each confirmed pill firms up the report's framing; each "Other / not sure" downgrades the matching synthesis claim.
 
 ### 4b. Fallback when elicitation unavailable
 
 If `mcp__visualize__show_widget` is NOT in the tool list, fall back to plain text:
 
-> Two quick clarifications before I write the report:
+> Three things to lock in before I write the report:
 >
-> 1. {question 1} (recommended: {recommended_answer})
-> 2. {question 2} (recommended: {recommended_answer})
+> 1. {strategic question 1} (my read: {synthesizer hypothesis})
+> 2. {strategic question 2} (my read: {synthesizer hypothesis})
+> 3. {strategic question 3} (my read: {synthesizer hypothesis})
 
-User answers conversationally. Each question's empty/skip = log to report's Open Questions section.
+User answers conversationally. Empty/skip = synthesizer ships its hypothesis as-is, with a soft hedge in the report.
 
-### 4c. Skip when no useful follow-ups
+### 4c. Skip when synthesizer has high confidence
 
-If no useful follow-ups remain, skip Phase 4 entirely. Move directly to Phase 5.
+If the synthesizer's internal draft has uniformly high confidence across the contestable answer + Top 3 (no genuine forks to clarify), skip Phase 4 entirely. Move directly to Phase 5. Don't ask three questions just because the rubric says you should — three weak questions is worse than zero strong ones.
 
 ---
 
-## Phase 5 — Synthesize, render markdown + HTML deck
+## Phase 5 — Synthesize, render two artifacts, run reviewer
 
-### 5a. Synthesize the markdown report — Minto pyramid structure
+### 5a. Synthesize the structured JSON
 
-The report follows Barbara Minto's Pyramid Principle (per `research/frontier/2026-02-07-gary-tan-boil-the-ocean.md` cross-reference + the canonical Minto skill at `https://raw.githubusercontent.com/olelehmann1337/claude-skills/main/skills/minto/SKILL.md`):
+The synthesizer produces a single structured JSON object that drives BOTH renderers (deck + markdown). Shape per `references/subagent-output-contract.md` § "Synthesizer output contract" (contract_version 2.2).
 
-- **Level 1 — The Answer.** ONE contestable sentence at the top of the report. Specific enough that someone could disagree. Not a topic label, not a hedged claim, not a question.
-- **Level 2 — Supporting Arguments.** 2–4 claims, MECE (mutually exclusive, collectively exhaustive). Each is a full sentence. These are the report's section headers.
-- **Level 3 — Evidence.** One concrete piece per argument — named stat, specific example, attributed quote, or detailed anecdote.
+Required fields:
 
-Score the 8 dimensions of the AI Readiness Rubric (see `references/ai-readiness-rubric.md`) using the per-subagent dimension scores. The overall score is the weighted average × 10, rendered 0–100. Don't fabricate scores from thin data — mark dimensions Unknown if the subagent couldn't read them.
-
-**Bias the report toward HIGH `surprise_factor` findings in the top sections.** Findings the user almost certainly already knows (Low surprise) belong in the appendix. Findings the user could not have written without us (High surprise) belong above the fold.
+- `the_answer` — Minto Level 1. ONE contestable sentence. ≤60 words.
+- `scores` — split scoring: `stack` (1-10 grade of AI tool surface), `workflow_integration` (1-10 grade of how tools wire into deterministic workflows), `overall` (0-100 weighted: `stack × 4 + workflow_integration × 6`), `interpretation` (one-line tied to overall band).
+- `wins_top_3` — exactly 3 entries. Each `{rank, headline, one_liner, ai_mechanism, impact_metric, effort, impact, confidence, surprise, evidence}`. The `ai_mechanism` field is mandatory and names a concrete Prescyent ladder rung (Claude skill / scheduled task / custom plugin / durable agent). Total word budget per win ≤50 words across `headline + one_liner + ai_mechanism`.
+- `why_now` — boil-the-ocean framing tied to May 2026. ≤100 words. **Do NOT name Garry Tan in this field** — the buyer deck never names him. The zero-sum vs positive-sum idea stands on its own without attribution.
+- `losing_time` — 3-5 entries. Each `{headline, one_liner, time_cost, ai_fix}`. The `ai_fix` field is mandatory — names the AI mechanism that solves this pain.
+- `roadmap` — exactly 4 entries (now-3mo / 3-6mo / 6-12mo / 12mo+). Each `{window, title, body, accent}` with accent ∈ {`green`, `cyan`, `purple`, `brass`}.
+- `lanes` — exactly 3 entries (DIY / Light-touch / Full). Each `{name, headline, body, cta_label}`. **No pricing in body copy.**
+- `tyler_brief` — 100-word executive brief that lands at the top of the analyst markdown.
+- `coverage` — 4 entries (one per audit category) with `{category, platforms, records_analyzed, confidence}`.
+- `dimensions` — 4 entries (one per audit category) with `{title, score, findings[]}`. Each finding `{severity, surprise, headline, recommendation}`.
+- `conflicts` — list of `{topic, summary, recommendation, needed_decision}`.
+- `coverage_gaps` — list of `{gap, impact, fix}`. Withhold `confidential` findings and surface them here as `{gap: "Confidential signal detected", impact: "...", fix: "Surfaced only in private analyst review"}`. Drop `restricted` findings entirely.
+- `open_questions` — list of `{question, recommended_answer, needed_decision}`. This is where subagent `open_questions[]` flow.
+- `next_steps_role_aware` — one-line tailored next step based on `user_role`.
+- `next_steps_connector_aware` — one-line tailored next step based on biggest unconnected platform.
+- `tan_attribution_footnote` — Garry Tan attribution string, surfaces ONLY in the analyst markdown footnote, NEVER in the buyer deck.
 
 **Persona-tailoring** based on `discovery_scope.user_role`:
 
@@ -280,175 +310,105 @@ Score the 8 dimensions of the AI Readiness Rubric (see `references/ai-readiness-
 | `product` / `other` (technical) | Tech debt, integration risk, build-vs-buy, agentic patterns | Generic risk statements |
 | `other` (non-technical default) | Treat as `founder` |
 
-Same data, different lead sentence. The rest of the report stays consistent.
+**Voice gauntlet on every field. No banned words. Em-dash density ≤1 per 100 words. AI-translation present on every win + every losing-time entry.**
 
-**Voice gauntlet on every line. No banned words. No process narration. Embed boil-the-ocean framing in "Why this matters now" — the May 2026 inflection point, positive-sum vs zero-sum AI plays.**
+### 5b. Write the structured JSON to disk
 
-Write the report in this exact section order:
-
-```markdown
----
-company_name: {company_name}
-company_slug: {company_slug}
-user_role: {user_role}
-buyer_intent: {buyer_intent}
-depth: {depth}
-generated_at: {today_date}
-plugin_version: 0.4-alpha
-contract_version: 2.1
----
-
-# {company_name}
-**AI Readiness Audit · {today_date} · {Depth: Standard | Deep}**
-
-## The answer
-> {ONE contestable sentence — Minto Level 1.
->  Examples (calibrate to actual findings, never copy verbatim):
->  - "Your AI tools aren't bad — they're starving on context. Three connector fixes get you 80% of the value, two months of KB work gets you the rest."
->  - "Your CRM hygiene is the structural cause of every bad AI output. Subtract before you add — fix four required fields and your pipeline forecasts double in accuracy."
->  - "You're three connector authorizations and one wiki-mount fix away from making Claude actually useful for {company_name}. The work is small. The compounding is large."
-> }
-
-**Overall AI Readiness Score: {0-100}** · {one-line interpretation tied to the score band}
-
-## Top 3 moves
-[The 3 highest-priority opportunities — moved from old slot 7 to the top. Bias toward HIGH surprise_factor and (impact - effort) × confidence. Each is a full Minto Level 2 argument.]
-
-1. **{opportunity headline}** — {why_now in one sentence}. Effort: {Low/Med/High}. Impact: {Low/Med/High}. Confidence: {High/Med/Low}. Surprise: {Low/Med/High}.
-   - **Evidence:** {one concrete data citation — Minto Level 3}.
-2. ...
-3. ...
-
-## Why this matters now
-[Boil-the-ocean framing tied to May 2026. Two-paragraph max. Voice-checked.]
-
-We're at the inflection moment Garry Tan called out in February — the strategic split between zero-sum AI plays (do the same thing cheaper) and positive-sum AI plays (attempt things previously impossible). {Company-name} is currently positioned for {zero-sum / positive-sum / neither, depending on score band}. {One specific observation about why, tied to the data the audit surfaced.}
-
-The companies pulling ahead are the ones that stopped asking "how do we cut headcount with AI" and started asking "what would it look like to do something dramatically bigger." The audit findings below are the building blocks for that bigger move.
-
-## Where you're losing time today
-[Persona-tailored. 3-5 specific blind spots. Each is a HIGH or MEDIUM surprise_factor finding, tied to verbatim_pain when the user provided one.]
-
-- **{Blind spot headline}** — {one-paragraph explanation grounded in the data, written in the persona's vocabulary}. **Cost today:** {time / $ / risk}.
-  - **Evidence:** {citation}.
-- ...
-
-## The path forward
-[Sell the KB Builder. Frame as the inevitable next step, not one of three options. ~150 words.]
-
-The audit findings above point at one structural pattern: AI tools at {company_name} are operating without a persistent context layer. Every Claude session starts cold. Every ChatGPT prompt is hand-fed. Every new hire rebuilds context from scratch. That's the friction making AI feel underwhelming.
-
-The fix is a knowledge base — a single Karpathy-style wiki on {their existing storage: Drive / OneDrive / etc.} that every AI tool reads from. The KB compounds. Every interview adds to it. Every meeting transcript lands in it. Every new hire onboards into it.
-
-`/kb-build --from-discover` takes this report and scaffolds that wiki in 20 minutes. The mining subagents read your connected systems, distill institutional knowledge into structured pages, and hand you back a folder you can hand to your CFO, your VP of Sales, and your new hire on day one.
-
-That's the boil-the-ocean version of "make AI useful." The small-fix version is "buy a better AI tool." The big-fix version is "give every AI tool the context they're missing."
-
-## The detail
-[Everything below is appendix — the per-dimension breakdown, full findings, conflicts, gaps, and open questions. Surface high-surprise findings above; relegate low-surprise findings here.]
-
-### Coverage
-| Category | Connected | Records analyzed | Confidence |
-|---|---|---|---|
-| GTM & Systems | {platforms} | {N} records | High/Medium/Low |
-| Knowledge & Docs | {platforms} | {N} docs | High/Medium/Low |
-| Communications | {platforms} | {N} threads | High/Medium/Low |
-| Stack | {platforms} | {N} apps | n/a |
-
-If the user listed `unconnected_tools` at Phase 2c Q5, append:
-> **Not in scope:** {unconnected_tools_list}. The audit ran on what's connected — these gaps are flagged in Coverage Gaps below.
-
-### GTM & Systems Readiness — {N}/10
-- [Severity, Surprise] Headline — detail. **Recommendation:** fix.
-- ... (sorted by surprise_factor DESC, then severity × confidence × impact)
-
-### Knowledge & Document Readiness — {N}/10
-- ...
-
-### Communications Readiness — {N}/10
-- ...
-
-### AI Stack Readiness — {N}/10
-- ...
-
-### Conflicts Between Sources
-- **{topic}**: {subagent A finding} vs. {subagent B finding}.
-  - Recommendation: {which to adopt and why}.
-  - Need from you: {specific decision}.
-
-### Coverage Gaps
-- {gap}: {impact}. Fix: {connector to add or process to verify}.
-- {if unconnected_tools were listed at Phase 2c Q5, repeat each one with a one-line "what we couldn't see and why it matters" note}
-
-### Open Questions
-1. **{question}**
-   - Recommended answer: {recommendation with reasoning}.
-   - Need from you: {specific decision or confirmation}.
-
-## Recommended next steps
-1. **Run `/kb-build --from-discover {report_path_md}`.** This is the path forward described above. It scaffolds the wiki, mines your connectors, and produces the persistent context layer.
-2. **{role-aware tailored next step}** — for {user_role}, this is typically: {founder/cfo: "review the Top 3 moves with your senior team this week"; sales: "fix the four required-field workflows in HubSpot before any new AI tooling"; ops: "audit the deprecated pipelines / stale records flagged above"; product/other: "prototype the highest-impact opportunity as a one-off agent before scoping the KB build"}.
-3. **{connector-aware tailored next step}** — connect {first unconnected platform that would meaningfully expand coverage}; the audit's biggest blind spot today is {specific category}.
-```
-
-**Confidence tagging** — every finding gets High / Medium / Low based on volume:
-
-- **High:** subagent analyzed ≥50 records / ≥10 documents / ≥1 month of messages
-- **Medium:** ≥10 records / ≥3 documents / ≥1 week of messages
-- **Low:** below the medium thresholds, or single-source signal with no corroboration
-
-**Drop `restricted` findings entirely. Withhold `confidential` findings unless `buyer_intent` includes a confidentiality-aware signal — otherwise list as "Coverage Gap: confidential signal detected, omitted from report."**
-
-### 5b. Render the HTML deck
-
-Save the markdown to a sandbox temp path, then render via the existing renderer:
+Write the synthesizer output to the Cowork session's writable working directory. **Do NOT use `/tmp/`** — Cowork sandbox blocks writes outside connected folders.
 
 ```bash
 SLUG="{company_slug}"
 DATE="{today_date}"
-MD_PATH="/tmp/prescyent-discovery-${SLUG}-${DATE}.md"
-HTML_PATH="/tmp/prescyent-discovery-${SLUG}-${DATE}.html"
-
-# write the markdown to MD_PATH first (skill is responsible for that write)
-
-python3 "${CLAUDE_PLUGIN_ROOT}/skills/discover/scripts/render-report.py" \
-  --input  "${MD_PATH}" \
-  --output "${HTML_PATH}" \
-  --company "{company_name}"
+JSON_PATH="{cwd}/prescyent-discovery-${SLUG}-${DATE}.json"
+MD_PATH="{cwd}/prescyent-discovery-${SLUG}-${DATE}.md"
+HTML_PATH="{cwd}/prescyent-discovery-${SLUG}-${DATE}.html"
 ```
 
-The renderer uses `references/report-template.html` (the Prescyent dark-mode design system).
+Where `{cwd}` is the Cowork session's current working directory (typically `outputs/` inside the session sandbox). Use relative paths if absolute resolution is uncertain — the renderers handle path expansion.
 
-### 5c. Display inline
+Use the `Write` tool to save the synthesizer JSON to `JSON_PATH`.
 
-If `mcp__cowork__create_artifact` is available:
+### 5c. Render both artifacts
 
-- Render the HTML inline as a Cowork artifact (visible in chat without drive writes).
-- Render the markdown as a second artifact too — some users prefer reading flat markdown.
+Run both renderers from the JSON. Both are pure-stdlib Python.
 
-If `mcp__cowork__create_artifact` is NOT available (Claude Code, etc.):
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/discover/scripts/render_markdown.py" \
+  --input  "${JSON_PATH}" \
+  --output "${MD_PATH}"
 
-- Print the markdown inline as a fenced code block.
-- Surface the HTML path so the user can open it manually: `Open the deck at: {HTML_PATH}`.
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/discover/scripts/render_deck.py" \
+  --input  "${JSON_PATH}" \
+  --output "${HTML_PATH}"
+```
 
-### 5d. Inline answer + Top 3 hook
+Each script reads the JSON, builds its target artifact directly from structured fields (no markdown→HTML middleman, no token-injection from markdown blobs), and writes the output.
 
-Always print the Minto Level 1 answer + Top 3 moves inline in chat AFTER the artifact, even if the user is reading the full report inline already. The hook is the asynchronous "what to scroll to" entry point. Format:
+### 5d. Run the deck reviewer
 
-> **The answer:** {Minto Level 1 sentence verbatim from the report}
+Dispatch the `audit-deck-reviewer` subagent via `Task` to validate the rendered HTML deck before showing it to the user.
+
+```
+Task(
+  subagent_type: "prescyent-plugin:audit-deck-reviewer",
+  description: "Review the buyer deck before final output",
+  prompt: "{verbatim instructions including deck_path, synthesizer_json_path, iteration: 1}"
+)
+```
+
+The reviewer returns structured JSON with `verdict`, `hard_fails[]`, `soft_warns[]`, `stats{}`. Decision tree:
+
+- **If `verdict: ship` AND `hard_fails: []`** → proceed to Phase 5e. Log `soft_warns` to a sidecar `_review.json` file next to the deck for Tyler's later review.
+- **If `verdict: regenerate` AND `iteration < 3`** → for each `hard_fail`, fix the underlying issue:
+  - `RENDER_*` codes → typically a renderer or template bug. Read the failing pattern, patch in the JSON synthesizer output if the data is wrong, or re-run the renderer if the bug is transient.
+  - `MISSING_AI_MECHANISM` / `MISSING_AI_FIX` → re-run synthesis with explicit "every win must have ai_mechanism, every losing_time must have ai_fix" reminder. Update the JSON, re-render.
+  - `MISSING_CTA` → check the template + footer were correctly applied; re-render.
+  - `APPENDIX_OPEN_BY_DEFAULT` → renderer bug; report and ship at iteration 3.
+  - `TAN_NAME_IN_BUYER_COPY` → re-write the offending field (`why_now` typically), regenerate JSON, re-render.
+
+  Re-dispatch the reviewer with `iteration: 2`. Cap at 3 iterations.
+- **If `iteration == 3` AND hard_fails persist** → ship anyway with a short user-visible note: `The audit's ready, but I caught a couple of polish items I couldn't fix in this session. The deck is below; the full report is saved alongside.` Log the unfixed `hard_fails` to the sidecar `_review.json`.
+
+### 5e. Display inline as a Cowork artifact (mandatory)
+
+If `mcp__cowork__create_artifact` is in the tool list, render the HTML buyer deck as a Cowork artifact. The artifact IS the primary deliverable — visible inline in chat without the user having to open a file link.
+
+```
+mcp__cowork__create_artifact({
+  type: "text/html",
+  title: "{company_name} · AI Readiness Audit",
+  content: "<contents of HTML_PATH>"
+})
+```
+
+If `mcp__cowork__create_artifact` is NOT available (Claude Code, headless), fall back to:
+
+- Surface the HTML path so the user can open it: `Open your custom audit page at: {HTML_PATH}`.
+
+**Closing chat copy** (after the artifact renders):
+
+> Your custom audit page is above. Skim the 3 wins and the roadmap — that's where the value is. The full markdown report is also saved to `{MD_PATH}` if you want to forward it.
+
+Do NOT use phrases like "open in your browser for the full layout" or "read the markdown if you prefer flat text." The artifact IS the deliverable; the markdown is the analyst secondary.
+
+### 5f. Inline answer + Top 3 hook (post-artifact)
+
+After the artifact renders, print the contestable answer + Top 3 wins as inline chat text. The hook gives the user something to anchor to in the chat history without re-scrolling the artifact:
+
+> **The answer:** {Minto Level 1 sentence verbatim from the synthesizer}
 >
-> **Three moves this week:**
-> 1. {Top move 1 headline}
-> 2. {Top move 2 headline}
-> 3. {Top move 3 headline}
+> **Three wins this quarter:**
+> 1. {wins_top_3[0].headline}
+> 2. {wins_top_3[1].headline}
+> 3. {wins_top_3[2].headline}
 
 ---
 
 ## Phase 6 — Recommended next step + secondary options (elicitation)
 
-Frame the path forward as the recommended action with two secondary options for the user to optionally pick alongside. The KB build is NOT one of three equal options — it's THE next step the report's "Path forward" section sold them on.
+Frame the path forward as the recommended action with two secondary options. The KB build is the recommended next step — the report's "Path forward" + "How to climb the ladder" sections sold the user on it.
 
-Render Phase 6 as an elicitation form (same explicit `mcp__visualize__read_me` + `mcp__visualize__show_widget` pattern as Phase 2). Title: `"Next step"`. Submit label: `"Go"`. Skip label: `"Skip — close the audit"`.
+Render Phase 6 as an elicitation form. Title: `"Next step"`. Submit label: `"Go"`. Skip label: `"Skip — close the audit"`.
 
 **Form structure:**
 
@@ -460,7 +420,7 @@ Render Phase 6 as an elicitation form (same explicit `mcp__visualize__read_me` +
 
 If `mcp__visualize__show_widget` is unavailable, fall back to plain text:
 
-> The path forward is `/kb-build` — the audit's Path Forward section makes the case for why. Reply with one of:
+> The path forward is `/kb-build` — the audit's "How to climb the ladder" section makes the case. Reply with one of:
 >
 > - "go" — chain into /kb-build now (recommended)
 > - "save" — save markdown + HTML to my drive
@@ -474,13 +434,7 @@ If `primary_action = "Yes — chain into /kb-build now"`, transfer control to `/
 
 If the user picks `"No — close the audit here"`, go directly to Phase 7.
 
-### Option 1 — Save to drive
-
-- If `mcp__cowork__request_cowork_directory` is available, request directory consent.
-- If granted, write `{HTML_PATH}` and `{MD_PATH}` to the granted folder under `prescyent-discovery-{slug}-{date}.{html,md}`.
-- If declined, surface that ("Saved to chat only — re-run option 1 when you're ready") and skip.
-
-### Secondary action — Save to drive
+### Option — Save to drive
 
 If `secondary_actions` includes `"Save markdown + HTML to my drive"`:
 
@@ -488,46 +442,43 @@ If `secondary_actions` includes `"Save markdown + HTML to my drive"`:
 - If granted, write `{HTML_PATH}` and `{MD_PATH}` to the granted folder as `prescyent-discovery-{slug}-{date}.{html,md}`.
 - If declined, surface ("Saved to chat only — re-run later when you're ready") and skip.
 
-### Secondary action — Draft email to tyler@prescyent.ai
+### Option — Draft email to tyler@prescyent.ai
 
 If `secondary_actions` includes `"Draft a follow-up email to tyler@prescyent.ai"`:
 
 Chain to `skills/draft-upsell-email/SKILL.md`. Pass these inputs:
 
 - `company_name`
-- `report_path_html` — the drive path if Save was also selected, else the sandbox temp path
+- `report_path_html` — the drive path if Save was also selected, else the sandbox path
 - `report_path_md` — same logic
 - `the_answer` — the Minto Level 1 sentence
-- `top_3_moves` — the ranked Top 3 from synthesis
+- `top_3_moves` — the ranked Top 3 from synthesis (use `wins_top_3` shape)
 - `overall_score` — integer 0–100
+- `tyler_brief` — the 100-word executive brief (pre-populated email body candidate)
 
 `draft-upsell-email` handles email-MCP detection, drafting, attachment fallback, and never sends.
 
-### Secondary action — Send to teammate
+### Option — Send to teammate
 
 If `secondary_actions` includes `"Send to a teammate"` AND `teammate_email` is non-empty:
 
-Chain to `skills/draft-upsell-email/SKILL.md` with the teammate email as the `to` field instead of `tyler@prescyent.ai`. Same drafting flow. Never sends.
-
-If `teammate_email` is empty after the user picked the option, prompt for it once via plain text (or a tiny one-question elicitation if available). If still empty, skip with a one-line note.
+Chain to `skills/draft-upsell-email/SKILL.md` with the teammate email as the `to` field. Same drafting flow. Never sends.
 
 ### Primary action — Chain to `/kb-build`
 
 If `primary_action = "Yes — chain into /kb-build now"`:
 
-Invoke `/kb-build --from-discover {MD_PATH}` (or the drive path if Save was also picked). The `/kb-build` command parses the markdown's YAML frontmatter for `company_name`, `company_slug`, `user_role`, then asks only for the storage target and KB root label.
-
-Control transfers to `/kb-build` and Phase 7 below is skipped.
+Invoke `/kb-build --from-discover {MD_PATH}`. Control transfers to `/kb-build`; Phase 7 below is skipped.
 
 ---
 
 ## Phase 7 — Closing handoff
 
-If the user picked `"Yes — chain into /kb-build now"` in Phase 6, skip this phase — `/kb-build` owns the next moment.
+If the user picked `"Yes — chain into /kb-build now"` in Phase 6, skip this phase.
 
 Otherwise emit a closing handoff (≤90 words, voice-checked):
 
-> Your assessment is in your chat. The path forward is in the report — when you're ready to turn this into a living wiki every future Claude session reads from, run `/kb-build --from-discover {MD_PATH}`.
+> Your custom audit page is above. The path forward is `/kb-build` — turn this into a living wiki every Claude session reads from. Run `/kb-build --from-discover {MD_PATH}` when you're ready.
 >
 > That's the **Map** + **Build** step. **Deliver** is what we do together once the wiki is in your hands.
 >
@@ -535,7 +486,7 @@ Otherwise emit a closing handoff (≤90 words, voice-checked):
 
 The settings-file hint only emits IF Phase 2c actually ran (the user answered scope questions in this session). If Phase 2a hit and the settings file already existed, drop the third paragraph.
 
-If `mcp__plugins__suggest_plugin_install` is available, also surface a plugin-install card pointing at `prescyent-plugin` (the Tier 1 entry is the same plugin in v0.4-alpha — the card just nudges the user to keep going).
+If `mcp__plugins__suggest_plugin_install` is available, also surface a plugin-install card pointing at `prescyent-plugin`.
 
 ---
 
@@ -548,52 +499,58 @@ If `mcp__plugins__suggest_plugin_install` is available, also surface a plugin-in
 3. Jargon a mid-market exec wouldn't say? Replace.
 4. Banned word present? Fix.
 5. Implementation detail that doesn't change their next move? Strip.
-6. Under the word budget? Orientation ≤155 (the "what to know" paragraph adds room), scope ≤120, status ≤30, errors ≤20 + one recovery step.
-7. **Boil-the-ocean check (added v0.4):** does this string frame the reader as positive-sum (attempt things previously impossible) or zero-sum (do the same thing cheaper)? If zero-sum, rewrite. The discovery report's job is to make the bigger move feel inevitable, not to enumerate small fixes.
+6. Under the word budget? Orientation ≤155, scope ≤120, status ≤30, errors ≤20 + one recovery step.
+7. **Boil-the-ocean check:** does this string frame the reader as positive-sum (attempt things previously impossible) or zero-sum (do the same thing cheaper)? If zero-sum, rewrite.
+8. **AI-translation check (v0.5):** every problem named in the buyer deck has an explicit AI mechanism translation (skill / scheduled task / custom plugin / durable agent). If a problem appears without a fix mechanism, rewrite.
+9. **Tan-attribution check (v0.5):** "Garry Tan" or "Tan" never appears in buyer-facing copy (deck HTML, chat text). Tan attribution is allowed in the analyst markdown footnote only.
 
-Pass all six — ship. Fail one — rewrite.
+Pass all nine — ship. Fail one — rewrite.
 
 ---
 
 ## Failure modes
 
-- **Subagent times out** (>maxTurns or >5 min wall clock): continue with the others. Flag the missing slice in Coverage Gaps. Do not retry — retry burns tokens and the user can re-run.
+- **Subagent times out** (>maxTurns or >5 min wall clock): continue with the others. Flag the missing slice in Coverage Gaps. Do not retry.
 - **Subagent returns malformed JSON:** include the raw return verbatim in Coverage Gaps. Do not retry. Do not fabricate findings.
 - **All four subagents return zero findings:** emit (≤30 words):
   > Your connectors didn't surface enough signal for a useful read. Connect more tools — or run `/kb-build` to capture knowledge directly from your team via interview.
-- **Render script (`render-report.py`) fails:** save the markdown anyway. Surface the markdown path and the stderr. Skip Phase 5c HTML and continue with markdown-only display.
-- **`mcp__cowork__create_artifact` unavailable:** fall back to inline markdown code block (Phase 5c).
-- **`mcp__visualize__show_widget` unavailable** (Claude Code, headless runs, host without the visualize MCP loaded): fall back to sequential `AskUserQuestion` per Phase 2c. Every elicitation field maps 1:1 to an AskUserQuestion call.
+- **Render script (`render_deck.py` or `render_markdown.py`) fails:** save the JSON and the markdown anyway. Surface the markdown path and the stderr. If the deck failed but the markdown succeeded, ship the markdown via inline code block + offer to re-run the deck.
+- **Deck reviewer dispatched but returns malformed JSON:** ship the deck without the validation gate; log the reviewer's raw output to `_review.json` for Tyler.
+- **`mcp__cowork__create_artifact` unavailable:** fall back to printing the file path with affirmative copy ("Your custom audit page is at: {HTML_PATH}"). No "flat text" disclaimer.
+- **`mcp__visualize__show_widget` unavailable** (Claude Code, headless): fall back to sequential `AskUserQuestion` per Phase 2d. Every elicitation field maps 1:1 to an AskUserQuestion call.
 - **`mcp__cowork__request_cowork_directory` unavailable AND user picked the Save secondary action:** print the sandbox path and tell the user to copy manually:
   > I can't request drive access in this session. Copy the report from `{HTML_PATH}` if you want a local copy.
-- **`mcp__mcp-registry__list_connectors` unavailable at Phase 2c form-build time:** fall back per Phase 2c — emit Q4 as a textarea with placeholder "Which platforms should I search? (Drive, HubSpot, Notion, etc.)". Discovery still runs; the model uses connector availability discovered at Phase 3 dispatch time instead.
+- **`mcp__mcp-registry__list_connectors` unavailable at Phase 2c form-build time:** fall back per Phase 2c — emit Q3 as a textarea with placeholder.
 
 ---
 
 ## What this skill does NOT do
 
-- Does not write to the user's drive (unless they pick Option 1 in Phase 6 and grant directory consent).
+- Does not write to the user's drive (unless they pick the Save option in Phase 6 and grant directory consent).
 - Does not scaffold a knowledge base.
 - Does not ask for storage target or KB root label.
-- Does not collect or persist preflight data beyond the chat session.
 - Does not call any subagent that calls `AskUserQuestion` (subagents are `background_safe: true`).
 - Does not narrate process. Does not name subagents in user-facing strings. Does not surface phase numbers in user-visible text.
+- Does not name Garry Tan in buyer-facing copy.
 
-The deliverable IS the chat-rendered assessment. Everything beyond is opt-in.
+The deliverable IS the chat-rendered audit deck. Everything beyond is opt-in.
 
 ---
 
 ## Reference files
 
 - `references/orientation-copy.md` — the LOCKED Phase 1 message
-- `references/subagent-output-contract.md` — the JSON contract every audit subagent returns (contract_version 2.1, includes surprise_factor)
+- `references/subagent-output-contract.md` — JSON contracts (audit subagent + synthesizer output, contract_version 2.2)
 - `references/ai-readiness-rubric.md` — 8-dimension scoring rubric for synthesis
-- `references/report-template.html` — Prescyent dark-mode HTML shell used by `render-report.py` (v0.4 — full design system + canonical deck-footer-pattern + favicon/OG/Twitter meta tags per `prescyent/references/shared/deck-head-pattern.md`)
-- `scripts/render-report.py` — markdown → HTML renderer (PLUGIN_VERSION = "0.4.0")
-- `../../settings/prescyent.local.md.example` — per-project settings template buyers can copy to skip Phase 2c on subsequent runs
+- `references/report-template.html` — Prescyent dark-mode HTML layout shell (slot-based — no content tokens, no markdown→HTML middleman)
+- `scripts/render_markdown.py` — JSON → analyst markdown
+- `scripts/render_deck.py` — JSON → buyer-facing HTML deck
+- `../../agents/audit-deck-reviewer.md` — deck reviewer subagent (validates HTML before final output)
+- `../../settings/prescyent.local.md.example` — per-project settings template
 
 ## Cross-references (mothership context)
 
-- `prescyent/research/frontier/2026-02-07-gary-tan-boil-the-ocean.md` — the ethos that drives the "Why this matters now" + "Path forward" framing in the Minto report shape
-- `prescyent/references/shared/deck-footer-pattern.md` — canonical Prescyent deck close (mailto + booking link + sign-off) — embedded into `report-template.html`
-- `prescyent/references/shared/deck-head-pattern.md` — canonical favicon + OG + Twitter tags — embedded into `report-template.html`
+- `prescyent/research/frontier/2026-02-07-gary-tan-boil-the-ocean.md` — the ethos behind "why this matters now" (analyst-side attribution only)
+- `prescyent/wiki/concepts/foaster-mechanics-and-steal-list.md` — Foaster's 0-3 / 3-6 / 6-12 / 12+ ladder pattern (informs the roadmap section)
+- `prescyent/references/shared/deck-footer-pattern.md` — canonical Prescyent deck close (mailto + booking link + sign-off)
+- `prescyent/references/shared/deck-head-pattern.md` — canonical favicon + OG + Twitter tags

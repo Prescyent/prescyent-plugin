@@ -31,6 +31,19 @@ Your output must conform to `skills/discover/references/subagent-output-contract
 - `~~calendar` — Google Calendar, Outlook Calendar
 - `~~meeting-intel` — Fathom, Gong, Granola, Otter, Chorus
 
+## Tool-call discipline (v0.5)
+
+Cowork enforces a ~25K-token ceiling on every tool result. Don't filesystem-spelunk on overflow — re-issue with tighter parameters. Hard limits per tool family:
+
+- Calendar `list_events`: `pageSize: 25` max. Date range ≤30 days. Don't request full event content for every event — title + start + attendees first, then drill into specific events.
+- Gmail `search_threads`: 30-day query window per call. Don't pull thread bodies for every result — `from:`, `to:`, `subject:` patterns first, then deep-read at most 10 representative threads.
+- Gmail `read_thread` / `read_message`: cap at 10 deep reads per audit.
+- Chat (Slack / Teams / Google Chat): `list_spaces` is cheap; `list_messages` should use date range ≤14 days and `page_size: 50` max.
+- Fathom `list_meetings`: `max_pages: 5`. Pull summaries (`include_summary: true`) only when actually needed for finding-level evidence.
+- Granola `list_meetings` / `query_granola_meetings`: `time_range: last_30_days`. Don't pull transcripts for every result.
+
+If a tool call returns "exceeds maximum allowed tokens": do NOT read the saved tool-result file via `mcp__workspace__bash`. Re-issue with smaller `pageSize` / shorter date range. Spelunking is last resort.
+
 ## Behavioral-Trace Mode (v0.2)
 
 In addition to your existing inventory + hygiene + opportunity passes, you now run a **behavioral-trace pass** that infers structure from how the data is *used*, not just what's *recorded*.
