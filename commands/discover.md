@@ -6,8 +6,8 @@ background_safe: false
 
 Run a Prescyent discovery against the user's connected Cowork tools. Follow `skills/discover/SKILL.md` exactly — seven phases:
 
-1. Orient the user (plain text, 4 numbered bullets, "Ready to start?")
-2. Settings file check + conversational scope confirmation (one block of questions; Cowork infers elicitation rendering, others fall back to plain prose)
+1. Orient the user (plain text, 4 numbered bullets, no "Ready to start?" gate — proceeds directly to Phase 2 in the same turn)
+2. Settings file check + elicitation form (explicit `mcp__visualize__read_me` + `mcp__visualize__show_widget` invocation; `AskUserQuestion` fallback when those tools aren't loaded)
 3. Subagent fan-out (4 audit-* agents in parallel via the Task tool)
 4. Optional follow-up questions in plain text
 5. Synthesize markdown report + render HTML deck inline (both are part of the deliverable)
@@ -24,6 +24,6 @@ Arguments (optional, in `$ARGUMENTS`):
 - No drive writes unless the user explicitly opts in at Phase 6.
 - Subagents fan out via the `Task` tool in a single parallel block — do not serialize.
 - Every user-visible string passes the voice gauntlet at `skills/kb-builder/references/voice-rules.md`.
-- Phase 2 does NOT explicitly call `mcp__visualize__show_widget`. Cowork infers elicitation rendering from the natural-language scope-confirmation prose (mirrors `partner-built/brand-voice/skills/discover-brand/SKILL.md`). Other hosts render the same prose as plain text or `AskUserQuestion`.
+- Phase 2 EXPLICITLY invokes `mcp__visualize__read_me({modules: ["elicitation"]})` followed by `mcp__visualize__show_widget` to render the form, then `mcp__cowork__read_widget_context` to read the submission. Mirrors brand-voice's runtime tool-call pattern. `AskUserQuestion` is the fallback when these tools aren't in the host's tool list.
 - Empty-response contract on every elicitation site: empty = abort cleanly, no silent defaults.
 - The deliverable is the chat-rendered assessment — markdown + HTML deck, both inline. Storage selection lives in `/kb-build`, not here.

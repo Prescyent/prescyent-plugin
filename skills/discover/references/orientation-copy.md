@@ -1,6 +1,6 @@
 # Orientation Copy — LOCKED
 
-The canonical Phase 1 orientation message for `/discover`. Voice-gauntlet-passed on 2026-04-29. Plain text only — no placeholder substitution, no widget render, no connector picker. Never auto-regenerate. If copy needs to change, edit here, re-run the gauntlet at `../../kb-builder/references/voice-rules.md`, and commit as a deliberate voice update.
+The canonical Phase 1 orientation message for `/discover`. Voice-gauntlet-passed on 2026-05-01. Plain text only — no placeholder substitution, no widget render, no connector picker. Never auto-regenerate. If copy needs to change, edit here, re-run the gauntlet at `../../kb-builder/references/voice-rules.md`, and commit as a deliberate voice update.
 
 ## The message
 
@@ -11,20 +11,21 @@ The canonical Phase 1 orientation message for `/discover`. Voice-gauntlet-passed
 > 3. **Report** — You get a one-page assessment with the top 3 AI opportunities, where you're losing time today, and what to fix first.
 > 4. **Next** — Save the report, draft a follow-up email, or chain to `/kb-build` to turn it into a living wiki. Nothing writes anywhere without your explicit consent.
 >
-> The audit usually takes 4–6 minutes. Ready to start?
+> The audit usually takes 4–6 minutes. Let me check your settings and ask a few quick scope questions before I kick off.
 
 ## Why this message
 
-- **Mirrors brand-voice's `/discover-brand` orientation pattern** (partner-built/brand-voice/skills/discover-brand/SKILL.md). Four numbered bullets covering what we're doing, how it works, what they get, what comes next. Plain text. Conversational close.
+- **Mirrors brand-voice's `/discover-brand` orientation pattern** (partner-built/brand-voice/skills/discover-brand/SKILL.md). Four numbered bullets covering what we're doing, how it works, what they get, what comes next. Plain text. Bridges directly to the elicitation.
 - **No FUD opener.** Drops "Your AI sessions feel generic because Claude doesn't know your company." Buyers who installed the plugin don't need to be re-sold; they need expectations set.
-- **No verb-quartet vagueness.** Drops "Discover → Map → Build → Deliver. Ready when you are." That closer left "ready for what?" hanging. New closer is concrete: "The audit usually takes 4–6 minutes. Ready to start?"
-- **No connector picker.** The previous flow called `mcp__mcp-registry__list_connectors`, which renders Cowork's connector-management UI panel as a side effect. Coverage gaps now surface in the final report's Coverage table instead of pre-listing.
-- **Final line is consent.** Plain text reply, not `AskUserQuestion`. The user types "yes", "go", or asks a question. Either way, they're committed before any subagent dispatches.
+- **No verb-quartet vagueness.** Drops "Discover → Map → Build → Deliver. Ready when you are." That closer left "ready for what?" hanging.
+- **No "Ready to start?" gate.** Drops the explicit consent ask + "go" reply pattern. Brand-voice's `/discover-brand` emits orientation prose then immediately renders the elicitation form — same flow here. The elicitation IS the gate; the user submits or skips. Asking the user to type "go" between orientation and form was one extra step nobody needed (Tyler caught this 2026-05-01).
+- **Closing bridge to elicitation.** Final sentence ("Let me check your settings and ask a few quick scope questions...") matches brand-voice's "Let me check for any existing settings and validate what's connected before kicking off the search." Sets expectation that the form is the next thing the user sees.
+- **No connector picker.** The previous flow called `mcp__mcp-registry__list_connectors`, which renders Cowork's connector-management UI panel as a side effect. Coverage gaps now surface in the final report's Coverage table instead.
 
 ## Word count
 
-~110 words (excluding header). Matches brand-voice's discover-brand orientation length.
+~115 words (excluding header). Matches brand-voice's discover-brand orientation length.
 
 ## Banned-word check
 
-Run on 2026-04-29 — no banned words present (delve, crucial, robust, comprehensive, nuanced, landscape, furthermore, seamlessly, unlock, empower, game-changer, best-in-class, cutting-edge, holistic, paradigm, synergy, leverage, utilize, facilitate, tapestry, ecosystem, solution, journey, transformation).
+Run on 2026-05-01 — no banned words present (delve, crucial, robust, comprehensive, nuanced, landscape, furthermore, seamlessly, unlock, empower, game-changer, best-in-class, cutting-edge, holistic, paradigm, synergy, leverage, utilize, facilitate, tapestry, ecosystem, solution, journey, transformation).

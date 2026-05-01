@@ -13,9 +13,10 @@ background_safe: false
 
 # `/discover` — Prescyent entry point
 
-> `background_safe: false` is load-bearing. Phase 2 elicits scope conversationally;
-> the host (Cowork) may infer an elicitation form, others fall back to plain prose
-> or `AskUserQuestion`. Either rendering requires the foreground main thread.
+> `background_safe: false` is load-bearing. Phase 2 explicitly invokes
+> `mcp__visualize__read_me({modules: ["elicitation"]})` then `mcp__visualize__show_widget`
+> to render an elicitation form, with `AskUserQuestion` as the fallback when those tools
+> aren't loaded. Either rendering requires the foreground main thread.
 > Do not move into a background `Task`.
 
 You are running the buyer's first encounter with Prescyent. The deliverable is a one-page assessment rendered inline in chat — no drive writes, no scaffolding, no storage selection. The assessment IS the deliverable.
@@ -32,19 +33,17 @@ If the user submits a Cowork elicitation form via Skip with `company_name` empty
 
 Emit the message at `references/orientation-copy.md` verbatim. Plain text only — no widget, no connector picker, no panel render. Do not call `mcp__mcp-registry__list_connectors` (it pops a UI surface in Cowork). Do not paraphrase. Do not prepend "Welcome!" or similar. Do not append process notes or subagent names.
 
-After the orientation lands, wait for the user to acknowledge with plain text ("yes", "go", "continue"). **Do NOT use `AskUserQuestion` here** — keep it conversational. The orientation ends with "Ready to start?" which the user replies to.
-
-If the user replies with a question instead of go-ahead, answer it briefly and wait again. Do not auto-proceed.
+**Do not pause for user acknowledgment after the orientation.** Move directly to Phase 2 in the same turn. The elicitation form IS the gate — the user submits, skips, or asks a question. This mirrors brand-voice's `/discover-brand`, which emits orientation prose and immediately renders the elicitation without waiting for "go." Tyler validated this UX 2026-05-01: an explicit "Ready to start?" → reply "go" → form is one extra step the user shouldn't have to take.
 
 Coverage gaps surface in the final report — Phase 5's Coverage table names what was actually read, and the failure mode at the bottom of this file handles the zero-findings case.
 
 ---
 
-## Phase 2 — Settings + scope confirmation
+## Phase 2 — Settings + elicitation form
 
-This phase mirrors `partner-built/brand-voice/skills/discover-brand/SKILL.md` Steps 1 + 3. **Do not explicitly call `mcp__visualize__show_widget`.** Cowork infers elicitation rendering from natural-language scope-confirmation prompts when the visualize MCP is loaded — same way brand-voice's polished form appears without any widget code in their skill. In Claude Code or any host without inferred elicitation, the same prose falls back to plain text or `AskUserQuestion`.
+Brand-voice's `/discover-brand` runtime explicitly invokes `mcp__visualize__read_me({modules: ["elicitation"]})` then `mcp__visualize__show_widget` to render the polished form. We do the same here — explicit invocation, deterministic. Tyler examined brand-voice's actual Cowork tool calls 2026-05-01 and confirmed both tools fire on every run.
 
-### 2a. Check settings file
+### 2a. Check settings file (silent)
 
 Read `.claude/prescyent.local.md` if it exists. Extract:
 
@@ -54,42 +53,69 @@ Read `.claude/prescyent.local.md` if it exists. Extract:
 - Search depth (`standard` or `deep`) — default `standard`
 - Known doc locations or primary pain points (optional)
 
-A template lives at `settings/prescyent.local.md.example` — point users at it on first run if they didn't know it existed.
+A template lives at `settings/prescyent.local.md.example`.
 
-If the settings file exists AND has at minimum `company_name` + `user_role`, **skip Phase 2b** and proceed directly to Phase 2c.
+If the settings file exists AND has at minimum `company_name` + `user_role`, **skip Phase 2b**, surface a one-line confirmation (`Found your settings file — running discovery for {company_name}.`), and proceed directly to Phase 2d.
 
-### 2b. Confirm scope with the user
+### 2b. Render the elicitation form (Cowork host)
 
-If no settings file exists, or critical fields are missing, confirm scope. Keep this brief — one block of questions, not a serialized questionnaire. Phrase conversationally so Cowork can infer the elicitation pattern (and any host can fall back to plain prose):
+When `mcp__visualize__show_widget` is in the tool list, render the form via the elicitation module — explicit invocation, NOT inference.
 
-> Quick scope check before I run the audit:
->
-> - **Company name?**
-> - **Your role?** (Founder / CEO, CFO / Finance lead, Head of Ops, Sales / GTM lead, Marketing lead, Product / Engineering lead, Other)
-> - **What brought you here today?** (Understand AI readiness / Capture senior knowledge before someone leaves / Make Claude actually useful for the team / Something else)
-> - **Anything specific been frustrating that I should prioritize?** (optional)
-> - **Search depth?** (Standard — top 10–15 sources / Deep — broader sweep)
+**Step 1 — Fetch the elicitation spec** (first run of the session only; cache the response):
 
-If Cowork renders this as an elicitation form, the answers arrive on a single line per the spec ("Brand discovery details — Company: …"). Parse the line. If a host renders it as prose, parse the user's natural-language reply against the same field shape.
+```
+mcp__visualize__read_me({modules: ["elicitation"]})
+```
 
-If the reply doesn't surface a company name, prompt once more for just that:
+The response is the canonical contract: required CSS class names (`elicit`, `elicit-group`, `elicit-question`, `elicit-pills`, `elicit-pill`, `elicit-textarea`), required data attributes (`data-name`, `data-multi`, `data-value`, `data-other`), the four option formats (plain pills, cards, preview tiles, sliders/dates), the locked header SVG (File anthropicon), and the submit payload format. Build the HTML against this spec — don't guess the shape.
 
-> One more — what's the company called? I need it to label the report.
+**Step 2 — Build the elicitation HTML** with five `.elicit-group` blocks. Header title: `"Discovery details"`. Submit label: `"Run discovery"`. Skip label: `"Skip — use defaults"`.
 
-Empty response = abort cleanly per the empty-response contract.
+| # | Field key (`data-name`) | Question | Type | Options |
+|---|---|---|---|---|
+| 1 | `company_name` | What's your company called? | textarea (single-line is fine via the textarea class — there is no plain text input class in the elicitation module) | (free text) |
+| 2 | `user_role` | Which describes you best? | plain pills | Founder / CEO; CFO / Finance lead; Head of Ops; Sales / GTM lead; Marketing lead; Product / Engineering lead; Other |
+| 3 | `buyer_intent` | What brought you here today? | card pills (icon + subtitle) | Understand AI readiness; Capture senior knowledge before someone leaves; Make Claude actually useful for the team; Something else |
+| 4 | `verbatim_pain` | Anything specific been frustrating? (Optional) | textarea | (free text) |
+| 5 | `depth` | How deep should the search go? | plain pills | Standard — top 10–15 sources; Deep — broader sweep |
 
-### 2c. Argument pre-seed
+Pre-select Q5's `Standard` pill (matches the spec's default rendering pattern).
+
+**Step 3 — Render**:
+
+```
+mcp__visualize__show_widget({html: "<elicitation HTML built per the spec>"})
+```
+
+**Step 4 — Read the submission**:
+
+```
+mcp__cowork__read_widget_context()
+```
+
+The response arrives as a single-line message per the spec: `Discovery details — Company: Acme · Your role: Founder / CEO · Brought you here: Understand AI readiness · Frustrating: Sales reps don't update HubSpot · Search depth: Standard`. Parse fields by their humanized labels (the spec maps `data-name` → sentence-case label).
+
+If the user clicked Skip with `company_name` empty, apply the empty-response contract — log `Phase 2 returned empty — aborting before any side effects` and exit. No subagent dispatch.
+
+### 2c. Fallback when elicitation unavailable (Claude Code, headless)
+
+If `mcp__visualize__show_widget` is NOT in the tool list:
+
+- Fall back to sequential `AskUserQuestion` calls — five questions in field order. Map the elicitation pill options 1:1 to AskUserQuestion options.
+- Each call applies the empty-response contract EXCEPT Q4 (`verbatim_pain`), where empty = skip = `null`.
+
+### 2d. Argument pre-seed
 
 If `$ARGUMENTS` contains:
 
-- `depth:standard` or `depth:deep` — pre-seed `depth`; skip the corresponding question in 2b.
-- `role:<value>` — pre-seed `user_role`; skip that question. Valid values: `founder`, `cfo`, `ops`, `sales`, `marketing`, `product`, `other`.
+- `depth:standard` or `depth:deep` — pre-seed `depth`; skip the corresponding field/question.
+- `role:<value>` — pre-seed `user_role`; skip that field/question. Valid values: `founder`, `cfo`, `ops`, `sales`, `marketing`, `product`, `other`.
 
-Pre-seeded fields skip the empty-response contract.
+Pre-seeded fields skip the empty-response contract. If all fields are pre-seeded by args + settings, skip Phase 2b/2c entirely.
 
-### 2d. Build discovery_scope
+### 2e. Build discovery_scope
 
-After Phase 2a (settings) or Phase 2b (scope confirmation) completes, build:
+After Phase 2a (settings hit) or Phase 2b/2c (elicitation/fallback) completes, build:
 
 ```jsonc
 {
@@ -99,7 +125,7 @@ After Phase 2a (settings) or Phase 2b (scope confirmation) completes, build:
   "buyer_intent": "ai-readiness",
   "verbatim_pain": "Sales reps don't update HubSpot.",
   "depth": "standard",
-  "today_date": "2026-04-29",
+  "today_date": "2026-05-01",
   "user_email": "<from session>",
   "known_locations": []  // optional, from settings file
 }
@@ -376,7 +402,7 @@ Pass all six — ship. Fail one — rewrite.
   > Your connectors didn't surface enough signal for a useful read. Connect more tools — or run `/kb-build` to capture knowledge directly from your team via interview.
 - **Render script (`render-report.py`) fails:** save the markdown anyway. Surface the markdown path and the stderr. Skip Phase 5c HTML and continue with markdown-only display.
 - **`mcp__cowork__create_artifact` unavailable:** fall back to inline markdown code block (Phase 5c).
-- **Cowork inferred elicitation unavailable** (Claude Code, headless runs, host without the visualize MCP loaded): the Phase 2b prose renders as a single chat block — the user replies in natural language, parser handles the same field shape.
+- **`mcp__visualize__show_widget` unavailable** (Claude Code, headless runs, host without the visualize MCP loaded): fall back to sequential `AskUserQuestion` per Phase 2c. Every elicitation field maps 1:1 to an AskUserQuestion call.
 - **`mcp__cowork__request_cowork_directory` unavailable AND user picked Option 1:** print the sandbox path and tell the user to copy manually:
   > I can't request drive access in this session. Copy the report from `{HTML_PATH}` if you want a local copy.
 
