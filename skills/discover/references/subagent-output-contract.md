@@ -585,6 +585,7 @@ The master `discover` skill produces this structured JSON at Phase 5a. Both rend
 - **`citations[]`** (v3.0, audit-web-search + per-finding) — keyed by `finding_id`. Tier ratings 1-5.
 - **`resume_trace[]`** (v3.0, master gap-detection) — every resume call the master made: round, subagent, session_id, follow-up prompt, refined finding summary, timing.
 - **`raw_subagent_dumps{}`** (v3.0) — full per-lane JSON returns (the load-bearing addition for `/kb-build --from-discover` — lets mining subagents see EVERY finding, not just synthesized Top 3 + losing_time + dimensions).
+- **`lane_health[]`** (v3.0, QA-4) — connector-failure / inference-only banner. When ANY subagent returns `dimension_scores` with `score: null` OR `score: 0` AND its coverage_gaps mention "connector not accessible" / "blocked" / "not invoked" / "no records", emit a `lane_health[]` entry. Each entry: `{lane, status, headline, impact, fix}`. Status enum: `no_connector` | `blocked` | `inference_only` | `partial`. Renderers surface this as a prominent banner at the top of the deck (before the answer) AND immediately under the title in the markdown. **Hard rule:** lane_health entries SUPERSEDE silently-buried coverage_gaps for unreachable connectors. The user must see this before drawing conclusions from the audit.
 
 ### Behavioral promotion rule
 

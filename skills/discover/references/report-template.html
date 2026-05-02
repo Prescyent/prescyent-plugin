@@ -241,6 +241,83 @@
   .cta .arrow { transition: transform 0.2s ease; }
   .cta:hover .arrow { transform: translateX(3px); }
 
+  /* ---------- Lane health banner (v0.8 QA-4) ---------- */
+  .lane-health {
+    margin: 32px 0 8px 0;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, rgba(251,113,133,0.08), rgba(251,191,36,0.05));
+    border: 1px solid rgba(251,113,133,0.30);
+    border-left: 4px solid #fb7185;
+    border-radius: 12px;
+  }
+  .lane-health-eyebrow {
+    color: #fb7185;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .lane-health-title {
+    color: var(--text);
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+  }
+  .lane-health-subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin: 0 0 20px 0;
+  }
+  .lane-health-rows {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .lane-health-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    border-left: 3px solid #fb7185;
+  }
+  .lane-health-row.lane-health-warn {
+    border-left-color: #fbbf24;
+  }
+  .lane-health-status {
+    color: #fb7185;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    align-self: start;
+    padding-top: 2px;
+  }
+  .lane-health-row.lane-health-warn .lane-health-status {
+    color: #fbbf24;
+  }
+  .lane-health-headline {
+    color: var(--text);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .lane-health-impact {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+  .lane-health-fix {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .lane-health-fix strong { color: var(--text); }
+  @media (max-width: 600px) {
+    .lane-health-row { grid-template-columns: 1fr; gap: 6px; }
+  }
+
   /* ---------- Vocabulary primer (v0.8 EM-52) ---------- */
   .vocabulary-subtitle {
     color: var(--text-dim);
@@ -756,6 +833,23 @@
   #signoff a { color: var(--accent-cyan); text-decoration: none; }
   #signoff a:hover { text-decoration: underline; }
 
+  /* Override #signoff a cascade for CTA buttons in the footer — without this,
+     the .cta.primary text is the same cyan as the button background and reads
+     as a blank cyan blob. v0.8 EM-50 contrast fix needs this companion rule. */
+  #signoff a.cta.primary,
+  .cta.primary,
+  .cta.primary:visited,
+  .cta.primary:link {
+    color: #000 !important;
+  }
+  #signoff a.cta.primary:hover,
+  .cta.primary:hover {
+    color: #000 !important;
+  }
+  .cta.primary .icon { stroke: #000; }
+  #signoff a.cta.ghost { color: var(--text); }
+  #signoff a.cta.ghost:hover { color: var(--accent-cyan); }
+
   /* ---------- Reveal animation ---------- */
   .reveal {
     opacity: 0;
@@ -776,6 +870,8 @@
 <div class="container">
 
 {{HERO_HTML}}
+
+{{LANE_HEALTH_HTML}}
 
 {{ANSWER_HTML}}
 

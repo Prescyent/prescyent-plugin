@@ -15,7 +15,7 @@ The canonical Phase 1 orientation message for `/discover`. Voice-gauntlet-passed
 >
 > **What to know.** I'll request access to a few tools as I go — Terminal and Python Launcher to compute counts and render your HTML report, plus read access on whichever connectors you've already authorized. You can review each prompt and decline anything that feels off. Nothing leaves your machine.
 >
-> Once you submit the scope form, four agents fan out in parallel — that's the long part. Let me check your settings and ask a few quick scope questions before I kick off.
+> Once you submit the scope form, several agents fan out in parallel — that's the long part. Let me check your settings and ask a few quick scope questions before I kick off.
 
 ## Why this message
 

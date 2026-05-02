@@ -275,6 +275,23 @@
     }
   ],
 
+  "lane_health": [
+    {
+      "lane": "audit-systems",
+      "status": "no_connector",
+      "headline": "HubSpot connector wasn't reachable",
+      "impact": "GTM/Systems findings are inferred from verbatim pain + industry baselines for sub-10-person merchant services firms. No record-level hygiene metrics computed.",
+      "fix": "Connect HubSpot in your Cowork session settings and re-run /discover for a real read."
+    },
+    {
+      "lane": "audit-drive",
+      "status": "blocked",
+      "headline": "Google Drive connector was blocked",
+      "impact": "Drive findings are limited to inference. Folder taxonomy, doctrine pages, and voice samples weren't accessible.",
+      "fix": "Connect Google Drive in Cowork settings (or grant the existing connector additional scopes) and re-run /discover."
+    }
+  ],
+
   "vocabulary_primer": {
     "knowledge_base": "A single source on your drive every AI tool reads from.",
     "plugin": "A cookbook of capabilities tailored to your company.",

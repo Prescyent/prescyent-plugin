@@ -136,6 +136,34 @@ def _section_title_block(data: dict) -> list[str]:
     return [f"# {company}", f"**AI Readiness Audit · {audit_date} · Depth: {depth}**", ""]
 
 
+def _section_lane_health(data: dict) -> list[str]:
+    """v0.8 QA-4 — surface connector failures + inference-only lanes immediately
+    under the title, BEFORE the executive brief. If a buyer reads only the top
+    of the markdown, they need to know which lanes ran without their data."""
+    lane_health = data.get("lane_health", []) or []
+    if not lane_health:
+        return []
+    out = ["## ⚠ Heads up — read this before the findings", ""]
+    out.append("Some lanes ran without their data source. Findings below those lanes are inference-only — connect the missing tools and re-run for a real read.")
+    out.append("")
+    for lh in lane_health:
+        status = lh.get("status", "")
+        headline = lh.get("headline", "")
+        impact = lh.get("impact", "")
+        fix = lh.get("fix", "")
+        status_label = {
+            "no_connector": "**No connector**",
+            "blocked": "**Blocked**",
+            "inference_only": "**Inference only**",
+            "partial": "**Partial**",
+        }.get(status, f"**{status}**")
+        out.append(f"- {status_label} — **{headline}**")
+        out.append(f"  - {impact}")
+        out.append(f"  - **Fix:** {fix}")
+    out.append("")
+    return out
+
+
 def _section_tyler_brief(data: dict) -> list[str]:
     brief = data.get("tyler_brief", "")
     if not brief:
@@ -892,6 +920,7 @@ def render(data: dict) -> str:
     # Header sections
     blocks.append(_frontmatter(data))
     blocks.append(_section_title_block(data))
+    blocks.append(_section_lane_health(data))
     blocks.append(_section_tyler_brief(data))
     blocks.append(_section_answer(data))
     blocks.append(_section_top_3(data))

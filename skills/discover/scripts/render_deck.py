@@ -110,6 +110,53 @@ def build_hero(data: dict) -> str:
     )
 
 
+def build_lane_health_banner(data: dict) -> str:
+    """v0.8 QA-4 — surface connector failures + inference-only lanes prominently.
+
+    When subagents fell back to inference because their connector wasn't reachable
+    OR returned 0 records on a connector that was supposed to be active, the user
+    needs to see this before drawing conclusions from the audit.
+    """
+    lane_health = data.get("lane_health", []) or []
+    if not lane_health:
+        return ""
+    rows = []
+    for lh in lane_health:
+        status = lh.get("status", "")
+        headline = esc(lh.get("headline", ""))
+        impact = esc(lh.get("impact", ""))
+        fix = esc(lh.get("fix", ""))
+        # Status colors: no_connector + blocked = critical (rose); inference_only = amber
+        status_class = "lane-health-critical" if status in ("no_connector", "blocked") else "lane-health-warn"
+        status_label = {
+            "no_connector": "No connector",
+            "blocked": "Blocked",
+            "inference_only": "Inference only",
+            "partial": "Partial",
+        }.get(status, status.replace("_", " ").capitalize())
+        rows.append(
+            f'<div class="lane-health-row {status_class}">'
+            f'<div class="lane-health-status">{esc(status_label)}</div>'
+            '<div class="lane-health-body">'
+            f'<div class="lane-health-headline">{headline}</div>'
+            f'<div class="lane-health-impact">{impact}</div>'
+            f'<div class="lane-health-fix"><strong>Fix:</strong> {fix}</div>'
+            "</div>"
+            "</div>"
+        )
+    return (
+        '<section class="lane-health reveal">'
+        '<div class="lane-health-eyebrow">⚠ Heads up — read this before the findings</div>'
+        '<h2 class="lane-health-title">Some lanes ran without their data source</h2>'
+        '<p class="lane-health-subtitle">'
+        "These lanes either couldn't reach a connector or returned no records. "
+        "Findings below those lanes are inference-only — connect the missing tools and re-run for a real read."
+        "</p>"
+        f'<div class="lane-health-rows">{"".join(rows)}</div>'
+        "</section>"
+    )
+
+
 def _score_bar_svg(value: int | float, denominator: int, accent: str = "purple") -> str:
     """Inline SVG horizontal bar for a score. Pure SVG, no JS."""
     try:
@@ -658,6 +705,7 @@ def render(data: dict, template: str) -> str:
     out = out.replace("{{COMPANY_NAME}}", esc(company))
     out = out.replace("{{OG_DESCRIPTION}}", esc(og_desc))
     out = out.replace("{{HERO_HTML}}", build_hero(data))
+    out = out.replace("{{LANE_HEALTH_HTML}}", build_lane_health_banner(data))
     out = out.replace("{{ANSWER_HTML}}", build_answer(data))
     out = out.replace("{{HERO_CTA_HTML}}", build_hero_cta(data))
     out = out.replace("{{WINS_HTML}}", build_wins(data))

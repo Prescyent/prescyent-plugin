@@ -347,6 +347,28 @@ Required fields (v3.0 — see contract spec for full list including v0.8 additio
 - `tyler_brief` — 100-word executive brief.
 
 **Web-search entity-aware language (v0.8):** When `audit-web-search` produces an `entity_map` with >1 entity, the synthesis explicitly names the secondary entities in `the_answer` / `wins_top_3` / `roadmap` body — e.g. *"For Baseline + JetPay — wire pipeline reports separately"* — instead of treating the company as a single monolith. Hard rule when entity_map has >1 entry.
+
+**Lane health banner (v0.8 QA-4 — LOAD-BEARING).** Before writing any synthesis copy, scan every subagent return for connector-failure signals:
+
+- `dimension_scores.*.score == null` AND `dimension_scores.*.confidence == "Low"` AND `coverage_gaps[].gap` mentions "connector not accessible" / "no MCP" / "blocked" / "not invoked" / "no records analyzed"
+- `records_analyzed.total_records == 0` AND the connector was supposed to be active
+- Subagent's `_trace[]` shows zero successful tool calls against the expected connector category
+
+For each lane that triggers, emit a `lane_health[]` entry:
+
+```json
+{
+  "lane": "audit-systems",
+  "status": "no_connector",
+  "headline": "HubSpot connector wasn't reachable",
+  "impact": "GTM/Systems findings are inferred from your verbatim pain + industry baselines for sub-10-person merchant services firms. No record-level hygiene metrics computed.",
+  "fix": "Connect HubSpot in your Cowork session settings and re-run /discover for a real read."
+}
+```
+
+Status enum: `no_connector` (connector not in tool surface) | `blocked` (auth/permission denied) | `inference_only` (subagent ran but fell back to generic patterns) | `partial` (subagent got partial data — e.g., 1 of 4 quarters succeeded).
+
+**Synthesis voice with active lane_health entries:** any wins_top_3 / losing_time / dimensions content that derives from a lane with active lane_health MUST carry an inference hedge in `confidence` (downgrade to Low) and the rationale field should mention it. Don't bury connector failures in the appendix — the banner is mandatory whenever a lane fell back.
 - `coverage` — 4 entries (one per audit category) with `{category, platforms, records_analyzed, confidence}`.
 - `dimensions` — 4 entries (one per audit category) with `{title, score, findings[]}`. Each finding `{severity, surprise, headline, recommendation}`.
 - `conflicts` — list of `{topic, summary, recommendation, needed_decision}`.
@@ -487,6 +509,12 @@ If `mcp__cowork__create_artifact` is NOT available (Claude Code, headless), fall
 **Closing chat copy (v0.8 — EM-41/EM-47/EM-53 cleanup):**
 
 > Your custom audit page is above. Skim the 3 wins and the roadmap — that's where the value is.
+
+**Lane-health pre-amble (v0.8 QA-4).** If the synthesizer emitted `lane_health[]` entries (one or more lanes ran without their data source), prepend the closing chat copy with a heads-up BEFORE the artifact-render line. Concrete example for the v0.8 Baseline run that surfaced HubSpot + Drive failures:
+
+> Heads up before you read the deck — two lanes ran without their data source: HubSpot wasn't reachable, and Google Drive was blocked. Findings on those lanes are inference-only. Connect both and re-run for a real read.
+
+The user sees this BEFORE the deck renders so they don't draw conclusions from inference-only findings. The same warning lives at the top of the deck (banner) and at the top of the markdown (immediately under the title).
 
 That's it. Do NOT emit:
 - The "saved to {MD_PATH} if you want to forward it" line (EM-41 — Cowork's create_artifact emits its own link to the markdown; ours is redundant).
