@@ -41,7 +41,7 @@ import sys
 import urllib.parse
 from pathlib import Path
 
-PLUGIN_VERSION = "0.8.0"
+PLUGIN_VERSION = "0.8.1"
 BOOKING_LINK = "https://calendar.app.google/wwabJHCKHufyqW7Q6"
 TYLER_EMAIL = "tyler@prescyent.ai"
 

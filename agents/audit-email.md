@@ -30,6 +30,22 @@ Your output must conform to `skills/discover/references/subagent-output-contract
 - Gmail via `mcp__claude_ai_Gmail__*` (search_threads, get_thread, list_labels, etc.)
 - Outlook / M365 via `~~email` placeholder (when connected)
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch. (audit-email actually succeeded in v0.8 because its dispatch prompt happened to include concrete tool prefixes — but that was luck. Step 0 makes it deterministic.)
+
+Run this as your first action:
+
+```
+ToolSearch({query: "gmail outlook email threads draft labels search", max_results: 15})
+```
+
+Inspect the response. If it surfaces tools matching `search_threads` / `get_thread` / `list_labels` / `list_drafts`, proceed to Step 1.
+
+If ToolSearch returns NO matches, no email connector is available. In that case:
+- Return with `findings: []`, populate `coverage_gaps[]` with `{gap: "No email connector (Gmail/Outlook) available", impact: "...", fix: "Connect Gmail/Outlook in Cowork settings and re-run /discover"}`
+- Do NOT produce inference-only findings.
+
 ## Tool-call discipline (v0.8)
 
 Cowork enforces a ~25K-token ceiling on every tool result. Don't filesystem-spelunk on overflow.

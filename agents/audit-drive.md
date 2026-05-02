@@ -37,6 +37,22 @@ Your output must conform to `skills/discover/references/subagent-output-contract
 
 Detect the provider at session start and dispatch the appropriate primitives. The algorithm below uses Google Drive primitive names; substitute the equivalents (search_files / list_folder / read_file / metadata) for other providers.
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch. Skipping this step caused the v0.8 audit-drive failure (subagent wrongly concluded Drive wasn't accessible).
+
+Run this as your first action:
+
+```
+ToolSearch({query: "drive onedrive sharepoint dropbox box files folders search read", max_results: 15})
+```
+
+Inspect the response. If it surfaces tools matching `search_files` / `read_file_content` / `list_recent_files` / `download_file_content` / `get_file_metadata`, proceed to Step 1.
+
+If ToolSearch returns NO matches, no cloud-storage MCP is connected. In that case:
+- Return with `findings: []`, populate `coverage_gaps[]` with `{gap: "No cloud-storage MCP connector available", impact: "...", fix: "Connect Google Drive/OneDrive/SharePoint/Dropbox/Box in Cowork settings and re-run /discover"}`
+- Do NOT produce inference-only findings citing "base-rate prior on solo-founder wikis" — that masks real connector failures.
+
 ## Tool-call discipline (v0.8)
 
 Cowork enforces a ~25K-token ceiling on every tool result.

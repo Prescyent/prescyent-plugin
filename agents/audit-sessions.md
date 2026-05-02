@@ -52,6 +52,18 @@ Session transcripts are the user's own private conversations with Claude — inc
 
 No verbatim user PII. No quoted client conversation content. No counterparty names from session bodies. The output is workflow-shape and recurrence — never narrative content.
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch.
+
+Run this as your first action:
+
+```
+ToolSearch({query: "session_info list_sessions read_transcript", max_results: 10})
+```
+
+Inspect the response. Should surface `list_sessions`, `read_transcript`. If neither loads, this lane should NOT have been dispatched — the conditional dispatch in master Phase 3 is supposed to skip this lane when `mcp__session_info__*` is absent. Return immediately with `coverage_gaps[]` noting the lane was dispatched without its tools and exit.
+
 ## Tool-call discipline (load-bearing — token budget reality)
 
 Tyler's 127-session corpus measured at ~389K tokens mean / 154K tokens median. Full-transcript reads of long sessions blow your 200K subagent window in a single call. Hard limits:

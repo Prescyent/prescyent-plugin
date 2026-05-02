@@ -46,6 +46,20 @@ The master skill passes one of three modes based on the user's Phase 2c Q6 depth
 
 Read the mode from the prompt. If unspecified, default to `medium`.
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch.
+
+Run this as your first action — ONE call covers both Fathom and Granola:
+
+```
+ToolSearch({query: "fathom granola meeting transcript summary recordings", max_results: 15})
+```
+
+Inspect the response. Fathom: `list_meetings` / `get_meeting_summary` / `get_meeting_transcript` / `search_meetings`. Granola: `list_meetings` / `get_meetings` / `get_meeting_transcript` / `query_granola_meetings`.
+
+If neither family loads, no meeting-recording MCP is connected — return findings empty, mark coverage_gap. Do NOT produce inference-only findings.
+
 ## Tool-call discipline (v0.8)
 
 Cowork enforces a ~25K-token ceiling on every tool result.

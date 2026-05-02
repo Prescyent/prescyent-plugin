@@ -35,6 +35,24 @@ From `CONNECTORS.md`:
 
 The master skill passes you the specific platform mappings in the prompt (e.g., `~~crm → HubSpot`). If a category isn't mapped, skip it and flag it in `coverage_gaps`.
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch. If you skip this step, your tool calls will fail to resolve and you'll wrongly conclude the connector isn't available — that was the v0.8 failure mode this step exists to prevent.
+
+Run this as your first action:
+
+```
+ToolSearch({query: "hubspot crm deals contacts pipeline", max_results: 15})
+```
+
+Inspect the response. If it surfaces tools matching `*hubspot*` / `*crm*` / `search_crm_objects` / `get_crm_objects` / `manage_crm_objects` / `get_user_details` / `get_organization_details`, you're ready — proceed to Phase 1.
+
+If ToolSearch returns NO matches, the CRM connector genuinely isn't connected in this session. In that case:
+- Return immediately with `findings: []`, populate `coverage_gaps[]` with `{gap: "No CRM/HubSpot connector available", impact: "...", fix: "Connect HubSpot in Cowork settings and re-run /discover"}`
+- Do NOT produce inference-only findings citing "industry baselines" or "verbatim pain only" — that masks real connector failures.
+
+For project-tracker (Linear/Jira/Asana) and ticketing (Zendesk/Intercom), repeat ToolSearch with `query: "linear jira asana ticket"` if your master prompt indicates those connectors should be available.
+
 ## Tool-call discipline (v0.8)
 
 Cowork enforces a ~25K-token ceiling on every tool result. Subagents that overrun get an error pointing at a saved-to-disk fallback file. Don't filesystem-spelunk on overflow — re-issue the call with tighter parameters. Hard limits per tool family:

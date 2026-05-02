@@ -32,6 +32,20 @@ Your output must conform to `skills/discover/references/subagent-output-contract
 
 ZoomInfo when present (the user's connector inventory will tell us). Graceful fallback to WebSearch + WebFetch when not.
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch.
+
+Run this as your first action:
+
+```
+ToolSearch({query: "WebSearch WebFetch zoominfo company research", max_results: 15})
+```
+
+Inspect the response. Must surface `WebSearch` + `WebFetch` (always available). Optional surfaces: ZoomInfo `search_companies` / `account_research` / `enrich_companies` / `enrich_news` / `find_similar_companies`.
+
+If WebSearch + WebFetch both fail to load (extremely unlikely), the lane can't proceed — return `coverage_gaps[]` noting the failure. ZoomInfo is opt-in: if it loads, use it for entity enrichment alongside WebSearch; if not, WebSearch + WebFetch alone are sufficient.
+
 ## Tool-call discipline (v0.8)
 
 - **Web query budget: 60 queries per audit run** across all 5 phases. Distribution: ~10 Phase 1 (entity expansion), ~25 Phase 2 (per-entity authority sweep), 0 Phase 3 (uses WebFetch on already-collected URLs), ~25 Phase 4 (recent news + funding + hiring + earnings). Phase 5 is synthesis only.

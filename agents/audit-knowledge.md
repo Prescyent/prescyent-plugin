@@ -31,6 +31,22 @@ You are one of up to nine parallel subagents (v0.8). Stay in lane.
 
 Cloud storage (Google Drive, OneDrive, SharePoint, Box, Dropbox) is now `audit-drive`'s lane. Don't read drive primitives.
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch. Skipping this step caused the v0.8 audit-systems / audit-drive / audit-comms failure (subagents wrongly concluding connectors weren't available).
+
+Run this as your first action:
+
+```
+ToolSearch({query: "notion confluence wiki search fetch pages", max_results: 15})
+```
+
+Inspect the response. If it surfaces tools matching `notion-search` / `notion-fetch` / `notion-get-users` / `notion-get-teams` (or Confluence equivalents), proceed to Phase 1.
+
+If ToolSearch returns NO matches, the wiki connector genuinely isn't connected. In that case:
+- Return with `findings: []`, populate `coverage_gaps[]` with `{gap: "No wiki connector (Notion/Confluence/etc) available", impact: "...", fix: "Connect Notion in Cowork settings and re-run /discover"}`
+- Do NOT produce inference-only findings citing "verbatim pain only" — that masks real connector failures.
+
 ## Tool-call discipline (v0.8)
 
 Cowork enforces a ~25K-token ceiling on every tool result. Don't filesystem-spelunk on overflow — re-issue the call with tighter parameters. Hard limits:

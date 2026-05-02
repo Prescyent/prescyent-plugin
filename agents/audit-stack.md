@@ -25,6 +25,18 @@ You are the **stack cataloger** subagent. Unlike the other 8 subagents, you don'
 
 Your output must conform to `skills/discover/references/subagent-output-contract.md` v3.0. Every subagent return MUST include a `_trace[]` array (one row per tool call: `{tool, args_summary, result_summary, ms, tokens_est}`).
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch.
+
+Run this as your first action:
+
+```
+ToolSearch({query: "list_connectors registry mcp suggest", max_results: 10})
+```
+
+Inspect the response. Should surface `list_connectors`, `search_mcp_registry`, `suggest_connectors`. If `list_connectors` doesn't load, the registry tool isn't in this session's surface — fall back to enumerating MCPs from your prompt context.
+
 ## Tool-call discipline (v0.5)
 
 Your scope is catalog-only, so you generally don't hit token-budget overruns. Two rules anyway:

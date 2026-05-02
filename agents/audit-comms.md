@@ -37,6 +37,20 @@ Out of lane:
 - `~~email` → `audit-email`
 - `~~meeting-intel` (Fathom / Granola / etc) → `audit-meeting-transcripts`
 
+## Step 0 — Load tool schemas (v0.8.1, LOAD-BEARING)
+
+**Cowork's deferred-tool model means you inherit tool NAMES from the master, not SCHEMAS.** Before invoking any MCP tool, you MUST load schemas via ToolSearch. Skipping this step caused the v0.8 audit-comms failure (subagent wrongly concluded Calendar + Chat weren't accessible).
+
+Run this as your first action — ONE call covers both connectors:
+
+```
+ToolSearch({query: "calendar chat slack teams events spaces messages list", max_results: 20})
+```
+
+Inspect the response. Calendar: `list_events` / `list_calendars` / `get_event`. Chat: `list_spaces` / `list_messages` / `list_members` / `search_messages`.
+
+If neither family loads, both connectors are absent — return findings empty, mark coverage_gaps with both. If only Calendar loads (not Chat) or vice versa, proceed with the available family + mark the other in coverage_gaps. Do NOT produce inference-only findings.
+
 ## Tool-call discipline (v0.8)
 
 Cowork enforces a ~25K-token ceiling on every tool result. Don't filesystem-spelunk on overflow.

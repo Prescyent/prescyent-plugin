@@ -117,7 +117,9 @@ After Q6 submission, emit a footnote in chat: *"Heads up: Very-deep reads 10× m
 
 For Q1, pre-select the highest-confidence pre-detected candidate if Phase 2b found one. If multiple candidates emerged, render them all as un-selected pills so the user picks.
 
-For Q3, the connector list comes from a low-cost lookup at form-build time — call `mcp__mcp-registry__list_connectors` ONCE during HTML construction (not as a separate UI render). Use the returned list to populate Q3's pills with friendly names + subtitles. Default state: every card starts selected. **This is the only call to `list_connectors` in the flow** — its UI side effect lands inside the elicitation form, not as a separate panel.
+For Q3, the connector list comes from a low-cost lookup at form-build time — call `mcp__mcp-registry__list_connectors` ONCE during HTML construction. **v0.8.1 (QA-Q7) fix:** iterate the response and create one pill per `connected: true` entry. Map each entry's `name` field directly to the pill label, with the `description` field (when present) as the subtitle. **Do NOT filter by tool-prefix recognition** — the v0.8 dogfood dropped Excalidraw + Firebase Hosting because Cowork-Claude's deferred-tool registry uses UUID prefixes that don't match the friendly names. If a connector is irrelevant for the audit (e.g., Excalidraw), the user can deselect it. Better to over-show than under-show.
+
+Default state: every pill starts selected. **This is the only call to `list_connectors` in the flow** — its UI side effect lands inside the elicitation form, not as a separate panel.
 
 If `mcp__mcp-registry__list_connectors` is unavailable, fall back to: emit Q3 as a textarea with placeholder "Which platforms should I search? (Drive, HubSpot, Notion, etc.)".
 
@@ -186,6 +188,60 @@ After Phase 2a (settings hit) or Phase 2c/2d (elicitation/fallback) completes, b
 
 ---
 
+## Phase 2g — Connector pre-flight gate (v0.8.1 NEW — LOAD-BEARING)
+
+**The problem this solves:** v0.8 dogfood surfaced 3 of 9 lanes silently failing — audit-systems / audit-drive / audit-comms each burned ~30K tokens producing inference-only fallback findings because their subagent didn't successfully reach a connector. Cowork-Claude's introspection diagnosed it as a deferred-tool schema-loading gap (Step 0 in each agent file is the agent-side fix), but we ALSO need a master-side pre-flight to catch genuine connector outages (auth expired, scope decay, MCP server down) BEFORE we burn tokens on a doomed dispatch.
+
+**Run probes in parallel** — single message, multiple cheap MCP tool calls. Each probe is the lightest call that proves the connector is alive AND has the right scopes.
+
+| Connector category | Probe call | Pass | Fail |
+|---|---|---|---|
+| HubSpot (CRM) | `get_user_details` (no params) | Response contains `userInformation.email` AND no `REQUIRES_REAUTHORIZATION` flag on the scopes the audit needs | 401 / scope error → mark audit-systems DEGRADED with specific scope ask |
+| Drive | `list_recent_files(pageSize: 1)` | Response is array (even if empty) | 401 / not-connected → mark audit-drive DEGRADED |
+| Gmail | `list_labels()` | Returns array including system labels (INBOX, SENT) | Auth error → mark audit-email DEGRADED |
+| Notion | `notion-get-users()` | Returns user list | Auth error → mark audit-knowledge DEGRADED |
+| Calendar | `list_calendars(pageSize: 1)` | Returns at least one calendar | Auth error → mark audit-comms (calendar half) DEGRADED |
+| Chat (Google Chat / Slack) | `list_spaces(pageSize: 1)` | Returns array, even empty | Auth error → mark audit-comms (chat half) DEGRADED |
+| Fathom | `get_identity()` | Returns `{name, email}` | Auth error → mark audit-meeting-transcripts (fathom half) DEGRADED |
+| Granola | `get_account_info()` | Returns user account JSON | Auth error → mark audit-meeting-transcripts (granola half) DEGRADED |
+| ZoomInfo (optional) | `search_companies(query: 'a', pageSize: 1)` OR skip if not connected | Returns array | Quota / auth → mark audit-web-search ZoomInfo-side DEGRADED, WebSearch still OK |
+| Cowork sessions | `list_sessions(limit: 1)` | Returns array | Tool absent → audit-sessions skipped (already conditional in Phase 3) |
+
+**Probe budget:** ~10 parallel calls, ~5K tokens, ~3-5 sec wall-clock. Negligible vs the ~92K we'd otherwise burn on a doomed lane.
+
+### Pre-flight outcomes
+
+After probes return, classify each lane as:
+
+- **HEALTHY** — probe passed, dispatch lane normally
+- **DEGRADED** — probe failed; emit a `lane_health[]` entry up front, dispatch the lane anyway with a "best-effort" note (the subagent's Step 0 ToolSearch will redundantly catch this)
+- **ABSENT** — connector entirely missing; do NOT dispatch the lane (saves the doomed-fallback tokens), emit `lane_health[]` entry with `status: no_connector`
+
+### User-facing surfacing
+
+If `HEALTHY` lane count < 6 of 9, surface a coverage warning to the user BEFORE Phase 3 dispatch:
+
+> Heads up — N of 9 audit lanes can't reach their data right now:
+> - HubSpot: REQUIRES_REAUTHORIZATION on `crm.deals.read`. Reconnect at Cowork settings.
+> - Google Drive: connector blocked. Check Cowork connector settings.
+> - [other failed lanes]
+>
+> You can:
+> 1. Reconnect and re-run /discover (faster path to a complete audit)
+> 2. Proceed with the {N} healthy lanes (faster but the report will have gaps)
+>
+> What would you like?
+
+If user picks (1), abort cleanly — no subagent dispatch. If user picks (2), dispatch only the HEALTHY + DEGRADED lanes (DEGRADED still gets dispatched because Step 0 in the agent will probe again — defense in depth).
+
+If `HEALTHY` count >= 6 of 9, proceed silently to Phase 3 — the lane_health[] banner will surface the failures in the deck without blocking dispatch.
+
+### Pre-flight cache
+
+Cache the probe results in working state. The synthesizer at Phase 5a reads `lane_health[]` from the pre-flight + any additions from the subagents themselves (e.g., subagent ran but its Step 0 ToolSearch returned no matches → adds a `lane_health` entry). Master de-dupes.
+
+---
+
 ## Phase 3 — Subagent fan-out (v0.8 — 9 lanes)
 
 Dispatch the audit subagents IN PARALLEL via the `Task` tool. **Single message, all subagent calls together.** Do not serialize. Always dispatch the full set — each subagent discovers what's available in its own category and surfaces gaps in `coverage_gaps[]`.
@@ -195,6 +251,34 @@ Dispatch the audit subagents IN PARALLEL via the `Task` tool. **Single message, 
 **Conditional 9th lane:** `audit-sessions` runs only when `mcp__session_info__list_sessions` is in the tool list. The other 8 always dispatch.
 
 For each subagent, the Task `prompt` includes verbatim:
+
+- **STEP 0 directive (v0.8.1, LOAD-BEARING)** — the FIRST line of every subagent prompt must be a hard instruction to call ToolSearch with category-specific keywords BEFORE any other action. This is belt-and-suspenders alongside the agent file's Step 0 section. Without this, the dispatch prompt's lane-specific category mapping (which references tools by short name like "search_crm_objects") doesn't resolve schemas, and the subagent silently falls back to inference. Per-lane STEP 0 keyword queries:
+
+| Subagent | STEP 0 ToolSearch query |
+|---|---|
+| audit-systems | `"hubspot crm deals contacts pipeline"` |
+| audit-knowledge | `"notion confluence wiki search fetch pages"` |
+| audit-drive | `"drive onedrive sharepoint dropbox box files folders search read"` |
+| audit-email | `"gmail outlook email threads draft labels search"` |
+| audit-comms | `"calendar chat slack teams events spaces messages list"` |
+| audit-meeting-transcripts | `"fathom granola meeting transcript summary recordings"` |
+| audit-stack | `"list_connectors registry mcp suggest"` |
+| audit-sessions | `"session_info list_sessions read_transcript"` |
+| audit-web-search | `"WebSearch WebFetch zoominfo company research"` |
+
+Wrap the directive verbatim:
+
+```
+STEP 0 (CRITICAL — DO NOT SKIP, DO NOT REASON BEFORE THIS):
+Before reading the rest of this prompt or doing anything else, call:
+
+  ToolSearch({query: "<lane-specific keyword query>", max_results: 15})
+
+Inspect the response. If it surfaces tools matching your category, proceed
+to the algorithm below. If it returns NO matches, the connector for this
+lane isn't available in this session — return immediately with findings
+empty and coverage_gaps populated. Do NOT produce inference-only findings.
+```
 
 - `company_name`, `today_date`, `user_role`, `verbatim_pain`, `depth` from `discovery_scope`.
 - The category slice it owns (see mapping below).
