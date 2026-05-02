@@ -186,6 +186,19 @@
     color: var(--text-dim);
     line-height: 1.45;
   }
+  .score-bar {
+    display: block;
+    width: 100%;
+    height: 8px;
+    margin: 0.6rem 0 0.6rem;
+  }
+  .score-bar.overall { height: 10px; margin-top: 0.7rem; }
+  .score-bar-track {
+    fill: rgba(255,255,255,0.06);
+  }
+  .score-bar-fill {
+    /* fill color set inline per cell */
+  }
 
   /* ---------- CTA rows ---------- */
   .cta-row {
@@ -396,6 +409,19 @@
     color: var(--accent-cyan);
     font-style: italic;
   }
+  .pain-row .hour-bar {
+    display: inline-block;
+    width: 90px;
+    height: 6px;
+    vertical-align: middle;
+    margin: 0 0.5rem;
+  }
+  .pain-row .hour-bar-track {
+    fill: rgba(255,255,255,0.06);
+  }
+  .pain-row .hour-bar-fill {
+    fill: var(--accent-rose);
+  }
   .pain-row .ai-fix::before {
     content: '→ AI fixes this with: ';
     font-style: normal;
@@ -404,6 +430,37 @@
   }
 
   /* ---------- Roadmap timeline ---------- */
+  .roadmap-gantt {
+    margin-bottom: 1.25rem;
+    padding: 1rem 0.5rem 0;
+  }
+  .gantt-track {
+    display: block;
+    width: 100%;
+    height: 60px;
+    overflow: visible;
+  }
+  .gantt-segment {
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+  }
+  .gantt-segment:hover { opacity: 1; }
+  .gantt-tick {
+    fill: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .gantt-title-label {
+    fill: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .gantt-chevron {
+    opacity: 0.6;
+  }
   .roadmap-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

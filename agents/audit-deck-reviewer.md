@@ -67,7 +67,8 @@ Return JSON only. No prose, no preamble. Single object:
     "roadmap_total_words": 245,
     "lanes_total_words": 95,
     "cta_count": 4,
-    "em_dash_count": 7
+    "em_dash_count": 7,
+    "svg_count": 6
   }
 }
 ```
@@ -137,6 +138,9 @@ More than 1 em-dash per 100 words in the visible body. AI-tell at scale.
 
 ### MISSING_FOOTER_LINK
 The signoff section doesn't contain BOTH `mailto:tyler@prescyent.ai` AND the canonical booking link `https://calendar.app.google/wwabJHCKHufyqW7Q6`.
+
+### MISSING_SVG_VISUAL (v0.7)
+Total `<svg ` tag count in the body is < 3. v0.7 ships visual dimensionality across three sections (roadmap gantt, score bars, hour bars). Soft-warn only — the deck still ships if SVG render dropped, since the underlying numeric/text content is preserved. Log the count to `stats.svg_count` for tracking.
 
 ## How to count words
 

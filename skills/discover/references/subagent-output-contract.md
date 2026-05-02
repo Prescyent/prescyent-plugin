@@ -1,11 +1,19 @@
 # Subagent Output Contract
 
-**contract_version: "2.2"**
+**contract_version: "2.3"**
 
 Two contracts live in this file:
 
 1. **Audit subagent contract** — what each `audit-*` subagent returns to the master `discover` skill.
-2. **Synthesizer output contract** (new in 2.2) — the structured JSON the master skill produces for the renderers. Both renderers (`render_deck.py` for buyer HTML, `render_markdown.py` for analyst markdown) consume the same JSON. No markdown→HTML middleman.
+2. **Synthesizer output contract** — the structured JSON the master skill produces for the renderers. Both renderers (`render_deck.py` for buyer HTML, `render_markdown.py` for analyst markdown) consume the same JSON. No markdown→HTML middleman.
+
+---
+
+## What changed vs. v2.2
+
+- New `audit-sessions` lane added to the audit subagent set. Same JSON shape as the other four; lane-specific notes in the "audit-sessions addendum" section below.
+- Synthesizer contract gains `behavioral_history_findings[]` (analyst-markdown-only) and `cowork_observed: bool`. Buyer deck does NOT surface behavioral findings directly — they flow into `wins_top_3` slots via the synthesis ranking rule (see "Behavioral promotion" below).
+- No structural changes to existing fields. Renderers compatible with 2.2 fixtures.
 
 ---
 
@@ -37,8 +45,8 @@ Two contracts live in this file:
 
 ```json
 {
-  "contract_version": "2.2",
-  "subagent": "audit-systems | audit-knowledge | audit-comms | audit-stack",
+  "contract_version": "2.3",
+  "subagent": "audit-systems | audit-knowledge | audit-comms | audit-stack | audit-sessions",
   "company_name": "string",
   "connectors_used": ["HubSpot", "OneDrive", "..."],
   "records_analyzed": {
@@ -121,6 +129,19 @@ Two contracts live in this file:
   - **Medium** = volume-driven discovery — counts, percentages, stale-records the user might know exist but hasn't quantified.
   - **Low** = obvious / known patterns. Synthesis demotes to appendix.
 
+### audit-sessions addendum (v2.3)
+
+`audit-sessions` is the 5th audit lane introduced in v0.7. It returns the same JSON shape as the other four subagents but sources its evidence from `mcp__session_info__list_sessions` + `mcp__session_info__read_transcript` rather than connected systems.
+
+Lane-specific rules:
+
+- `dimension_scores` → omit. audit-sessions does NOT score dimensions; scoring lives with the four data-source audits.
+- `connectors_used` → use the literal string `"Cowork session history"` instead of connector names.
+- `records_analyzed` → `{total_sessions: <int>, deep_reads: <int>, date_range: "YYYY-MM-DD to YYYY-MM-DD"}`.
+- Findings describe **workflow patterns + recurrence**, not connected-system inventory. Verbatim user content is forbidden — see the audit-sessions agent file for privacy rules.
+- `data_source` field on every finding reads `"Cowork session history, N matching sessions sampled at last-30-message tail"` or similar.
+- Conditional dispatch: this subagent is included in Phase 3 fan-out ONLY when `mcp__session_info__list_sessions` is in the master skill's tool list. Otherwise the audit runs as 4 subagents (status quo).
+
 ### audit-stack addendum
 
 `audit-stack` additionally emits `classification_surface{}` alongside the standard contract:
@@ -147,14 +168,15 @@ Two contracts live in this file:
 
 ---
 
-## Synthesizer output contract (new in 2.2)
+## Synthesizer output contract
 
 The master `discover` skill produces this structured JSON at Phase 5a. Both renderers consume it:
 
 ```json
 {
-  "contract_version": "2.2",
-  "plugin_version": "0.5.0",
+  "contract_version": "2.3",
+  "plugin_version": "0.7.0",
+  "cowork_observed": true,
 
   "company_name": "Baseline Payments",
   "company_slug": "baseline-payments",
@@ -350,7 +372,20 @@ The master `discover` skill produces this structured JSON at Phase 5a. Both rend
 
   "next_steps_connector_aware": "Connect Trumpet to HubSpot via the native integration. Buyer engagement data is the highest-intent signal in B2B payments and it's currently siloed.",
 
-  "tan_attribution_footnote": "The zero-sum vs positive-sum framing comes from Garry Tan's February 2026 essay on AI strategy bifurcation."
+  "tan_attribution_footnote": "The zero-sum vs positive-sum framing comes from Garry Tan's February 2026 essay on AI strategy bifurcation.",
+
+  "behavioral_history_findings": [
+    {
+      "pattern": "User runs /gtm-wizards:call-prep 14 times in 30 days. 11 of 14 sessions ended with manual edits to the AI-drafted deck. Pattern is deterministic with manual finishing.",
+      "confidence": "High",
+      "evidence": "Cowork session history: 14 matching sessions, last-30-message tails sampled."
+    },
+    {
+      "pattern": "Three 'pipeline restage' sessions in the last 60 days share an identical prompt-pattern (paste deal list + customer-segment doctrine + restage-goal sentence). Indicates a custom skill in disguise.",
+      "confidence": "Medium",
+      "evidence": "Cowork session history: 3 matching sessions sampled."
+    }
+  ]
 }
 ```
 
@@ -372,24 +407,33 @@ The master `discover` skill produces this structured JSON at Phase 5a. Both rend
   - `how_kb_build_does_it` — 2-3 sentence explanation of the `/kb-build` mining + `/kb-interview` voice-conversation flow. Persona-tailored on `user_role` (founder/cfo → "your senior team"; sales → "your top reps + closers"; ops → "your process owners").
 - **`dimensions`** — 4 entries, one per audit category. Each finding has `severity` + `surprise` + `headline` + `recommendation`.
 - **`tan_attribution_footnote`** — appears ONLY in the analyst markdown's footnote. Never named in the buyer deck. Buyer copy uses the zero-sum vs positive-sum idea without the attribution.
+- **`cowork_observed`** (v0.7) — boolean. `true` when `audit-sessions` ran and returned at least one finding; `false` otherwise. Renderers use this to softly tag the analyst markdown (frontmatter line: `cowork_observed: true`) so downstream `/kb-build` flows know whether session-history evidence is in the report.
+- **`behavioral_history_findings[]`** (v0.7) — distilled session-history patterns that DON'T already surface in `wins_top_3`. Cap at 3 entries. Each `{pattern, confidence, evidence}`. Surfaces in the analyst markdown's "Behavioral history" appendix only — NOT in the buyer deck (too inside-baseball for the buyer audience). Empty array `[]` when `audit-sessions` did not run or returned no findings.
+
+### Behavioral promotion rule (v0.7)
+
+When `audit-sessions` returns findings AND a behavioral finding ties a tool-source finding on `(severity, confidence, impact, surprise)` for the same `wins_top_3` slot: the behavioral finding wins the slot. The user has lived the workflow; "I keep doing X manually" beats "your data shows X is incomplete" at equal weight.
+
+Findings that lose this tie-break flow to `behavioral_history_findings[]` for the analyst markdown appendix.
 
 ### Renderer responsibilities
 
 `render_deck.py` (buyer HTML):
 
-- Hero with `the_answer` blockquote + split-score display.
-- "The 3 wins" cards built from `wins_top_3` (compressed shape).
+- Hero with `the_answer` blockquote + split-score display **plus inline SVG score bars** (v0.7).
+- "The 3 wins" cards built from `wins_top_3` (compressed shape). Behavioral findings can occupy any of the 3 slots per the promotion rule.
 - Mid-page CTA after the 3 wins.
 - "Why this matters now" from `why_now` (no Tan name in buyer copy).
-- "Where you're losing time" from `losing_time` with explicit `ai_fix` lines.
-- "The path from here to AI-native" timeline from `roadmap`.
+- "Where you're losing time" from `losing_time` with explicit `ai_fix` lines **plus inline SVG hour bars** (v0.7).
+- "The path from here to AI-native" timeline from `roadmap` **rendered as Gantt-style horizontal SVG track + caption cards** (v0.7).
 - Three lanes from `lanes`.
-- Collapsed `<details>` appendix with `dimensions` + `conflicts` + `coverage_gaps` + `open_questions`.
+- Always-visible appendix `<section>` with `dimensions` + `conflicts` + `coverage_gaps` + `open_questions` (NOT `behavioral_history_findings[]` — that's analyst-only).
 - Canonical Prescyent footer with mailto + booking link.
 
 `render_markdown.py` (analyst MD):
 
-- YAML frontmatter (company, slug, dates, scores, plugin_version, contract_version).
+- YAML frontmatter (company, slug, dates, scores, plugin_version, contract_version, **`cowork_observed`** v0.7).
 - Top section: `tyler_brief` (100-word executive brief).
 - Full report: contestable answer, top 3, why now (with Tan footnote), losing time, path forward, full per-dimension findings, conflicts, gaps, open questions, next steps.
+- **"Behavioral history" appendix subsection** (v0.7): renders `behavioral_history_findings[]` as a bulleted list. Omitted when the array is empty.
 - Plain markdown — no HTML. Suitable for `/kb-build` ingestion.

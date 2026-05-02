@@ -1,6 +1,7 @@
 {
-  "contract_version": "2.2",
-  "plugin_version": "0.5.0",
+  "contract_version": "2.3",
+  "plugin_version": "0.7.0",
+  "cowork_observed": true,
   "company_name": "Baseline Payments",
   "company_slug": "baseline-payments",
   "audit_date": "2026-05-01",
@@ -254,5 +255,22 @@
   ],
   "next_steps_role_aware": "Review the Top 3 wins with your senior team this week. The zombie-pipeline fix is the single highest-surprise finding — disconnect before the next pipeline review.",
   "next_steps_connector_aware": "Connect Trumpet to HubSpot via the native integration. Buyer engagement data is the highest-intent signal in B2B payments and it's currently siloed.",
-  "tan_attribution_footnote": "The zero-sum vs positive-sum framing comes from Garry Tan's February 2026 essay on AI strategy bifurcation."
+  "tan_attribution_footnote": "The zero-sum vs positive-sum framing comes from Garry Tan's February 2026 essay on AI strategy bifurcation.",
+  "behavioral_history_findings": [
+    {
+      "pattern": "User runs /gtm-wizards:call-prep 14 times in 30 days. 11 of 14 sessions ended with manual edits to the AI-drafted deck. Pattern is deterministic with manual finishing — strong scheduled-task candidate.",
+      "confidence": "High",
+      "evidence": "Cowork session history: 14 matching sessions across 30 days, last-30-message tails sampled."
+    },
+    {
+      "pattern": "Three pipeline-restage sessions in the last 60 days share an identical prompt-pattern (paste deal list + customer-segment doctrine + restage-goal sentence). Indicates a custom skill in disguise.",
+      "confidence": "Medium",
+      "evidence": "Cowork session history: 3 matching sessions sampled."
+    },
+    {
+      "pattern": "Two of three Notion-restructure sessions in the last 90 days ended with the user reverting AI-suggested page hierarchy. Implies the AI's structural guess didn't carry the team's mental model — strong KB-builder mining candidate before any further structure work.",
+      "confidence": "Medium",
+      "evidence": "Cowork session history: 3 sessions sampled, 2 closed with revert pattern."
+    }
+  ]
 }

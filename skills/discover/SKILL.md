@@ -180,25 +180,31 @@ After Phase 2a (settings hit) or Phase 2c/2d (elicitation/fallback) completes, b
 
 ## Phase 3 — Subagent fan-out
 
-Dispatch the four audit subagents IN PARALLEL via the `Task` tool. **Single message, four tool calls.** Do not serialize. Always dispatch all four — each subagent discovers what's available in its own category and surfaces gaps in `coverage_gaps[]`.
+Dispatch the audit subagents IN PARALLEL via the `Task` tool. **Single message, all subagent calls together.** Do not serialize. Always dispatch the full set — each subagent discovers what's available in its own category and surfaces gaps in `coverage_gaps[]`.
+
+**Conditional 5th subagent (v0.7).** Inspect the available tool list. If `mcp__session_info__list_sessions` is present (the user is on Cowork desktop with session history available), dispatch **5 subagents** including `audit-sessions`. Otherwise dispatch **4 subagents** as before.
+
+This is a one-line check, not an elicitation: read the tool list, count to 5 or 4, dispatch in a single message.
 
 For each subagent, the Task `prompt` includes verbatim:
 
 - `company_name`, `today_date`, `user_role`, `verbatim_pain`, `depth` from `discovery_scope`.
 - The category slice it owns (see mapping below).
 - **The full subagent JSON contract spec, inlined into the prompt** (NOT a path reference). The contract block from `references/subagent-output-contract.md` § "Audit subagent contract" — paste verbatim into each subagent prompt. Subagents read the contract from the prompt, not from disk. (v0.5 change: previous versions referenced the contract by path; the path didn't resolve in Cowork's plugin sandbox and three subagents wasted tool calls hunting for it.)
+- For `audit-sessions`: also paste the lane addendum from § "audit-sessions addendum (v2.3)" into the prompt.
 - Instruction to return JSON only, no prose, no preamble.
 
 ### Subagent → category mapping (from `CONNECTORS.md`)
 
-| Subagent | Category slice |
-|---|---|
-| `audit-systems` | `~~crm`, `~~project-tracker`, `~~ticketing` |
-| `audit-knowledge` | `~~cloud-storage`, `~~wiki` |
-| `audit-comms` | `~~email`, `~~chat`, `~~calendar`, `~~meeting-intel` |
-| `audit-stack` | All connectors visible in the session (catalog-only against the AI-readiness rubric) |
+| Subagent | Category slice | Dispatch condition |
+|---|---|---|
+| `audit-systems` | `~~crm`, `~~project-tracker`, `~~ticketing` | Always |
+| `audit-knowledge` | `~~cloud-storage`, `~~wiki` | Always |
+| `audit-comms` | `~~email`, `~~chat`, `~~calendar`, `~~meeting-intel` | Always |
+| `audit-stack` | All connectors visible in the session (catalog-only against the AI-readiness rubric) | Always |
+| `audit-sessions` | Cowork session history (behavioral signal) | Only when `mcp__session_info__list_sessions` is in the tool list |
 
-If a subagent finds no connected tools in its category, it returns null findings and populates `coverage_gaps[]`.
+If a subagent finds no connected tools / no session history in its category, it returns null findings and populates `coverage_gaps[]`.
 
 ### Status update during dispatch
 
@@ -212,7 +218,7 @@ Do not narrate process. Do not name subagents. Do not stream sub-progress. The 8
 
 ## Phase 4 — Strategic clarifications (elicitation)
 
-When all dispatched subagents return, parse each JSON. Aggregate `findings[]`, `behavioral_trace_findings[]`, `opportunities[]`, `coverage_gaps[]`, and `open_questions[]`.
+When all dispatched subagents return, parse each JSON. Aggregate `findings[]`, `behavioral_trace_findings[]`, `opportunities[]`, `coverage_gaps[]`, and `open_questions[]`. If `audit-sessions` ran, set `cowork_observed: true` in the synthesizer-input working state; otherwise `false`.
 
 **v0.5 change:** Phase 4 is no longer driven by subagent `open_questions[]`. Subagent open questions are tactical operations triage ("are these 815 records zombies or live?") — wrong altitude for a McKinsey/BCG-grade clarification moment. Subagent `open_questions[]` flow to the analyst markdown's Open Questions appendix, NOT to this elicitation.
 
@@ -299,6 +305,10 @@ Required fields:
 - `next_steps_role_aware` — one-line tailored next step based on `user_role`.
 - `next_steps_connector_aware` — one-line tailored next step based on biggest unconnected platform.
 - `tan_attribution_footnote` — Garry Tan attribution string, surfaces ONLY in the analyst markdown footnote, NEVER in the buyer deck.
+- `cowork_observed` (v0.7) — boolean. True when `audit-sessions` ran and produced findings. Renderers tag the analyst markdown frontmatter with this so downstream `/kb-build` knows session-history evidence informed the report.
+- `behavioral_history_findings[]` (v0.7) — distilled session-history patterns that did NOT win a `wins_top_3` slot. Cap at 3. Each `{pattern, confidence, evidence}`. Surfaces in the analyst markdown's "Behavioral history" appendix only — NEVER in the buyer deck.
+
+**Behavioral promotion rule (v0.7):** when `audit-sessions` returned findings AND a behavioral finding ties a tool-source finding on `(severity, confidence, impact, surprise)` for the same `wins_top_3` slot — the behavioral finding wins the slot. The user lived the workflow; "I keep doing X manually" beats "your data shows X is incomplete" at equal weight. Findings that lose the tie-break flow into `behavioral_history_findings[]` instead of being dropped.
 
 **Persona-tailoring** based on `discovery_scope.user_role`:
 
@@ -390,6 +400,14 @@ If `mcp__cowork__create_artifact` is NOT available (Claude Code, headless), fall
 > Your custom audit page is above. Skim the 3 wins and the roadmap — that's where the value is. The full markdown report is also saved to `{MD_PATH}` if you want to forward it.
 
 Do NOT use phrases like "open in your browser for the full layout" or "read the markdown if you prefer flat text." The artifact IS the deliverable; the markdown is the analyst secondary.
+
+**Open in Chrome link (v0.7 — EM-28).** Immediately after the closing chat copy, emit one additional line pointing the user at the same HTML in their default browser:
+
+> Open full-screen in Chrome → file://{absolute_path_to_HTML_PATH}
+
+Where `{absolute_path_to_HTML_PATH}` is the resolved absolute path render_deck.py wrote the file to (the same path the artifact was sourced from). Use the literal `file://` scheme; do not URL-escape spaces in the path (the click handler in most chat clients expects the raw path).
+
+If the chat client doesn't render `file://` links as clickable, the path is at least visible and copy-pasteable. No `mcp__claude-in-chrome` programmatic open in v0.7 — the link is the deliverable, not a guaranteed launch.
 
 ### 5f. Inline answer + Top 3 hook (post-artifact)
 

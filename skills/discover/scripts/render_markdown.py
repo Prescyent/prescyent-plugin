@@ -24,8 +24,8 @@ import os
 import sys
 from pathlib import Path
 
-PLUGIN_VERSION = "0.5.0"
-CONTRACT_VERSION = "2.2"
+PLUGIN_VERSION = "0.7.0"
+CONTRACT_VERSION = "2.3"
 
 
 def _table(coverage: list[dict]) -> str:
@@ -75,6 +75,8 @@ def render(data: dict) -> str:
     next_role = data.get("next_steps_role_aware", "")
     next_conn = data.get("next_steps_connector_aware", "")
     tan_footnote = data.get("tan_attribution_footnote", "")
+    cowork_observed = bool(data.get("cowork_observed", False))
+    behavioral_history = data.get("behavioral_history_findings", []) or []
 
     # ----- assemble -----
 
@@ -95,6 +97,7 @@ def render(data: dict) -> str:
     lines.append(f"score_stack: {stack_score}")
     lines.append(f"score_workflow_integration: {workflow_score}")
     lines.append(f"score_overall: {overall_score}")
+    lines.append(f"cowork_observed: {'true' if cowork_observed else 'false'}")
     lines.append("---")
     lines.append("")
 
@@ -261,6 +264,24 @@ def render(data: dict) -> str:
                 lines.append(f"   - Recommended answer: {rec}")
             if decision:
                 lines.append(f"   - Need from you: {decision}")
+        lines.append("")
+
+    # Behavioral history (v0.7) — analyst-only appendix
+    if behavioral_history:
+        lines.append("### Behavioral history")
+        lines.append("")
+        lines.append("> _Patterns derived from your Cowork session log — workflows you keep running, where you correct AI output, prompts you re-paste. Surfaces in this appendix only; never in the buyer-facing deck._")
+        lines.append("")
+        for bh in behavioral_history:
+            pattern = bh.get("pattern", "")
+            confidence = bh.get("confidence", "")
+            evidence = bh.get("evidence", "")
+            line = f"- **{pattern}**"
+            if confidence:
+                line += f" _(confidence: {confidence})_"
+            lines.append(line)
+            if evidence:
+                lines.append(f"  - **Evidence:** {evidence}")
         lines.append("")
 
     # Recommended next steps

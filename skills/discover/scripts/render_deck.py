@@ -36,11 +36,12 @@ import argparse
 import html
 import json
 import os
+import re
 import sys
 import urllib.parse
 from pathlib import Path
 
-PLUGIN_VERSION = "0.5.0"
+PLUGIN_VERSION = "0.7.0"
 BOOKING_LINK = "https://calendar.app.google/wwabJHCKHufyqW7Q6"
 TYLER_EMAIL = "tyler@prescyent.ai"
 
@@ -51,7 +52,13 @@ SEVERITY_CLASS = {
     "low": "tag-low",
 }
 
-ALLOWED_ROADMAP_ACCENTS = {"green", "cyan", "purple", "brass"}
+ALLOWED_ROADMAP_ACCENTS = ("green", "cyan", "purple", "brass")
+ROADMAP_ACCENT_HEX = {
+    "green": "#34d399",
+    "cyan": "#22d3ee",
+    "purple": "#a78bfa",
+    "brass": "#d4af78",
+}
 
 
 # ---------- helpers ----------
@@ -103,6 +110,44 @@ def build_hero(data: dict) -> str:
     )
 
 
+def _score_bar_svg(value: int | float, denominator: int, accent: str = "purple") -> str:
+    """Inline SVG horizontal bar for a score. Pure SVG, no JS."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return ""
+    if denominator <= 0:
+        return ""
+    pct = max(0.0, min(1.0, v / denominator))
+    filled = round(pct * 200, 1)  # viewBox width 200
+    accent_color = "#a78bfa" if accent == "purple" else "#22d3ee"
+    return (
+        '<svg class="score-bar" viewBox="0 0 200 8" preserveAspectRatio="none" aria-hidden="true">'
+        '<rect class="score-bar-track" x="0" y="0" width="200" height="8" rx="4"/>'
+        f'<rect class="score-bar-fill" x="0" y="0" width="{filled}" height="8" rx="4" fill="{accent_color}"/>'
+        "</svg>"
+    )
+
+
+def _score_bar_overall_svg(value: int | float) -> str:
+    """Inline SVG for the overall 0-100 score with a gradient fill."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return ""
+    pct = max(0.0, min(1.0, v / 100.0))
+    filled = round(pct * 200, 1)
+    return (
+        '<svg class="score-bar overall" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true">'
+        '<defs><linearGradient id="overallGrad" x1="0%" y1="0%" x2="100%" y2="0%">'
+        '<stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#22d3ee"/>'
+        "</linearGradient></defs>"
+        '<rect class="score-bar-track" x="0" y="0" width="200" height="10" rx="5"/>'
+        f'<rect x="0" y="0" width="{filled}" height="10" rx="5" fill="url(#overallGrad)"/>'
+        "</svg>"
+    )
+
+
 def build_answer(data: dict) -> str:
     answer = esc(data.get("the_answer", ""))
     scores = data.get("scores", {}) or {}
@@ -117,6 +162,7 @@ def build_answer(data: dict) -> str:
             '<div class="score-cell">'
             '<div class="label">AI stack</div>'
             f'<div class="value">{esc(stack)}<span class="value-suffix">/10</span></div>'
+            f"{_score_bar_svg(stack, 10, accent='purple')}"
             "</div>"
         )
     if workflow is not None:
@@ -124,6 +170,7 @@ def build_answer(data: dict) -> str:
             '<div class="score-cell">'
             '<div class="label">Workflow integration</div>'
             f'<div class="value">{esc(workflow)}<span class="value-suffix">/10</span></div>'
+            f"{_score_bar_svg(workflow, 10, accent='cyan')}"
             "</div>"
         )
     if overall is not None:
@@ -131,6 +178,7 @@ def build_answer(data: dict) -> str:
             '<div class="score-cell overall">'
             '<div class="label">Overall readiness</div>'
             f'<div class="value">{esc(overall)}<span class="value-suffix">/100</span></div>'
+            f"{_score_bar_overall_svg(overall)}"
             f'<div class="interpretation">{interp}</div>'
             "</div>"
         )
@@ -215,22 +263,59 @@ def build_why_now(data: dict) -> str:
     )
 
 
+def _parse_hours_per_week(time_cost: str) -> float:
+    """Extract a leading number from a time_cost string like '2.5 hrs/week'.
+
+    Returns 0.0 if no number can be parsed. Forgiving — accepts integers, decimals,
+    and ranges like '1-2 hrs/week' (averages the range).
+    """
+    if not time_cost:
+        return 0.0
+    nums = re.findall(r"\d+\.?\d*", str(time_cost))
+    if not nums:
+        return 0.0
+    try:
+        if len(nums) >= 2 and "-" in str(time_cost):
+            return (float(nums[0]) + float(nums[1])) / 2
+        return float(nums[0])
+    except ValueError:
+        return 0.0
+
+
+def _hour_bar_svg(hours: float, max_hours: float) -> str:
+    """Inline SVG horizontal bar for a pain row's time cost. Width is relative."""
+    if max_hours <= 0:
+        return ""
+    pct = max(0.0, min(1.0, hours / max_hours))
+    filled = round(pct * 100, 1)  # viewBox width 100
+    return (
+        '<svg class="hour-bar" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true">'
+        '<rect class="hour-bar-track" x="0" y="0" width="100" height="6" rx="3"/>'
+        f'<rect class="hour-bar-fill" x="0" y="0" width="{filled}" height="6" rx="3"/>'
+        "</svg>"
+    )
+
+
 def build_losing_time(data: dict) -> str:
     items = data.get("losing_time", []) or []
     if not items:
         return ""
+    parsed_hours = [_parse_hours_per_week(it.get("time_cost", "")) for it in items]
+    max_hours = max(parsed_hours) if parsed_hours else 0.0
     rows = []
-    for it in items:
+    for it, hours in zip(items, parsed_hours):
         head = esc(it.get("headline", ""))
         detail = esc(it.get("one_liner", ""))
         time_cost = esc(it.get("time_cost", ""))
         ai_fix = esc(it.get("ai_fix", ""))
+        bar = _hour_bar_svg(hours, max_hours) if max_hours > 0 else ""
         rows.append(
             '<div class="pain-row">'
             f'<p class="pain-headline">{head}</p>'
             f'<p class="pain-detail">{detail}</p>'
             '<div class="pain-meta">'
             f'<span class="time-cost">{time_cost}</span>'
+            f"{bar}"
             f'<span class="ai-fix">{ai_fix}</span>'
             "</div>"
             "</div>"
@@ -240,6 +325,64 @@ def build_losing_time(data: dict) -> str:
         '<h2 class="section">Where you\'re losing time today</h2>'
         f'<div class="pain-list">{"".join(rows)}</div>'
         "</section>"
+    )
+
+
+def _gantt_track_svg(items: list[dict]) -> str:
+    """Inline SVG horizontal Gantt-style track. 4 segments, equal-width.
+
+    Uses a 1000-unit viewBox width (so each segment is 250 units wide) and a
+    50-unit height. Tick labels sit above each segment with the window text;
+    the colored bar sits in the middle; segment titles sit below.
+    """
+    if not items:
+        return ""
+    n = min(len(items), 4)
+    seg_w = 1000 / n
+    pad = 6  # internal padding between segments to show separation
+
+    segments = []
+    ticks = []
+    titles = []
+    for i, it in enumerate(items[:n]):
+        accent = it.get("accent", "cyan")
+        if accent not in ALLOWED_ROADMAP_ACCENTS:
+            accent = "cyan"
+        color = ROADMAP_ACCENT_HEX.get(accent, ROADMAP_ACCENT_HEX["cyan"])
+        x = i * seg_w
+        seg_x = x + pad
+        seg_width = seg_w - 2 * pad
+        cx = x + seg_w / 2
+        window = esc(it.get("window", ""))
+        title = esc(it.get("title", ""))
+        # Colored segment
+        segments.append(
+            f'<rect x="{seg_x:.1f}" y="22" width="{seg_width:.1f}" height="14" '
+            f'rx="7" fill="{color}" class="gantt-segment {accent}"/>'
+        )
+        # Tick label above (the window: "Now → 3 months")
+        ticks.append(
+            f'<text x="{cx:.1f}" y="14" class="gantt-tick" text-anchor="middle">{window}</text>'
+        )
+        # Title label below segment
+        titles.append(
+            f'<text x="{cx:.1f}" y="50" class="gantt-title-label" text-anchor="middle">{title}</text>'
+        )
+    # Chevron-like progression markers between segments (small triangles)
+    chevrons = []
+    for i in range(1, n):
+        cx = i * seg_w
+        chevrons.append(
+            f'<path d="M {cx - 3:.1f} 25 L {cx + 3:.1f} 29 L {cx - 3:.1f} 33 Z" '
+            'class="gantt-chevron" fill="rgba(230,232,236,0.45)"/>'
+        )
+    return (
+        '<svg class="gantt-track" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true">'
+        + "".join(segments)
+        + "".join(chevrons)
+        + "".join(ticks)
+        + "".join(titles)
+        + "</svg>"
     )
 
 
@@ -262,9 +405,11 @@ def build_roadmap(data: dict) -> str:
             f'<p class="body">{body}</p>'
             "</div>"
         )
+    gantt = _gantt_track_svg(items[:4])
     return (
         '<section class="reveal">'
         '<h2 class="section">The path from here to AI-native</h2>'
+        f'<div class="roadmap-gantt">{gantt}</div>'
         f'<div class="roadmap-grid">{"".join(steps)}</div>'
         '<p class="roadmap-footnote">This is the Prescyent ladder. You don\'t climb it all at once — most companies start with the wiki, add three skills, and feel the difference inside two weeks.</p>'
         "</section>"
