@@ -41,7 +41,7 @@ import sys
 import urllib.parse
 from pathlib import Path
 
-PLUGIN_VERSION = "0.7.0"
+PLUGIN_VERSION = "0.8.0"
 BOOKING_LINK = "https://calendar.app.google/wwabJHCKHufyqW7Q6"
 TYLER_EMAIL = "tyler@prescyent.ai"
 
@@ -259,6 +259,48 @@ def build_why_now(data: dict) -> str:
         f"{para_html if para_html else ''}"
         f"{split_box}"
         "</div>"
+        "</section>"
+    )
+
+
+def build_vocabulary_primer(data: dict) -> str:
+    """v0.8 EM-52: vocabulary primer between why-now and losing-time.
+
+    6-term plain-English glossary using Tyler's cookbook/recipe analogy.
+    Renders as 6 term-definition rows + a kicker line.
+    """
+    vocab = data.get("vocabulary_primer", {}) or {}
+    if not vocab:
+        return ""
+    # Ordered terms — the cookbook progression
+    term_order = [
+        ("knowledge_base", "Knowledge base"),
+        ("plugin", "Plugin"),
+        ("skill", "Skill"),
+        ("agent", "Agent"),
+        ("scheduled_task", "Scheduled task"),
+    ]
+    rows = []
+    for key, label in term_order:
+        definition = vocab.get(key, "")
+        if not definition:
+            continue
+        rows.append(
+            '<div class="vocabulary-row">'
+            f'<div class="vocabulary-term">{esc(label)}</div>'
+            f'<div class="vocabulary-definition">{esc(definition)}</div>'
+            "</div>"
+        )
+    kicker = vocab.get("kicker", "")
+    kicker_html = f'<p class="vocabulary-kicker">{esc(kicker)}</p>' if kicker else ""
+    return (
+        '<section class="reveal">'
+        '<h2 class="section">A quick vocabulary</h2>'
+        '<p class="vocabulary-subtitle">The terms used across the audit, in plain English.</p>'
+        '<div class="vocabulary-primer">'
+        f"{''.join(rows)}"
+        "</div>"
+        f"{kicker_html}"
         "</section>"
     )
 
@@ -621,6 +663,7 @@ def render(data: dict, template: str) -> str:
     out = out.replace("{{WINS_HTML}}", build_wins(data))
     out = out.replace("{{MID_CTA_HTML}}", build_mid_cta(data))
     out = out.replace("{{WHY_NOW_HTML}}", build_why_now(data))
+    out = out.replace("{{VOCABULARY_HTML}}", build_vocabulary_primer(data))
     out = out.replace("{{LOSING_TIME_HTML}}", build_losing_time(data))
     out = out.replace("{{ROADMAP_HTML}}", build_roadmap(data))
     out = out.replace("{{LANES_HTML}}", build_lanes(data))

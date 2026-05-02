@@ -1,11 +1,12 @@
 {
-  "contract_version": "2.3",
-  "plugin_version": "0.7.0",
+  "contract_version": "3.0",
+  "plugin_version": "0.8.0",
   "cowork_observed": true,
+  "depth_tier": "Very-deep",
   "company_name": "Baseline Payments",
   "company_slug": "baseline-payments",
-  "audit_date": "2026-05-01",
-  "depth": "Deep",
+  "audit_date": "2026-05-02",
+  "depth": "Very-deep",
   "user_role": "founder",
   "user_email": "tyler@baselinepayments.com",
   "unconnected_tools": "Koncert, Trumpet",
@@ -110,20 +111,20 @@
   "lanes": [
     {
       "name": "DIY",
-      "headline": "Start your knowledge base with /kb-build",
-      "body": "Free, ~20 min. Mining subagents read your connectors and scaffold the KB. You own everything.",
+      "headline": "Run /kb-build now",
+      "body": "Free, ~20 min. Mining subagents read your connectors and scaffold the wiki. You own everything.",
       "cta_label": "Free path"
     },
     {
       "name": "Light-touch",
-      "headline": "Have us build your knowledge base",
-      "body": "Skip the learning curve. We build the foundation, hand it back, support your team through the first month.",
+      "headline": "Have Prescyent build your knowledge base + skills",
+      "body": "We build the knowledge base foundation plus a few custom skills mapped to your workflows. Hand it back. Support your team through the first month.",
       "cta_label": "Talk to us"
     },
     {
       "name": "Full",
       "headline": "Engage Prescyent for the complete discovery",
-      "body": "Two-layer audit. Voice-agent interviews with your team. Custom plugin built around how you actually run.",
+      "body": "Our team interviews leadership. Voice agents interview the rest of the company. Custom plugin built around how you actually run.",
       "cta_label": "Talk to us"
     }
   ],
@@ -272,5 +273,288 @@
       "confidence": "Medium",
       "evidence": "Cowork session history: 3 sessions sampled, 2 closed with revert pattern."
     }
-  ]
+  ],
+
+  "vocabulary_primer": {
+    "knowledge_base": "A single source on your drive every AI tool reads from.",
+    "plugin": "A cookbook of capabilities tailored to your company.",
+    "skill": "A single recipe in that cookbook — one workflow, one trigger.",
+    "agent": "A recipe that hands itself off to other recipes when the work needs more than one step.",
+    "scheduled_task": "A recipe that runs on a clock, even when you're asleep.",
+    "kicker": "Each one removes a kind of toil. The audit picks the ones that hurt most this quarter."
+  },
+
+  "entity_map": [
+    {"name": "Baseline Payments", "type": "primary", "domain": "baselinepayments.com", "description": "B2B payments processor"},
+    {"name": "JetPay", "type": "product_line", "parent": "Baseline Payments", "domain": "jetpay.com", "description": "Merchant onboarding product line"},
+    {"name": "Hernando Capital Ltd.", "type": "operating_company", "relationship": "holding entity for tyler@", "description": "Canadian CCPC holding company"}
+  ],
+
+  "voice_pattern": {
+    "formality": "casual",
+    "median_length_words": 87,
+    "em_dash_density_per_100w": 0.4,
+    "sign_off_pattern": "first-name-only",
+    "lead_pattern": "lead-with-the-thing"
+  },
+
+  "voice_samples": [
+    {"source": "audit-email", "source_ref": "thread:abc123", "to_domain": "@partner.io", "excerpt": "Wanted to flag the Q2 number before our Tuesday sync. The pipeline shifted right after the JetPay disconnect — happy to walk through the numbers if useful."},
+    {"source": "audit-drive", "source_ref": "/Drafts/q1-recap.md", "excerpt": "Q1 closed strong on the partnership side. Three things we shipped that compound: the Esker deployment, the migration to Granola, and the wiki rewrite."}
+  ],
+
+  "email_matrix": {
+    "top_inbound_senders": [
+      {"sender": "alice@partner.io", "volume_12mo": 312, "domain_type": "external_partner"},
+      {"sender": "team@baselinepayments.com", "volume_12mo": 198, "domain_type": "internal"},
+      {"sender": "support@hubspot.com", "volume_12mo": 87, "domain_type": "vendor"}
+    ],
+    "top_outbound_domains": [
+      {"domain": "@baselinepayments.com", "volume_12mo": 2104, "dominant_thread_type": "internal-coord"},
+      {"domain": "@partner.io", "volume_12mo": 412, "dominant_thread_type": "deal-coord"}
+    ],
+    "sent_received_ratios": {
+      "alice@partner.io": {"sent": 198, "received": 312, "ratio": 0.63},
+      "team@baselinepayments.com": {"sent": 412, "received": 198, "ratio": 2.08}
+    },
+    "response_time_medians": {
+      "alice@partner.io": "1.5h",
+      "team@baselinepayments.com": "20min"
+    },
+    "recurring_workflows": [
+      {"pattern": "Weekly pipeline digest", "subject_template": "Pipeline week of {date}", "frequency": "weekly", "recipients": ["team@baselinepayments.com"]},
+      {"pattern": "Calendar admin batch", "subject_template": "RE: meeting reschedule", "frequency": "daily", "recipients": ["multiple"]}
+    ],
+    "attachment_patterns": [
+      {"to_domain": "@partner.io", "file_type": ".pdf", "volume": 22, "common_subject_pattern": "Statement of Work"}
+    ]
+  },
+
+  "drive_taxonomy": {
+    "root_label": "Tyler @ Baseline (Google Drive)",
+    "top_folders": [
+      {"path": "/Wiki", "file_count": 47, "depth": 3, "authority_score": 9, "last_modified": "2026-04-30"},
+      {"path": "/Decks", "file_count": 22, "depth": 2, "authority_score": 7, "last_modified": "2026-05-01"},
+      {"path": "/Drafts", "file_count": 18, "depth": 2, "authority_score": 6, "last_modified": "2026-04-28"}
+    ],
+    "authority_clusters": [
+      {"name": "Playbooks", "patterns": ["playbook", "doctrine", "SOP"], "page_count": 14},
+      {"name": "Templates", "patterns": ["template", "draft"], "page_count": 9}
+    ],
+    "stale_pages": [
+      {"path": "/Wiki/2024-q1-strategy.md", "last_modified": "2024-03-15", "still_referenced": false}
+    ],
+    "doctrine_pages": [
+      {"path": "/Wiki/sales-playbook.md", "owner": "tyler@baselinepayments.com", "last_modified": "2026-04-22", "promote_to_canonical": true}
+    ]
+  },
+
+  "comms_patterns": {
+    "calendar_meeting_density": {
+      "weekly_avg_meetings": 18,
+      "weekly_avg_meeting_hours": 14,
+      "by_quarter": {"2025-q4": 16, "2026-q1": 19, "2026-q2": 18}
+    },
+    "recurring_meeting_cadences": [
+      {"title_pattern": "Weekly leadership", "frequency": "weekly", "attendee_count": 5},
+      {"title_pattern": "Monthly Esker review", "frequency": "monthly", "attendee_count": 7}
+    ],
+    "chat_top_spaces": [
+      {"space": "team-leadership", "30d_message_volume": 412, "active_participants": 5},
+      {"space": "engineering", "30d_message_volume": 289, "active_participants": 8}
+    ],
+    "cross_channel_decision_flow": "Decisions surface in chat (40%), formalized in calendar invites (30%), confirmed in meeting summaries (30%)."
+  },
+
+  "meeting_inventory": {
+    "total_meetings_12mo": 142,
+    "by_counterparty": [
+      {"counterparty": "Esker", "meeting_count": 8, "cadence": "monthly", "first_seen": "2025-09-12", "last_seen": "2026-04-22"},
+      {"counterparty": "Internal — leadership", "meeting_count": 22, "cadence": "weekly", "first_seen": "2025-05-01", "last_seen": "2026-05-01"}
+    ],
+    "by_type": [
+      {"type": "discovery", "count": 18},
+      {"type": "review", "count": 24},
+      {"type": "kickoff", "count": 6}
+    ],
+    "cadence_patterns": [
+      {"pattern": "Every Tuesday with Esker partner team", "frequency": "weekly", "first_observed": "2025-11"}
+    ]
+  },
+
+  "transcript_deep_reads": [
+    {
+      "recording_id": "fathom-12345",
+      "title": "Esker Q1 review",
+      "date": "2026-03-15",
+      "duration_min": 47,
+      "why_selected": "Decision: Esker partner team committed to Q2 deployment timeline",
+      "key_extract": "We agreed Tuesday timing works for the deployment kickoff. Tyler to send the team allocation spreadsheet by Friday; Esker to confirm the staging environment by Monday. Q2 deployment locked.",
+      "counterparty": "Esker"
+    }
+  ],
+
+  "web_research": {
+    "per_entity_summaries": [
+      {
+        "entity": "Baseline Payments",
+        "description": "B2B payments processor with merchant services + AP/AR automation reseller positioning",
+        "customer_segments": ["mid-market merchants", "Esker AP/AR customers"],
+        "products": ["JetPay merchant onboarding", "Esker partnership", "Direct merchant services"],
+        "recent_moves": [{"date": "2026-03-15", "headline": "Esker partnership formalized", "tier": 3}],
+        "team_signals": ["VP BD: Tyler Massey (LinkedIn)"],
+        "risk_signals": []
+      },
+      {
+        "entity": "JetPay",
+        "description": "Merchant-onboarding product line under Baseline Payments umbrella",
+        "customer_segments": ["new SMB merchants", "high-velocity onboarders"],
+        "products": ["Self-serve merchant signup", "Risk-tiered onboarding"],
+        "recent_moves": [],
+        "team_signals": [],
+        "risk_signals": []
+      }
+    ],
+    "individual_operator_flag": false
+  },
+
+  "citations": [
+    {"finding_id": "WEB-01", "url": "https://baselinepayments.com/", "title": "Baseline Payments — Home", "retrieved": "2026-05-02", "tier": 2},
+    {"finding_id": "WEB-01", "url": "https://baselinepayments.com/partners/esker", "title": "Esker Partnership", "retrieved": "2026-05-02", "tier": 2},
+    {"finding_id": "WEB-02", "url": "https://www.linkedin.com/in/tylermassey", "title": "Tyler Massey — LinkedIn", "retrieved": "2026-05-02", "tier": 4}
+  ],
+
+  "resume_trace": [
+    {
+      "round": 1,
+      "subagent": "audit-systems",
+      "session_id": "abc-123",
+      "follow_up_prompt": "You found 815 zombie deals but didn't dig into ownership. Who owns the deals in DO NOT USE pipelines?",
+      "refined_finding_summary": "Of 815 zombie deals, 612 owned by 3 reps who left in Q4 2025; remainder unassigned. Workflow at risk if any of those reps' contacts are still being routed to.",
+      "ms": 9300,
+      "tokens_est": 12400
+    },
+    {
+      "round": 1,
+      "subagent": "audit-email",
+      "session_id": "def-456",
+      "follow_up_prompt": "Your voice_pattern is sparse — pull 5 more sent threads from external counterparties to anchor the formality scoring.",
+      "refined_finding_summary": "Voice formality confirmed casual across external counterparty threads. Em-dash density 0.4/100w (low). Sign-off pattern consistent first-name-only.",
+      "ms": 8200,
+      "tokens_est": 9800
+    }
+  ],
+
+  "raw_subagent_dumps": {
+    "audit-systems": {
+      "_trace": [
+        {"tool": "search_crm_objects", "args_summary": "deals limit:100 props:8 q1-2026", "result_summary": "612 deals, 412 with no close_date", "ms": 2300, "tokens_est": 18400},
+        {"tool": "search_crm_objects", "args_summary": "deals limit:100 props:8 q2-2026", "result_summary": "489 deals, 321 with no close_date", "ms": 2100, "tokens_est": 17200}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-systems",
+      "company_name": "Baseline Payments",
+      "connectors_used": ["HubSpot"],
+      "records_analyzed": {"total_records": 1149, "date_range": "2025-05-02 to 2026-05-02"},
+      "findings": [
+        {"id": "SYS-01", "headline": "Zombie pipelines hold 815/1149 open deals", "severity": "Critical", "confidence": "High", "surprise_factor": "High", "data_source": "HubSpot deals API, pulled 2026-05-02", "recommendation": "Audit HubSpot Workflows; disable any create-deal action targeting DO NOT USE pipelines.", "effort": "Low", "impact": "High", "classification": "internal", "framework_indexes": {"pcf": "3.5.3", "bian": null, "togaf": null, "zachman": null}}
+      ]
+    },
+    "audit-knowledge": {
+      "_trace": [
+        {"tool": "notion-search", "args_summary": "query:'' pageSize:25", "result_summary": "47 pages, 15 superseded", "ms": 1800, "tokens_est": 14200}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-knowledge",
+      "company_name": "Baseline Payments",
+      "connectors_used": ["Notion"]
+    },
+    "audit-drive": {
+      "_trace": [
+        {"tool": "search_files", "args_summary": "all pageSize:50", "result_summary": "127 files surfaced", "ms": 1900, "tokens_est": 12300}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-drive",
+      "company_name": "Baseline Payments",
+      "connectors_used": ["Google Drive"]
+    },
+    "audit-email": {
+      "_trace": [
+        {"tool": "search_threads", "args_summary": "newer_than:30d", "result_summary": "412 threads", "ms": 2400, "tokens_est": 19200}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-email",
+      "company_name": "Baseline Payments",
+      "connectors_used": ["Gmail"]
+    },
+    "audit-comms": {
+      "_trace": [
+        {"tool": "list_events", "args_summary": "pageSize:25 q1", "result_summary": "82 events", "ms": 1500, "tokens_est": 11200}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-comms",
+      "company_name": "Baseline Payments",
+      "connectors_used": ["Google Calendar", "Google Chat"]
+    },
+    "audit-meeting-transcripts": {
+      "_trace": [
+        {"tool": "list_meetings", "args_summary": "limit:100", "result_summary": "142 meetings", "ms": 1800, "tokens_est": 8400},
+        {"tool": "get_meeting_summary", "args_summary": "120 calls × ~2K tokens", "result_summary": "240K tokens of summaries", "ms": 28000, "tokens_est": 240000},
+        {"tool": "get_meeting_transcript", "args_summary": "12 high-signal × ~15K tokens", "result_summary": "180K tokens", "ms": 22000, "tokens_est": 180000}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-meeting-transcripts",
+      "company_name": "Baseline Payments",
+      "connectors_used": ["Fathom", "Granola"]
+    },
+    "audit-stack": {
+      "_trace": [
+        {"tool": "list_connectors", "args_summary": "all", "result_summary": "11 connectors", "ms": 800, "tokens_est": 4200}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-stack",
+      "company_name": "Baseline Payments",
+      "connectors_used": ["catalog"],
+      "classification_surface": {
+        "HubSpot": "internal",
+        "Gmail": "confidential",
+        "Google Drive": "internal",
+        "Notion": "internal",
+        "Google Calendar": "internal",
+        "Google Chat": "internal",
+        "Fathom": "confidential",
+        "Granola": "confidential"
+      },
+      "findings": [
+        {"id": "STK-01", "headline": "11 connectors visible; Trumpet (digital sales room) unconnected", "recommendation": "Configure Trumpet's native HubSpot integration. 30-min setup."}
+      ]
+    },
+    "audit-sessions": {
+      "_trace": [
+        {"tool": "list_sessions", "args_summary": "limit:100", "result_summary": "127 sessions", "ms": 600, "tokens_est": 3800},
+        {"tool": "read_transcript", "args_summary": "12 deep-reads × limit:30", "result_summary": "behavioral patterns surfaced", "ms": 14000, "tokens_est": 38000}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-sessions",
+      "company_name": "Baseline Payments",
+      "connectors_used": "Cowork session history",
+      "findings": [
+        {"id": "SES-01", "headline": "User runs /gtm-wizards:call-prep 14 times in 30 days", "severity": "High", "confidence": "High", "surprise_factor": "Medium", "data_source": "Cowork session history, 14 matching sessions sampled at last-30-message tail", "recommendation": "Convert to a scheduled task that runs Mondays + Wednesdays at 7am.", "effort": "Low", "impact": "High", "classification": "internal"}
+      ]
+    },
+    "audit-web-search": {
+      "_trace": [
+        {"tool": "WebSearch", "args_summary": "Baseline Payments company", "result_summary": "8 results, primary domain confirmed", "ms": 4200, "tokens_est": 6800},
+        {"tool": "WebSearch", "args_summary": "Baseline Payments products", "result_summary": "JetPay product line surfaced", "ms": 3800, "tokens_est": 6200},
+        {"tool": "WebFetch", "args_summary": "baselinepayments.com homepage", "result_summary": "Positioning extracted", "ms": 5400, "tokens_est": 8400}
+      ],
+      "contract_version": "3.0",
+      "subagent": "audit-web-search",
+      "company_name": "Baseline Payments",
+      "connectors_used": "Open web (WebSearch + WebFetch)",
+      "findings": [
+        {"id": "WEB-01", "headline": "Baseline's public positioning leads with merchant-services + AP/AR automation reseller — not with Esker partnership.", "severity": "Medium", "confidence": "High", "surprise_factor": "Medium", "data_source": "baselinepayments.com (homepage + /partners), retrieved 2026-05-02", "recommendation": "Either elevate Esker partnership to homepage hero (matches internal GTM) OR explicitly position Esker as a back-end capability.", "effort": "Low", "impact": "Medium", "classification": "public"}
+      ]
+    }
+  }
 }

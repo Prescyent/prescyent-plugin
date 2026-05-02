@@ -99,13 +99,21 @@ The six questions, in render order:
 | 3 | `connectors_in_scope` | Which platforms should I search? | card pills, multi-select | One card per detected connector with friendly name + one-line subtitle (e.g. "Notion — Wiki, playbooks, briefs"; "HubSpot — CRM, deals, contacts"; "Fathom — Sales call transcripts"; "Gmail — Sent emails, voice samples") |
 | 4 | `unconnected_tools` | Other tools you use that aren't connected here? | textarea | Free text. Placeholder: "e.g. Google Chat, Slack, Salesforce, Linear — I'll flag what I can't reach so you can decide whether to connect them." |
 | 5 | `verbatim_pain` | Anything specific been frustrating? (Optional) | textarea | Free text |
-| 6 | `depth` | How deep should the search go? | plain pills | Standard — top 10–15 sources, ~5 min, fits a Pro session; Deep — broader sweep, ~10–15 min, best on Team plan |
+| 6 | `depth` | How deep should the search go? | plain pills | Standard — last 90 days, ~5 min, light pass on each connector; Medium — last 12 months, ~10–15 min, summary-wide on meetings, 3 master follow-ups per lane; Very-deep — last 12 months, ~20–30 min, summary-wide PLUS transcript-deep on ~12 meetings, 6 master follow-ups per lane |
 
 **Title text rules:**
 
 - Q1 — exact title text: `"Whose company are we discovering?"`. No parenthetical decoration.
 - Q3 — exact title text: `"Which platforms should I search?"`. No parenthetical decoration. The pre-selection behavior (every card starts selected, user deselects to exclude) is a UI behavior — do NOT echo it as title text. The inference layer should NOT add "(All pre-selected — deselect any to skip.)" or similar; render the title verbatim.
-- Q6 — exact title text: `"How deep should the search go?"`. The Pro/Team framing lives in the option labels, not the title.
+- Q6 — exact title text: `"How deep should the search go?"`. v0.8 (EM-59) drops Pro/Team/Max plan-name strings (collide with ChatGPT Pro). Labels are time + scope + behavior — universal across platforms. The three tiers drive `audit-meeting-transcripts` mode + master resumption cap + per-lane time window:
+
+| Tier | audit-meeting-transcripts | Resume follow-ups per subagent | Time window per lane |
+|---|---|---|---|
+| Standard | DOES NOT FIRE (or fires with `summary_count: 10` cap) | 1 | 90 days |
+| Medium | Summary-wide mode (`summary_count: 80`, no transcript deep-read) | 3 | 12 months |
+| Very-deep | Summary-wide + Transcript-deep mode (`summary_count: 120, transcript_count: 12`) | 6 | 12 months |
+
+After Q6 submission, emit a footnote in chat: *"Heads up: Very-deep reads 10× more source material across the year. If you hit a usage limit mid-audit, you'll see partial findings."*
 
 For Q1, pre-select the highest-confidence pre-detected candidate if Phase 2b found one. If multiple candidates emerged, render them all as un-selected pills so the user picks.
 
@@ -113,7 +121,7 @@ For Q3, the connector list comes from a low-cost lookup at form-build time — c
 
 If `mcp__mcp-registry__list_connectors` is unavailable, fall back to: emit Q3 as a textarea with placeholder "Which platforms should I search? (Drive, HubSpot, Notion, etc.)".
 
-For Q6, pre-select Standard.
+For Q6, pre-select Medium (was Standard in v0.7 — the Medium tier is the new default for v0.8 since it captures the 12-month window without the very-deep transcript-fetch overhead).
 
 **v0.5 change:** Q3 from earlier rounds (`buyer_intent` — "What brought you here today?") is dropped. The skill's stated purpose IS AI readiness. The other intent options pulled users toward outcomes that other commands serve better (`/kb-interview` for senior knowledge capture, `/kb-build` for "make Claude useful"). `buyer_intent` is hard-coded to `ai-readiness` in the discovery_scope build at Phase 2f. Subagents no longer receive a buyer_intent field.
 
@@ -178,31 +186,41 @@ After Phase 2a (settings hit) or Phase 2c/2d (elicitation/fallback) completes, b
 
 ---
 
-## Phase 3 — Subagent fan-out
+## Phase 3 — Subagent fan-out (v0.8 — 9 lanes)
 
 Dispatch the audit subagents IN PARALLEL via the `Task` tool. **Single message, all subagent calls together.** Do not serialize. Always dispatch the full set — each subagent discovers what's available in its own category and surfaces gaps in `coverage_gaps[]`.
 
-**Conditional 5th subagent (v0.7).** Inspect the available tool list. If `mcp__session_info__list_sessions` is present (the user is on Cowork desktop with session history available), dispatch **5 subagents** including `audit-sessions`. Otherwise dispatch **4 subagents** as before.
+**v0.8 expansion: 9 lanes.** Email, drive, and meeting-transcripts get DEDICATED subagents because they're the three highest-volume context surfaces. Plus `audit-web-search` to read the open web's view of the company.
 
-This is a one-line check, not an elicitation: read the tool list, count to 5 or 4, dispatch in a single message.
+**Conditional 9th lane:** `audit-sessions` runs only when `mcp__session_info__list_sessions` is in the tool list. The other 8 always dispatch.
 
 For each subagent, the Task `prompt` includes verbatim:
 
 - `company_name`, `today_date`, `user_role`, `verbatim_pain`, `depth` from `discovery_scope`.
 - The category slice it owns (see mapping below).
-- **The full subagent JSON contract spec, inlined into the prompt** (NOT a path reference). The contract block from `references/subagent-output-contract.md` § "Audit subagent contract" — paste verbatim into each subagent prompt. Subagents read the contract from the prompt, not from disk. (v0.5 change: previous versions referenced the contract by path; the path didn't resolve in Cowork's plugin sandbox and three subagents wasted tool calls hunting for it.)
-- For `audit-sessions`: also paste the lane addendum from § "audit-sessions addendum (v2.3)" into the prompt.
+- **The full subagent JSON contract spec, inlined into the prompt** (NOT a path reference). The contract block from `references/subagent-output-contract.md` § "Audit subagent contract" — paste verbatim into each subagent prompt. Subagents read the contract from the prompt, not from disk.
+- For `audit-sessions`: also paste the lane addendum from § "audit-sessions addendum".
+- For `audit-meeting-transcripts`: pass the `mode` derived from `discovery_scope.depth`:
+  - Standard → `mode: "standard"` (or skip lane entirely with `summary_count: 0`)
+  - Medium → `mode: "medium"` (`summary_count: 80, transcript_count: 0`)
+  - Very-deep → `mode: "very-deep"` (`summary_count: 120, transcript_count: 12`)
+- For `audit-web-search`: pass `company_industry` so it can run industry-tagged web queries.
+- All subagents: include the v3.0 `_trace[]` requirement — every subagent prepends a `_trace[]` array showing every tool call.
 - Instruction to return JSON only, no prose, no preamble.
 
-### Subagent → category mapping (from `CONNECTORS.md`)
+### Subagent → category mapping (v0.8 9-lane fan-out)
 
 | Subagent | Category slice | Dispatch condition |
 |---|---|---|
 | `audit-systems` | `~~crm`, `~~project-tracker`, `~~ticketing` | Always |
-| `audit-knowledge` | `~~cloud-storage`, `~~wiki` | Always |
-| `audit-comms` | `~~email`, `~~chat`, `~~calendar`, `~~meeting-intel` | Always |
+| `audit-knowledge` | `~~wiki` (Notion / Confluence / etc — wiki only, drive moved out) | Always |
+| `audit-drive` | `~~cloud-storage` (Google Drive / OneDrive / Dropbox / SharePoint / Box) | Always |
+| `audit-email` | `~~email` (Gmail / Outlook) | Always |
+| `audit-comms` | `~~chat`, `~~calendar` (chat + calendar only, email + meeting-intel moved out) | Always |
+| `audit-meeting-transcripts` | `~~meeting-intel` (Fathom / Granola / etc) | Always (mode varies by depth — standard mode may skip with `summary_count: 0`) |
 | `audit-stack` | All connectors visible in the session (catalog-only against the AI-readiness rubric) | Always |
 | `audit-sessions` | Cowork session history (behavioral signal) | Only when `mcp__session_info__list_sessions` is in the tool list |
+| `audit-web-search` | Open web (WebSearch + WebFetch + ZoomInfo when present) | Always (60-query budget per audit run) |
 
 If a subagent finds no connected tools / no session history in its category, it returns null findings and populates `coverage_gaps[]`.
 
@@ -210,9 +228,9 @@ If a subagent finds no connected tools / no session history in its category, it 
 
 Emit ONE status line (≤40 words) immediately after the parallel block:
 
-> Discovery agents reading your data. Should be done in 8–10 min — go grab a coffee or high-five a friend.
+> Discovery agents reading your data. Very-deep depth runs across 12 months — should be done in 15–25 min. Medium fits in 8–10 min. Go grab a coffee or high-five a friend.
 
-Do not narrate process. Do not name subagents. Do not stream sub-progress. The 8–10 min estimate is the discover 4 dogfood wall-clock; previous "4–6 minutes" was wrong and lived in the orientation, where it set the user up to step away during the elicitation. Time estimate now lands AFTER form submission.
+Time estimate adapts to the user's Q6 selection. Standard ~5 min, Medium ~10 min, Very-deep ~20-30 min. Do not narrate process. Do not name subagents. Do not stream sub-progress.
 
 ---
 
@@ -285,18 +303,50 @@ If the synthesizer's internal draft has uniformly high confidence across the con
 
 ### 5a. Synthesize the structured JSON
 
-The synthesizer produces a single structured JSON object that drives BOTH renderers (deck + markdown). Shape per `references/subagent-output-contract.md` § "Synthesizer output contract" (contract_version 2.2).
+The synthesizer produces a single structured JSON object that drives BOTH renderers (deck + markdown). Shape per `references/subagent-output-contract.md` § "Synthesizer output contract" (contract_version 3.0).
 
-Required fields:
+**Synthesis anti-pattern block (v0.8 — lifted from enterprise-search plugin):**
+
+Do NOT:
+- List results source by source (write the SYNTHESIZED finding, not the per-subagent dump — that's the appendix's job)
+- Include irrelevant results just because they matched a keyword
+- Bury the answer under methodology explanation
+- Present conflicting info without flagging the conflict
+- Omit source attribution
+- Present uncertain information with the same confidence as well-supported facts
+
+**Confidence-tagged language (v0.8):**
+
+- **High confidence** → direct claim ("HubSpot has 412 deals with no close date.")
+- **Moderate confidence** → "based on the discussion in #engineering last month, the team was leaning toward..."
+- **Low confidence** → "...The information may be outdated. You might want to check with the team for current status."
+
+Required fields (v3.0 — see contract spec for full list including v0.8 additions):
 
 - `the_answer` — Minto Level 1. ONE contestable sentence. ≤60 words.
 - `scores` — split scoring: `stack` (1-10 grade of AI tool surface), `workflow_integration` (1-10 grade of how tools wire into deterministic workflows), `overall` (0-100 weighted: `stack × 4 + workflow_integration × 6`), `interpretation` (one-line tied to overall band).
-- `wins_top_3` — exactly 3 entries. Each `{rank, headline, one_liner, ai_mechanism, impact_metric, effort, impact, confidence, surprise, evidence}`. The `ai_mechanism` field is mandatory and names a concrete Prescyent ladder rung (Claude skill / scheduled task / custom plugin / durable agent). Total word budget per win ≤50 words across `headline + one_liner + ai_mechanism`.
-- `why_now` — boil-the-ocean framing. ≤100 words. **Do NOT name Garry Tan in this field** — the buyer deck never names him. **Do NOT date-stamp the framing** (no "May 2026", no "Q2 2026", no "this month"). v0.6 change (EM-30): the buyer deck must read fresh in any quarter. Use timeless openers: "Today is the inflection moment", "Right now is where companies split", "We're at the moment AI strategies are bifurcating." The zero-sum vs positive-sum idea stands on its own.
-- `losing_time` — 3-5 entries. Each `{headline, one_liner, time_cost, ai_fix}`. The `ai_fix` field is mandatory — names the AI mechanism that solves this pain.
+- `wins_top_3` — exactly 3 entries. Each `{rank, headline, one_liner, ai_mechanism, impact_metric, effort, impact, confidence, surprise, evidence}`. The `ai_mechanism` field is mandatory and names a concrete Prescyent ladder rung (Claude skill / scheduled task / custom plugin / durable agent). Total word budget per win ≤50 words across `headline + one_liner + ai_mechanism`. We-tense ("we'd want to..."), not Tyler-singular.
+- `why_now` — boil-the-ocean framing. ≤100 words. **Do NOT name Garry Tan in this field**. **Do NOT date-stamp the framing**. Use timeless openers: "Today is the inflection moment", "Right now is where companies split", "We're at the moment AI strategies are bifurcating."
+- `losing_time` — 3-5 entries. Each `{headline, one_liner, time_cost, ai_fix}`. The `ai_fix` field is mandatory.
 - `roadmap` — exactly 4 entries (now-3mo / 3-6mo / 6-12mo / 12mo+). Each `{window, title, body, accent}` with accent ∈ {`green`, `cyan`, `purple`, `brass`}.
-- `lanes` — exactly 3 entries (DIY / Light-touch / Full). Each `{name, headline, body, cta_label}`. **No pricing in body copy.**
-- `tyler_brief` — 100-word executive brief that lands at the top of the analyst markdown.
+- `lanes` — exactly 3 entries (DIY / Light-touch / Full). v0.8 (EM-51) lanes copy:
+  - **DIY** — `headline: "Run /kb-build now"`. Body: `"Free, ~20 min. Mining subagents read your connectors and scaffold the wiki. You own everything."` cta_label: `"Free path"`.
+  - **Light-touch** — `headline: "Have Prescyent build your knowledge base + skills"`. Body: `"We build the knowledge base foundation plus a few custom skills mapped to your workflows. Hand it back. Support your team through the first month."` cta_label: `"Talk to us"`.
+  - **Full** — `headline: "Engage Prescyent for the complete discovery"`. Body: `"Our team interviews leadership. Voice agents interview the rest of the company. Custom plugin built around how you actually run."` cta_label: `"Talk to us"`. Three distinct moves — leadership human discovery → voice-agent team discovery → custom plugin — NOT "two layers" (the v0.7 wording was confused).
+- `vocabulary_primer` (v0.8 NEW — EM-52) — object with 6 plain-English term definitions used by the deck's vocabulary primer section AND markdown YAML frontmatter glossary:
+  ```json
+  {
+    "knowledge_base": "A single source on your drive every AI tool reads from.",
+    "plugin": "A cookbook of capabilities tailored to your company.",
+    "skill": "A single recipe in that cookbook — one workflow, one trigger.",
+    "agent": "A recipe that hands itself off to other recipes when the work needs more than one step.",
+    "scheduled_task": "A recipe that runs on a clock, even when you're asleep.",
+    "kicker": "Each one removes a kind of toil. The audit picks the ones that hurt most this quarter."
+  }
+  ```
+- `tyler_brief` — 100-word executive brief.
+
+**Web-search entity-aware language (v0.8):** When `audit-web-search` produces an `entity_map` with >1 entity, the synthesis explicitly names the secondary entities in `the_answer` / `wins_top_3` / `roadmap` body — e.g. *"For Baseline + JetPay — wire pipeline reports separately"* — instead of treating the company as a single monolith. Hard rule when entity_map has >1 entry.
 - `coverage` — 4 entries (one per audit category) with `{category, platforms, records_analyzed, confidence}`.
 - `dimensions` — 4 entries (one per audit category) with `{title, score, findings[]}`. Each finding `{severity, surprise, headline, recommendation}`.
 - `conflicts` — list of `{topic, summary, recommendation, needed_decision}`.
@@ -368,7 +418,9 @@ Task(
 
 The reviewer returns structured JSON with `verdict`, `hard_fails[]`, `soft_warns[]`, `stats{}`. Decision tree:
 
-- **If `verdict: ship` AND `hard_fails: []`** → proceed to Phase 5e. Log `soft_warns` to a sidecar `_review.json` file next to the deck for Tyler's later review.
+**Sidecar `_review.json` — always written (v0.8 EM-42).** Regardless of verdict, hard_fails, or soft_warns, write a sidecar `_review.json` next to the deck. Costs ~120-400 bytes per run; gains durable reviewer telemetry. The sidecar captures the full reviewer JSON return for Tyler's post-hoc audit.
+
+- **If `verdict: ship` AND `hard_fails: []`** → proceed to Phase 5e (gap-detection + resumption pass). Sidecar already written above.
 - **If `verdict: regenerate` AND `iteration < 3`** → for each `hard_fail`, fix the underlying issue:
   - `RENDER_*` codes → typically a renderer or template bug. Read the failing pattern, patch in the JSON synthesizer output if the data is wrong, or re-run the renderer if the bug is transient.
   - `MISSING_AI_MECHANISM` / `MISSING_AI_FIX` → re-run synthesis with explicit "every win must have ai_mechanism, every losing_time must have ai_fix" reminder. Update the JSON, re-render.
@@ -379,9 +431,46 @@ The reviewer returns structured JSON with `verdict`, `hard_fails[]`, `soft_warns
   Re-dispatch the reviewer with `iteration: 2`. Cap at 3 iterations.
 - **If `iteration == 3` AND hard_fails persist** → ship anyway with a short user-visible note: `The audit's ready, but I caught a couple of polish items I couldn't fix in this session. The deck is below; the full report is saved alongside.` Log the unfixed `hard_fails` to the sidecar `_review.json`.
 
-### 5e. Display inline as a Cowork artifact (mandatory)
+### 5e. Gap-detection + resumption pass (v0.8 NEW)
 
-If `mcp__cowork__create_artifact` is in the tool list, render the HTML buyer deck as a Cowork artifact. The artifact IS the primary deliverable — visible inline in chat without the user having to open a file link.
+After Wave 1 (all 9 subagents return), run an internal critique BEFORE displaying the artifact. This is the v0.8 quality lever — closes the surface-level gap that Round 6 EM-58 flagged.
+
+**Algorithm:**
+
+1. **Score each subagent's output** for thin spots, contradictions, missing entity coverage. Examples of thin spots:
+   - audit-systems mentioned the zombie pipeline but didn't dig into ownership distribution.
+   - audit-email's voice_pattern is empty (didn't sample sent threads).
+   - audit-web-search returned <3 entities for a known multi-entity company.
+   - audit-meeting-transcripts in very-deep mode returned <8 transcript_deep_reads.
+   - audit-drive returned drive_taxonomy without doctrine_pages identified.
+
+2. **For each thin spot, resume the responsible subagent** with a targeted follow-up question via the SDK's documented resume pattern:
+
+   ```
+   query({
+     prompt: "Resume agent {agentId} and dig into {specific question}",
+     options: { resume: sessionId }
+   })
+   ```
+
+   Subagents retain their full prior conversation, all tool calls, and all reasoning. The follow-up is a continuation, not a new dispatch.
+
+3. **Cap follow-ups by depth tier** (Tyler 2026-05-02: *"set it at four, set it at six. Like go wild."*):
+   - **Standard:** 1 follow-up per subagent (9 max)
+   - **Medium:** 3 follow-ups per subagent (27 max)
+   - **Very-deep:** 6 follow-ups per subagent (54 max)
+
+4. **Each resume call adds to `resume_trace[]`** in the synthesizer JSON: `{round, subagent, session_id, follow_up_prompt, refined_finding_summary, ms, tokens_est}`.
+
+5. **Re-run synthesis** on the post-follow-up consolidated finding set. Update `the_answer`, `wins_top_3`, `losing_time`, etc. with the deeper signal.
+
+6. **Re-run the deck reviewer** if the synthesis changed any rendered field. Re-render the deck + markdown if reviewer iteration was triggered.
+
+This is the v0.8 quality lever. Wider fan-out makes the audit go wider; resumption makes it go deeper without spinning up new subagents that lack context. SpaceX-ethos.
+
+### 5f. Display inline as a Cowork artifact (mandatory)
+
+If `mcp__cowork__create_artifact` is in the tool list, render the HTML buyer deck as a Cowork artifact. The artifact IS the primary deliverable.
 
 ```
 mcp__cowork__create_artifact({
@@ -395,21 +484,16 @@ If `mcp__cowork__create_artifact` is NOT available (Claude Code, headless), fall
 
 - Surface the HTML path so the user can open it: `Open your custom audit page at: {HTML_PATH}`.
 
-**Closing chat copy** (after the artifact renders):
+**Closing chat copy (v0.8 — EM-41/EM-47/EM-53 cleanup):**
 
-> Your custom audit page is above. Skim the 3 wins and the roadmap — that's where the value is. The full markdown report is also saved to `{MD_PATH}` if you want to forward it.
+> Your custom audit page is above. Skim the 3 wins and the roadmap — that's where the value is.
 
-Do NOT use phrases like "open in your browser for the full layout" or "read the markdown if you prefer flat text." The artifact IS the deliverable; the markdown is the analyst secondary.
+That's it. Do NOT emit:
+- The "saved to {MD_PATH} if you want to forward it" line (EM-41 — Cowork's create_artifact emits its own link to the markdown; ours is redundant).
+- The "Open full-screen in Chrome → file://..." line (EM-53 — Cowork's create_artifact emits its own clickable "View your audit deck" link; file:// links don't render clickable in Cowork chat anyway).
+- Any "open in your browser for the full layout" or "read the markdown if you prefer flat text" disclaimers — the artifact IS the deliverable.
 
-**Open in Chrome link (v0.7 — EM-28).** Immediately after the closing chat copy, emit one additional line pointing the user at the same HTML in their default browser:
-
-> Open full-screen in Chrome → file://{absolute_path_to_HTML_PATH}
-
-Where `{absolute_path_to_HTML_PATH}` is the resolved absolute path render_deck.py wrote the file to (the same path the artifact was sourced from). Use the literal `file://` scheme; do not URL-escape spaces in the path (the click handler in most chat clients expects the raw path).
-
-If the chat client doesn't render `file://` links as clickable, the path is at least visible and copy-pasteable. No `mcp__claude-in-chrome` programmatic open in v0.7 — the link is the deliverable, not a guaranteed launch.
-
-### 5f. Inline answer + Top 3 hook (post-artifact)
+### 5g. Inline answer + Top 3 hook (post-artifact)
 
 After the artifact renders, print the contestable answer + Top 3 wins as inline chat text. The hook gives the user something to anchor to in the chat history without re-scrolling the artifact:
 
@@ -420,7 +504,7 @@ After the artifact renders, print the contestable answer + Top 3 wins as inline 
 > 2. {wins_top_3[1].headline}
 > 3. {wins_top_3[2].headline}
 
-### 5g. Knowledge-base explainer (v0.6 — EM-39)
+### 5h. Knowledge-base explainer (v0.6 — EM-39)
 
 Before Phase 6 fires the next-step elicitation, emit a 4-paragraph explainer in chat that introduces what a knowledge base is, why it specifically helps THIS company, what they'd build, and how `/kb-build` does it. Each paragraph pulls from synthesizer JSON fields — no hard-coded copy. Persona-tailored.
 
@@ -451,7 +535,13 @@ The synthesizer fills these placeholders during Phase 5a; the explainer ships as
 
 ## Phase 6 — Recommended next step + secondary options (elicitation)
 
-Frame building the knowledge base as the recommended action. The Phase 5g explainer above sold the user on what a knowledge base is and why it fixes their specific pain — Phase 6 closes the loop with three paths.
+Frame building the knowledge base as the recommended action. The Phase 5h explainer above sold the user on what a knowledge base is and why it fixes their specific pain — Phase 6 closes the loop with three paths.
+
+**ASST #6 bridge sentence (v0.8 — EM-49).** Before rendering the form, emit a chat lead-in that bridges from the Phase 5h explainer to the action:
+
+> Pick a path. The recommended one opens `/kb-build` in a fresh Cowork project session, where the mining subagents read your connectors and turn the knowledge-base pages above into a real wiki you can self-serve from. Each phase gets its own session so token budget stays tractable.
+
+~50 words, two sentences, trades terse for concrete mechanism.
 
 Render Phase 6 as an elicitation form. Title: `"Next step"`. Submit label: `"Go"`. Skip label: `"Skip — close the audit"`.
 
@@ -520,9 +610,9 @@ If `primary_action = "Yes — save the audit first, I'll start later"`:
 2. Emit the same seed-prompt handoff as the recommended path (so the user has the exact paste-text when they're ready).
 3. End Phase 6. Phase 7 fires.
 
-### "No — close the audit here"
+### "No — close the audit here" (v0.8 — EM-48)
 
-Go directly to Phase 7.
+ASST #7 just confirms saves + draft email if those secondary actions ran. **Do NOT emit the `/kb-build --from-discover` seed prompt.** The user explicitly said no. Drop the handoff. Go directly to Phase 7.
 
 ### Option — Save to drive
 
@@ -558,11 +648,15 @@ Chain to `skills/draft-upsell-email/SKILL.md` with the teammate email as the `to
 
 ---
 
-## Phase 7 — Closing handoff
+## Phase 7 — Closing handoff (v0.8 — branches on Phase 6 primary_action)
 
 If the user picked `"Yes — chain inline (I have token room)"` in Phase 6, skip this phase — `/kb-build` owns the next moment.
 
-Otherwise emit a closing handoff (≤90 words, voice-checked):
+If the user picked `"No — close the audit here"` (v0.8 EM-48), do NOT emit the seed prompt. Phase 7 just confirms saves + draft email if those secondary actions ran:
+
+> {Saves confirmed if the user picked the save secondary action.} {Email draft confirmed if the user picked the draft-upsell-email secondary action.} You're set.
+
+Otherwise (user picked `"Yes — open /kb-build in a new session"` or `"Yes — save the audit first"`), emit the closing handoff (≤90 words, voice-checked):
 
 > Your custom audit page is above. The path forward is `/kb-build` — turn this into a living knowledge base every Claude session reads from. Open a new Cowork project session and paste:
 >
@@ -630,7 +724,7 @@ The deliverable IS the chat-rendered audit deck. Everything beyond is opt-in.
 ## Reference files
 
 - `references/orientation-copy.md` — the LOCKED Phase 1 message
-- `references/subagent-output-contract.md` — JSON contracts (audit subagent + synthesizer output, contract_version 2.2)
+- `references/subagent-output-contract.md` — JSON contracts (audit subagent + synthesizer output, contract_version 3.0)
 - `references/ai-readiness-rubric.md` — 8-dimension scoring rubric for synthesis
 - `references/report-template.html` — Prescyent dark-mode HTML layout shell (slot-based — no content tokens, no markdown→HTML middleman)
 - `scripts/render_markdown.py` — JSON → analyst markdown

@@ -4,6 +4,10 @@
 
 Install this plugin in Claude Cowork or Claude Code. The plugin reads the tools you have already connected, runs a discovery against your actual data, and returns a one-page AI readiness assessment inline in your chat. From there, it can turn the assessment into a living wiki on your own drive — interviewing your senior people for the work nobody wrote down — that every future Claude session reads from.
 
+**v0.8 architecture.** Nine audit lanes run in parallel: `audit-systems`, `audit-knowledge`, `audit-drive`, `audit-email`, `audit-comms`, `audit-meeting-transcripts`, `audit-stack`, `audit-sessions`, `audit-web-search`. The master then runs a gap-detection pass that resumes specific subagents to deepen findings (1/3/6 follow-ups per subagent at Standard/Medium/Very-deep depth). The buyer-facing HTML deck stays light and marketing-grade; the analyst markdown report becomes the load-bearing deliverable — 50-100 KB, AI-consumable for downstream `/kb-build --from-discover` ingestion or Prescyent's deal-context tooling.
+
+**Model defaults.** v0.8 ships with all subagents on Opus 4.7 + 1M context flag for self-dogfood validation. **Sonnet fallback** for cost-sensitive deployments: a single sed pass swaps every `model: opus` → `model: sonnet` across the agent files. Toggle for the alpha cohort before wider distribution.
+
 ## What you get
 
 | Command | What it does | When you run it |
@@ -35,10 +39,13 @@ You can also run `/discover` against any single connector you have plugged into 
 ```
                  ┌────────────────────────────────────────┐
                  │  /discover                             │
-                 │  Reads your connectors                 │
-                 │  Single widget form                    │
-                 │  4 audit subagents in parallel         │
-                 │  One-page report rendered in chat      │
+                 │  Reads your connectors + the open web  │
+                 │  Single widget form (3-tier depth)     │
+                 │  9 audit subagents in parallel         │
+                 │  Master gap-detection + resumption     │
+                 │  HTML deck + 50-100 KB markdown report │
+                 │  rendered inline + email body inline   │
+                 │  embeds the full artifact bundle       │
                  └────────────────────────────────────────┘
                                    │
                                    ▼
@@ -113,6 +120,12 @@ Seven schemas keep pages consistent and link-friendly. Full definitions under `s
 Every employee is a first-class user. `/kb-build` captures a champion on first run; each teammate joins later with their own widget submission and identity record. `/kb-interview` produces one private transcript plus one public profile per person. Multi-user converge is the design, not an afterthought.
 
 Voice is extracted from your team's actual writing and stored at `_meta/voice.md`. Every new page writes in your tone, not a generic corporate one.
+
+## Email body inline-embed (v0.8)
+
+When you select "Draft a follow-up email to us at Prescyent" at the end of `/discover`, the draft body **inline-embeds** the full artifact bundle (markdown + HTML + JSON) below the signoff. Gmail MCP `create_draft` doesn't accept attachments, so the body string IS the deliverable. Both human readers (top section, email-as-email) and AI consumers (bottom section, fenced ``` blocks for ingestion) are served from one body string.
+
+Body size is typically 110-180 KB — well within Gmail's 25 MB message limit. Some email clients (Outlook, Apple Mail) may truncate or warn at very large bodies; eyeball the first dogfood draft.
 
 ## Modes for `/discover`
 

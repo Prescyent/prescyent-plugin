@@ -48,6 +48,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("session_id", help="Cowork session ID, e.g. local_8dfa6c46-...")
     parser.add_argument("--raw", action="store_true", help="Include tool_use_ids + input previews per call")
+    parser.add_argument("--trace", action="store_true", help="Surface _trace[] per-tool-call rollup from each subagent's JSON return (v0.8 contract 3.0)")
     args = parser.parse_args()
 
     log_path = find_audit_log(args.session_id)
@@ -125,6 +126,54 @@ def main() -> int:
             print(f"    prompt chars: {info['prompt_chars']:,}")
             print(f"    result chars: {rc:,}")
             print(f"    prompt preview: {info['prompt_preview']}")
+
+    if args.trace:
+        print()
+        print("=== Subagent _trace[] rollup (v3.0 contract) ===")
+        # Re-walk the lines and look for tool_result blocks that carry parseable JSON
+        # with a _trace[] array (the v0.8 contract requirement).
+        for tid, info in task_calls.items():
+            for e in lines:
+                if e.get("type") != "user":
+                    continue
+                msg = e.get("message") or {}
+                for blk in msg.get("content", []) or []:
+                    if not isinstance(blk, dict) or blk.get("type") != "tool_result":
+                        continue
+                    if blk.get("tool_use_id") != tid:
+                        continue
+                    inner = blk.get("content", "")
+                    text = ""
+                    if isinstance(inner, list):
+                        text = "".join(
+                            str(ib.get("text", ""))
+                            for ib in inner
+                            if isinstance(ib, dict)
+                        )
+                    else:
+                        text = str(inner)
+                    # Look for the _trace block inside the JSON return.
+                    try:
+                        # The subagent return may be wrapped in prose; find a JSON object.
+                        start = text.find("{")
+                        end = text.rfind("}")
+                        if start >= 0 and end > start:
+                            parsed = json.loads(text[start : end + 1])
+                            trace = parsed.get("_trace", [])
+                            if trace:
+                                print()
+                                print(f"  {info['agent']} ({len(trace)} tool calls):")
+                                total_ms = sum(t.get("ms", 0) for t in trace)
+                                total_tokens = sum(t.get("tokens_est", 0) for t in trace)
+                                for t in trace:
+                                    print(
+                                        f"    - {t.get('tool','?')} "
+                                        f"({t.get('ms',0)}ms, ~{t.get('tokens_est',0):,}t)"
+                                        f"  {trunc(t.get('args_summary',''), 60)}"
+                                    )
+                                print(f"    TOTAL: {total_ms}ms, ~{total_tokens:,} tokens")
+                    except (json.JSONDecodeError, ValueError):
+                        pass
 
     return 0
 
