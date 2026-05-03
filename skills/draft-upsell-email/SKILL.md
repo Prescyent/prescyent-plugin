@@ -29,15 +29,17 @@ You are the conversion step of the Prescyent Discovery Audit. Your job is narrow
 - `tyler_brief` — 100-word executive brief from synthesizer. Seed for the body, NOT the body itself.
 - `to_email` — recipient address. Default `tyler@prescyent.ai`.
 
-## v0.8 contract — body inline-embeds artifact bundle
+## v0.8.1 contract — body inline-embeds the markdown only
 
-Tyler 2026-05-02 directive: *"since one of the deliverables being send an email to tyleratpresident.ai, instead of having to drag asking the user because Google ... the Gmail MCP doesn't allow to add attachments, so we can't attach the markdown file directly. I just want to see what is possible if we could actually just in the MCP tool call add in as text everything from the markdown file, the HTML file, and the JSON file directly into the body of the email. Now it would be below the sign-off of that person's name but just as documentation or whatever. So let's maybe try that."*
+Tyler 2026-05-02 directive (v0.8): *"the Gmail MCP doesn't allow to add attachments, so we can't attach the markdown file directly. I just want to see what is possible if we could actually just in the MCP tool call add in as text everything from the markdown file, the HTML file, and the JSON file directly into the body of the email."*
 
-**The fix:** Gmail MCP `create_draft` accepts a single `body` string parameter and that string can be arbitrarily long (Gmail itself accepts ~25-50MB messages). v0.8 embeds the FULL artifact contents directly into the body below the signoff. No attachments needed.
+**v0.8 attempted all three artifacts inline. v0.8.1 walks back to markdown only.** Why: the assembled md+html+json body was ~120 KB / ~50K tokens. Cowork's Read tool caps responses at 25K tokens, so the email skill couldn't get the assembled body into Claude's context to pass through to `create_draft`. The skill silently deferred ("artifacts saved locally") which left tyler@prescyent.ai with no actual content.
 
-The signoff line still ends the email-as-email at `Tyler`. Below the signoff is documentation/data for the recipient (or Prescyent's deal-context tool when it ingests). Most humans skim past horizontal rules; AI consumers parse fenced sections. Both audiences served from one body string.
+**v0.8.1 fix:** inline only the markdown. ~30 KB / ~12K tokens — fits in Cowork's Read cap. Markdown carries the full audit including the `Raw subagent JSON` appendix in fenced ```json blocks, so /kb-build --from-discover ingestion gets every subagent return. HTML deck is the human-facing alternate (Cowork artifact in the buyer's chat) and is NOT needed in the email body — the recipient (tyler@prescyent.ai or alpha-cohort recipients like Jack/Josh/BioMaxx) gets ONLY the email body, never the Cowork artifact and never local file paths. Markdown alone is sufficient for both AI ingestion and human skim.
 
-**Size estimate.** Markdown ~50-100 KB + HTML ~40-50 KB + JSON ~20-30 KB = ~110-180 KB email body. Gmail's 25 MB limit, well within. Some email clients (Outlook, Apple Mail) may truncate or warn at very large body sizes — Tyler will eyeball this when the first v0.8 dogfood draft lands.
+**Size:** ~30 KB email body total (lead-in + 3 wins + closing CTA + signoff + horizontal rule + ARTIFACT BUNDLE banner + markdown). Well within Gmail's ~25MB limit and Cowork's Read cap.
+
+**v0.8.2 / v0.9 future:** if dogfood reveals markdown-alone is insufficient and we genuinely need HTML or JSON inlined too, the right fix is a sandbox-side Python helper that posts to the Gmail MCP authenticated proxy URL without round-tripping the body through Claude's context. NOT scoped for v0.8.1.
 
 ## Step 1 — Detect email connector
 
@@ -56,15 +58,15 @@ If neither is connected:
 
 If both are connected, prefer the one the user has been sending from most recently, else prefer Gmail. If unclear, ask: "Draft in Gmail or Outlook?"
 
-## Step 2 — Read the three artifact files
+## Step 2 — Read the markdown artifact (v0.8.1 — markdown only)
 
 Use the `Read` tool to load:
 
 1. The markdown report at `{{report_path_md}}` — full text.
-2. The HTML deck at `{{report_path_html}}` — full text.
-3. The synthesizer JSON at `{{report_path_json}}` — full text.
 
-Capture each into a string variable. Compute size in KB for the size labels in the body separator banners.
+Capture into a string variable. Compute size in KB for the body separator banner. Markdown alone fits in Cowork's 25K-token Read cap (typical audit markdown is ~30 KB / ~12K tokens). Markdown carries the full audit including the `Raw subagent JSON` appendix at the end (fenced ```json blocks) — so /kb-build ingestion sees every subagent's full output without us also inlining the synthesizer JSON file.
+
+**Do NOT** read `report_path_html` or `report_path_json` (v0.8.1 walks back from the all-three-artifacts inline attempt). HTML deck stays as the buyer's Cowork artifact (rendered inline in the buyer's chat); JSON stays as the synthesizer's working file (the markdown's appendix already carries it). The recipient (tyler@prescyent.ai or alpha-cohort recipients) gets ONLY the email body — no local file paths in this body, no Cowork artifact link, just inline markdown.
 
 ## Step 3 — Compose the email body
 
@@ -97,29 +99,16 @@ Open to a 30-min call to discuss whether your engagement model fits this stage o
 ARTIFACT BUNDLE — for AI ingestion
 ────────────────────────────────────────────────────
 
-The full audit content is embedded below as plain-text dump for direct
-ingestion by Prescyent's deal-context tooling. Skip past this if you
-just wanted the email above. To use this with /kb-build, copy the
-markdown section into a fresh Cowork project and run
-/kb-build --from-discover with it.
+The full audit markdown is embedded below for direct ingestion by Prescyent's
+deal-context tooling. Skip past this if you just wanted the email above.
+To use this with /kb-build, copy the markdown section into a fresh Cowork
+project and run /kb-build --from-discover with it.
 
 ═══════════════════════════════════════════════════
 Markdown report ({{md_size_kb}} KB):
 ═══════════════════════════════════════════════════
 
 {{full markdown file contents verbatim}}
-
-═══════════════════════════════════════════════════
-HTML deck ({{html_size_kb}} KB) — copy this raw HTML to a .html file to view:
-═══════════════════════════════════════════════════
-
-{{full HTML file contents verbatim}}
-
-═══════════════════════════════════════════════════
-Synthesizer JSON ({{json_size_kb}} KB):
-═══════════════════════════════════════════════════
-
-{{full JSON file contents verbatim, formatted}}
 
 ═══════════════════════════════════════════════════
 END ARTIFACT BUNDLE
@@ -157,18 +146,18 @@ I just ran the Prescyent AI Discovery Audit on us. Overall readiness {{overall_s
 
 The rest of the body stays roughly the same, but the closing CTA shifts from "engagement model fits" to internal-action-oriented — e.g., "Want to grab 15 to walk through the top 3?". **Teammate variant DOES NOT include the artifact bundle below the signoff** — that's Prescyent-only context. Teammates get the email-as-email only.
 
-## Step 4 — Concatenate body string + create draft
+## Step 4 — Concatenate body string + create draft (v0.8.1 — markdown only)
 
 Concatenate:
 
 1. The voice-checked email body (everything from `{{company_name}} here.` through `{{user_first_name_or_dash}}`).
 2. The horizontal rule + ARTIFACT BUNDLE separator banner.
 3. The full markdown text (read in Step 2).
-4. The HTML separator banner + full HTML text.
-5. The JSON separator banner + full JSON text.
-6. The END ARTIFACT BUNDLE separator banner.
+4. The END ARTIFACT BUNDLE separator banner.
 
-Pass the concatenated string as the `body` parameter to the email MCP's `create_draft` tool. NO `attachments` parameter — the artifacts ARE the body now.
+Pass the concatenated string as the `body` parameter to the email MCP's `create_draft` tool. NO `attachments` parameter. NO HTML or JSON inline — markdown only.
+
+**Hard assertion (v0.8.1, LOAD-BEARING):** before calling `create_draft`, verify the assembled body string contains the literal text "ARTIFACT BUNDLE" AND contains the markdown's first section header (e.g. "# {{company_name}}"). If the assertion fails (Read tool returned an error, markdown was empty, etc.), do NOT call create_draft — fail loud with: *"Email inline-embed assertion failed: body is missing artifact contents. Aborting draft."* This prevents the v0.8 silent-deferral failure mode where the skill produced an email that looked complete but had no actual artifact content below the signoff.
 
 For Gmail MCP:
 
@@ -209,11 +198,11 @@ The v0.8 inline-embed design serves a SECOND purpose: when Tyler does open the d
 ## Failure modes
 
 - **User has no email connector:** copy-paste fallback (per Step 1). Still a conversion — just manual.
-- **Report HTML is missing (render failed upstream):** embed the markdown + JSON only. Note above the artifact bundle: "(HTML deck render failed — markdown + JSON below for full detail.)"
-- **Markdown is also missing:** abort with a clear message — there's nothing useful to embed.
+- **Markdown is missing (render failed upstream):** abort with a clear message — there's nothing useful to embed. Hard assertion in Step 4 catches this.
+- **Markdown is empty / 0 bytes:** abort. Hard assertion catches this.
+- **Markdown >25K tokens / >100KB:** rare given typical audit scope, but if Cowork's Read tool refuses, surface the error. Do NOT silently defer — that was the v0.8 failure mode. If the body genuinely doesn't fit, escalate to Tyler with a path forward (chunk via offset/limit Read pattern, OR fall back to inlining only the YAML frontmatter + Top 3 + losing_time sections, OR defer to v0.9 sandbox helper).
 - **User's email MCP throws auth error:** surface it. Do not silently fail.
-- **Body size > 10 MB:** rare with reasonable audit scopes, but if it happens, fall back to attachments-or-paths-in-body fallback. Surface the size.
-- **`session_audit_log_path` was previously a third attachment:** v0.8 deprecates this — the session log is too large to inline-embed and isn't part of the buyer-facing artifact bundle. If the master skill passes a non-null path, ignore it for v0.8.
+- **`session_audit_log_path` provided:** v0.8 deprecated as a third attachment; v0.8.1 keeps it deprecated. Ignore.
 
 ## Never do
 
