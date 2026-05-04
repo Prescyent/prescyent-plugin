@@ -29,17 +29,23 @@ You are the conversion step of the Prescyent Discovery Audit. Your job is narrow
 - `tyler_brief` — 100-word executive brief from synthesizer. Seed for the body, NOT the body itself.
 - `to_email` — recipient address. Default `tyler@prescyent.ai`.
 
-## v0.8.1 contract — body inline-embeds the markdown only
+## v0.8.2 contract — body inline-embeds the markdown only, chunked-Read for size
 
 Tyler 2026-05-02 directive (v0.8): *"the Gmail MCP doesn't allow to add attachments, so we can't attach the markdown file directly. I just want to see what is possible if we could actually just in the MCP tool call add in as text everything from the markdown file, the HTML file, and the JSON file directly into the body of the email."*
 
-**v0.8 attempted all three artifacts inline. v0.8.1 walks back to markdown only.** Why: the assembled md+html+json body was ~120 KB / ~50K tokens. Cowork's Read tool caps responses at 25K tokens, so the email skill couldn't get the assembled body into Claude's context to pass through to `create_draft`. The skill silently deferred ("artifacts saved locally") which left tyler@prescyent.ai with no actual content.
+**v0.8 attempted all three artifacts inline. v0.8.1 walked back to markdown only. v0.8.2 keeps the markdown-only design and adds chunked Read so the full markdown actually fits regardless of size.**
 
-**v0.8.1 fix:** inline only the markdown. ~30 KB / ~12K tokens — fits in Cowork's Read cap. Markdown carries the full audit including the `Raw subagent JSON` appendix in fenced ```json blocks, so /kb-build --from-discover ingestion gets every subagent return. HTML deck is the human-facing alternate (Cowork artifact in the buyer's chat) and is NOT needed in the email body — the recipient (tyler@prescyent.ai or alpha-cohort recipients like Jack/Josh/BioMaxx) gets ONLY the email body, never the Cowork artifact and never local file paths. Markdown alone is sufficient for both AI ingestion and human skim.
+Why v0.8.2 was needed: v0.8.1 was sized against a stub fixture that produced ~30KB rendered markdown. Real audits on rich Cowork sessions produce ~99KB markdown (3.3× the spec) — measured against `local_8a427367` Baseline Payments audit on 2026-05-04. Cowork's Read tool caps responses at 25K tokens (~100KB of typical markdown), so a single Read on a 99KB file returned a truncation error and the skill fell back to synthesis-only inline + a pointer-to-local-file note. That fallback wasn't supposed to be the default path.
 
-**Size:** ~30 KB email body total (lead-in + 3 wins + closing CTA + signoff + horizontal rule + ARTIFACT BUNDLE banner + markdown). Well within Gmail's ~25MB limit and Cowork's Read cap.
+**v0.8.2 fix:** branch on file size before reading.
+- File < 80KB: single Read (existing v0.8.1 behavior).
+- File ≥ 80KB: chunked Read via `offset` + `limit` (500 lines per chunk), assemble in Claude's context, pass full body to `create_draft`.
 
-**v0.8.2 / v0.9 future:** if dogfood reveals markdown-alone is insufficient and we genuinely need HTML or JSON inlined too, the right fix is a sandbox-side Python helper that posts to the Gmail MCP authenticated proxy URL without round-tripping the body through Claude's context. NOT scoped for v0.8.1.
+The recipient (tyler@prescyent.ai or alpha-cohort recipients like Jack/Josh/BioMaxx) still gets ONLY the email body — no Cowork artifact, no local file paths. Markdown alone carries the full audit including the `Raw subagent JSON` appendix in fenced ```json blocks, so /kb-build --from-discover ingestion sees every subagent return without us also inlining the synthesizer JSON file.
+
+**Size budget:** typical real audit is ~95-100 KB email body (lead-in ~2KB + 3 wins + closing CTA + signoff + horizontal rule + ARTIFACT BUNDLE banner + 95KB markdown). Well within Gmail's ~25MB limit. Cowork's Read 25K-token cap is irrelevant — chunked Read sidesteps it.
+
+**v0.9 future:** if a future audit produces >250KB markdown (multi-entity discoveries, very-deep retrofitted with parallel resumption), the chunked-Read pattern still works but starts ballooning Claude's context (~60K+ tokens just to assemble the body). At that point, the right fix is a sandbox-side Python helper that posts to the Gmail MCP authenticated proxy URL without round-tripping the body through Claude's context. NOT scoped for v0.8.2.
 
 ## Step 1 — Detect email connector
 
@@ -58,15 +64,32 @@ If neither is connected:
 
 If both are connected, prefer the one the user has been sending from most recently, else prefer Gmail. If unclear, ask: "Draft in Gmail or Outlook?"
 
-## Step 2 — Read the markdown artifact (v0.8.1 — markdown only)
+## Step 2 — Read the markdown artifact (v0.8.2 — chunked Read for any size)
 
-Use the `Read` tool to load:
+**Step 2a — Get file size first.** Don't blindly Read; Cowork's Read tool caps responses at 25K tokens (~100KB of typical text). Real audit markdowns regularly exceed 80KB. Run a Bash one-liner first:
 
-1. The markdown report at `{{report_path_md}}` — full text.
+```bash
+wc -lc {{report_path_md}}
+```
 
-Capture into a string variable. Compute size in KB for the body separator banner. Markdown alone fits in Cowork's 25K-token Read cap (typical audit markdown is ~30 KB / ~12K tokens). Markdown carries the full audit including the `Raw subagent JSON` appendix at the end (fenced ```json blocks) — so /kb-build ingestion sees every subagent's full output without us also inlining the synthesizer JSON file.
+This returns line count + byte count without reading the file into Claude's context.
 
-**Do NOT** read `report_path_html` or `report_path_json` (v0.8.1 walks back from the all-three-artifacts inline attempt). HTML deck stays as the buyer's Cowork artifact (rendered inline in the buyer's chat); JSON stays as the synthesizer's working file (the markdown's appendix already carries it). The recipient (tyler@prescyent.ai or alpha-cohort recipients) gets ONLY the email body — no local file paths in this body, no Cowork artifact link, just inline markdown.
+**Step 2b — Branch on size.**
+
+- **File < 80,000 bytes** → single `Read({file_path: report_path_md})`. Captures the full text in one shot. Existing v0.8.1 behavior.
+- **File ≥ 80,000 bytes** → chunked Read. Loop until eof:
+  1. Start `offset = 0`, `chunk_lines = 500`.
+  2. `Read({file_path: report_path_md, offset: <offset>, limit: <chunk_lines>})` — captures up to 500 lines per chunk, well under the 25K-token cap.
+  3. Append chunk content to your accumulating body string.
+  4. Increment `offset` by `chunk_lines`. Repeat until a Read returns fewer than `chunk_lines` lines (eof) or returns empty.
+
+**Step 2c — Verify completeness.** After assembly, the captured string length should equal the source byte count (give or take line-ending normalization). If your assembled string is significantly shorter than the source file's byte count, you have a chunking bug — abort with a clear error rather than sending a truncated email.
+
+**Capture into a string variable.** Compute size in KB for the body separator banner. The markdown carries the full audit including the `Raw subagent JSON` appendix at the end (fenced ```json blocks) — so /kb-build ingestion sees every subagent's full output without us also inlining the synthesizer JSON file.
+
+**Do NOT** read `report_path_html` or `report_path_json` (v0.8.1 walked back from the all-three-artifacts inline attempt; v0.8.2 maintains that decision). HTML deck stays as the buyer's Cowork artifact (rendered inline in the buyer's chat); JSON stays as the synthesizer's working file (the markdown's appendix already carries it). The recipient (tyler@prescyent.ai or alpha-cohort recipients) gets ONLY the email body — no local file paths in this body, no Cowork artifact link, just inline markdown.
+
+**Why this matters:** without chunked Read, any audit producing >12K tokens of markdown (which will be most real audits) hits Cowork's Read cap on the single-Read approach. The skill then falls back to synthesis-only inline (~10KB) plus a "see local file" pointer. The recipient loses the per-subagent appendix, /kb-build can't ingest cleanly without separate file access, and v0.8.1's documented behavior is silently bypassed. v0.8.2's chunked Read closes that gap so the recipient always gets the full audit in the body.
 
 ## Step 3 — Compose the email body
 
@@ -157,7 +180,13 @@ Concatenate:
 
 Pass the concatenated string as the `body` parameter to the email MCP's `create_draft` tool. NO `attachments` parameter. NO HTML or JSON inline — markdown only.
 
-**Hard assertion (v0.8.1, LOAD-BEARING):** before calling `create_draft`, verify the assembled body string contains the literal text "ARTIFACT BUNDLE" AND contains the markdown's first section header (e.g. "# {{company_name}}"). If the assertion fails (Read tool returned an error, markdown was empty, etc.), do NOT call create_draft — fail loud with: *"Email inline-embed assertion failed: body is missing artifact contents. Aborting draft."* This prevents the v0.8 silent-deferral failure mode where the skill produced an email that looked complete but had no actual artifact content below the signoff.
+**Hard assertions (v0.8.2, LOAD-BEARING — three checks):** before calling `create_draft`, verify all three:
+
+1. **Marker check.** Assembled body contains the literal text "ARTIFACT BUNDLE" AND contains the markdown's first section header (e.g. "# {{company_name}}"). Catches cases where Read returned an error, markdown was empty, or the artifact bundle banner was forgotten in concatenation.
+2. **Length check (NEW in v0.8.2).** The portion of the assembled body below the "Markdown report" banner must be within ±5% of the source markdown file's byte count (per `wc -c` from Step 2a). Catches partial-chunk-assembly bugs in the chunked-Read path — if you walked the offset loop and only got 60% of the file in, this fires before send.
+3. **No fallback-leak check (NEW in v0.8.2).** Body must NOT contain the literal phrase "synthesis-only inline" or "documented fallback applies" (legacy v0.8.1 fallback strings). If those phrases appear, an upstream branch escaped to the wrong path — abort.
+
+If ANY assertion fails: do NOT call create_draft. Fail loud with: *"Email inline-embed assertion failed: <which check> — <details>. Aborting draft."* This prevents the v0.8 silent-deferral failure mode AND the v0.8.1 fallback-was-canonical failure mode where the skill produced an email that looked complete but had truncated or summarized artifact content.
 
 For Gmail MCP:
 

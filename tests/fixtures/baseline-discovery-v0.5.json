@@ -1,6 +1,6 @@
 {
   "contract_version": "3.0",
-  "plugin_version": "0.8.0",
+  "plugin_version": "0.8.2",
   "cowork_observed": true,
   "depth_tier": "Very-deep",
   "company_name": "Baseline Payments",
@@ -32,7 +32,7 @@
     },
     {
       "rank": 2,
-      "headline": "Build the Granola → Gmail-draft + HubSpot-note loop.",
+      "headline": "Build the Granola \u2192 Gmail-draft + HubSpot-note loop.",
       "one_liner": "26 Fathom recordings in 30 days, zero CRM writebacks. The wiki has the playbook; the connectors are wired.",
       "ai_mechanism": "A Claude skill triggered by Fathom recap that drafts the email + writes the CRM note.",
       "impact_metric": "~1.5 hrs/week back",
@@ -55,7 +55,7 @@
       "evidence": "Michael & Son thread on April 30 produced nine separate emails in three hours for one 30-min pre-game."
     }
   ],
-  "why_now": "Today is the inflection moment. Companies are splitting into two AI plays — use AI to do the same things slightly cheaper, or use AI to do things that were impossible last quarter. The companies pulling ahead aren't cutting headcount. They're running outbound motions no human team could sustain, building knowledge layers that compound, shipping product before competitors notice. Baseline has the connector surface to play that game. What's missing is the wiring.",
+  "why_now": "Today is the inflection moment. Companies are splitting into two AI plays \u2014 use AI to do the same things slightly cheaper, or use AI to do things that were impossible last quarter. The companies pulling ahead aren't cutting headcount. They're running outbound motions no human team could sustain, building knowledge layers that compound, shipping product before competitors notice. Baseline has the connector surface to play that game. What's missing is the wiring.",
   "losing_time": [
     {
       "headline": "You author every external calendar invite by hand.",
@@ -77,26 +77,26 @@
     },
     {
       "headline": "Merchants email you for hardware and account changes that should never touch your inbox.",
-      "one_liner": "Osprey, Sea Air, RVYC, Pacific Backlot — all sent terminal/account requests directly to tyler@.",
+      "one_liner": "Osprey, Sea Air, RVYC, Pacific Backlot \u2014 all sent terminal/account requests directly to tyler@.",
       "time_cost": "0.75 hrs/week",
       "ai_fix": "Gmail AI triage that auto-routes hardware/account requests to elsy@ / georgina@"
     }
   ],
   "roadmap": [
     {
-      "window": "Now → 3 months",
+      "window": "Now \u2192 3 months",
       "title": "Quick wins",
       "body": "Ship the 3 wins above. Plus: a knowledge base on the Drive that every AI tool reads from. Replace stale Notion doctrine with the canonical wiki.",
       "accent": "green"
     },
     {
-      "window": "3 → 6 months",
+      "window": "3 \u2192 6 months",
       "title": "Skills layer",
       "body": "Custom skills for your top 5 recurring workflows: pipeline reports, post-call recap drafts, calendar admin, ticket intake, weekly research digests. Your personal cookbook.",
       "accent": "cyan"
     },
     {
-      "window": "6 → 12 months",
+      "window": "6 \u2192 12 months",
       "title": "Scheduled tasks",
       "body": "Skills run on cron. Esker drafts arrive Monday 8am. Daily competitive scan in your inbox at 7am. Weekly pipeline hygiene check. You wake up to drafts, not work.",
       "accent": "purple"
@@ -104,7 +104,7 @@
     {
       "window": "12 months+",
       "title": "Durable agents",
-      "body": "Cloud-deployed agents triggered by real-world events. New ticket → AI-drafted response in 30 sec. New deal stage → CRM enrichment + research brief. Work happens before you sit down.",
+      "body": "Cloud-deployed agents triggered by real-world events. New ticket \u2192 AI-drafted response in 30 sec. New deal stage \u2192 CRM enrichment + research brief. Work happens before you sit down.",
       "accent": "brass"
     }
   ],
@@ -128,25 +128,45 @@
       "cta_label": "Talk to us"
     }
   ],
-  "path_forward": "The audit findings point at one structural pattern: every AI tool at Baseline operates without a persistent context layer accessible to the team. The fix is finishing what you started — a single knowledge base on the Drive that every AI tool reads from, mined from your connectors, kept current automatically.",
-  "tyler_brief": "Baseline Payments has a v5.0.0 structured knowledge base on the Drive that almost no founder builds. Their AI stack is A-grade. The bottleneck is that every workflow runs through Tyler personally instead of through deterministic automation. Three immediate wins (zombie pipeline disconnect, Granola→Gmail loop, calendar-invite generator) free up ~7 hrs/week. The bigger move is finishing the KB so Marc, JS, and Matt operate from the same canonical source. Founder, ready for Phase 1 plugins.",
-  "company_industry": "B2B payments processor — Canadian merchant services + payment infrastructure",
+  "path_forward": "The audit findings point at one structural pattern: every AI tool at Baseline operates without a persistent context layer accessible to the team. The fix is finishing what you started \u2014 a single knowledge base on the Drive that every AI tool reads from, mined from your connectors, kept current automatically.",
+  "tyler_brief": "Baseline Payments has a v5.0.0 structured knowledge base on the Drive that almost no founder builds. Their AI stack is A-grade. The bottleneck is that every workflow runs through Tyler personally instead of through deterministic automation. Three immediate wins (zombie pipeline disconnect, Granola\u2192Gmail loop, calendar-invite generator) free up ~7 hrs/week. The bigger move is finishing the KB so Marc, JS, and Matt operate from the same canonical source. Founder, ready for Phase 1 plugins.",
+  "company_industry": "B2B payments processor \u2014 Canadian merchant services + payment infrastructure",
   "kb_explainer": {
-    "what_it_is": "A single source on your Google Drive that every AI tool reads from. Karpathy-style — structured pages your team writes once, that compound across every Claude session, every employee, every quarter.",
+    "what_it_is": "A single source on your Google Drive that every AI tool reads from. Karpathy-style \u2014 structured pages your team writes once, that compound across every Claude session, every employee, every quarter.",
     "why_now_for_company": "The audit found that every AI workflow at Baseline currently flows through one human (you) instead of through a shared knowledge layer the team can self-serve. A knowledge base directly fixes that. Without it, every workflow on the roadmap above runs cold every time a new session starts.",
     "what_youd_build": [
-      "Esker pipeline doctrine — so the Monday report draft has context for stage hygiene + Virginie's review pattern.",
-      "Customer onboarding patterns — so support ticket triage knows when to escalate to Elsy/Georgina.",
-      "Sales playbook — so post-call drafts match your team's voice and competitive positioning.",
-      "Calendar admin doctrine — so the invite-generator skill knows your internal vs external attendee patterns."
+      "Esker pipeline doctrine \u2014 so the Monday report draft has context for stage hygiene + Virginie's review pattern.",
+      "Customer onboarding patterns \u2014 so support ticket triage knows when to escalate to Elsy/Georgina.",
+      "Sales playbook \u2014 so post-call drafts match your team's voice and competitive positioning.",
+      "Calendar admin doctrine \u2014 so the invite-generator skill knows your internal vs external attendee patterns."
     ],
-    "how_kb_build_does_it": "Mining subagents read your connectors. They distill what's already there into typed pages. Then `/kb-interview` adds the parts that only live in your team's heads — 30-min voice conversations with your senior team that fill the gaps. The whole thing takes about a week."
+    "how_kb_build_does_it": "Mining subagents read your connectors. They distill what's already there into typed pages. Then `/kb-interview` adds the parts that only live in your team's heads \u2014 30-min voice conversations with your senior team that fill the gaps. The whole thing takes about a week."
   },
   "coverage": [
-    {"category": "GTM & Systems", "platforms": "HubSpot", "records_analyzed": "200 deals · 100 contacts · 10 tickets · 101 owners", "confidence": "High"},
-    {"category": "Knowledge & Docs", "platforms": "Google Drive · Notion", "records_analyzed": "127 Drive files · 47 Notion pages · 11 deep reads", "confidence": "Medium"},
-    {"category": "Communications", "platforms": "Gmail · Calendar · Chat · Fathom · Granola", "records_analyzed": "100+ threads · 41 meetings · 82 chat spaces · 26 Fathom recordings", "confidence": "High"},
-    {"category": "Stack", "platforms": "11 connectors visible", "records_analyzed": "Catalog scored across rubric · 2 unconnected adjacencies", "confidence": "High"}
+    {
+      "category": "GTM & Systems",
+      "platforms": "HubSpot",
+      "records_analyzed": "200 deals \u00b7 100 contacts \u00b7 10 tickets \u00b7 101 owners",
+      "confidence": "High"
+    },
+    {
+      "category": "Knowledge & Docs",
+      "platforms": "Google Drive \u00b7 Notion",
+      "records_analyzed": "127 Drive files \u00b7 47 Notion pages \u00b7 11 deep reads",
+      "confidence": "Medium"
+    },
+    {
+      "category": "Communications",
+      "platforms": "Gmail \u00b7 Calendar \u00b7 Chat \u00b7 Fathom \u00b7 Granola",
+      "records_analyzed": "100+ threads \u00b7 41 meetings \u00b7 82 chat spaces \u00b7 26 Fathom recordings",
+      "confidence": "High"
+    },
+    {
+      "category": "Stack",
+      "platforms": "11 connectors visible",
+      "records_analyzed": "Catalog scored across rubric \u00b7 2 unconnected adjacencies",
+      "confidence": "High"
+    }
   ],
   "dimensions": [
     {
@@ -199,7 +219,7 @@
           "severity": "High",
           "surprise": "High",
           "headline": "38% of email volume is calendar admin you author manually.",
-          "recommendation": "Subsumed by Top 3 move #3 — Claude skill replaces the calendar-invite factory."
+          "recommendation": "Subsumed by Top 3 move #3 \u2014 Claude skill replaces the calendar-invite factory."
         },
         {
           "severity": "High",
@@ -222,7 +242,7 @@
         {
           "severity": "High",
           "surprise": "High",
-          "headline": "Trumpet (digital sales room) is unconnected. Buyer engagement data — the highest-intent signal in B2B payments — is fully siloed.",
+          "headline": "Trumpet (digital sales room) is unconnected. Buyer engagement data \u2014 the highest-intent signal in B2B payments \u2014 is fully siloed.",
           "recommendation": "Configure Trumpet's native HubSpot integration. 30-minute setup."
         }
       ]
@@ -243,9 +263,21 @@
     }
   ],
   "coverage_gaps": [
-    {"gap": "Koncert (out of scope)", "impact": "SDR call activity siloed.", "fix": "Configure Koncert native HubSpot sync (Matt owns)."},
-    {"gap": "Trumpet (out of scope)", "impact": "Buyer engagement signal siloed.", "fix": "Configure Trumpet native HubSpot integration."},
-    {"gap": "HubSpot TEAMS / SEATS / JOB_TITLES", "impact": "Org-chart and seat analysis unavailable.", "fix": "Reauthorize the HubSpot MCP with crm.schemas.read and settings.users.read."}
+    {
+      "gap": "Koncert (out of scope)",
+      "impact": "SDR call activity siloed.",
+      "fix": "Configure Koncert native HubSpot sync (Matt owns)."
+    },
+    {
+      "gap": "Trumpet (out of scope)",
+      "impact": "Buyer engagement signal siloed.",
+      "fix": "Configure Trumpet native HubSpot integration."
+    },
+    {
+      "gap": "HubSpot TEAMS / SEATS / JOB_TITLES",
+      "impact": "Org-chart and seat analysis unavailable.",
+      "fix": "Reauthorize the HubSpot MCP with crm.schemas.read and settings.users.read."
+    }
   ],
   "open_questions": [
     {
@@ -254,12 +286,12 @@
       "needed_decision": "Confirm and either deploy or formally retire the documented sequences."
     }
   ],
-  "next_steps_role_aware": "Review the Top 3 wins with your senior team this week. The zombie-pipeline fix is the single highest-surprise finding — disconnect before the next pipeline review.",
+  "next_steps_role_aware": "Review the Top 3 wins with your senior team this week. The zombie-pipeline fix is the single highest-surprise finding \u2014 disconnect before the next pipeline review.",
   "next_steps_connector_aware": "Connect Trumpet to HubSpot via the native integration. Buyer engagement data is the highest-intent signal in B2B payments and it's currently siloed.",
   "tan_attribution_footnote": "The zero-sum vs positive-sum framing comes from Garry Tan's February 2026 essay on AI strategy bifurcation.",
   "behavioral_history_findings": [
     {
-      "pattern": "User runs /gtm-wizards:call-prep 14 times in 30 days. 11 of 14 sessions ended with manual edits to the AI-drafted deck. Pattern is deterministic with manual finishing — strong scheduled-task candidate.",
+      "pattern": "User runs /gtm-wizards:call-prep 14 times in 30 days. 11 of 14 sessions ended with manual edits to the AI-drafted deck. Pattern is deterministic with manual finishing \u2014 strong scheduled-task candidate.",
       "confidence": "High",
       "evidence": "Cowork session history: 14 matching sessions across 30 days, last-30-message tails sampled."
     },
@@ -269,12 +301,11 @@
       "evidence": "Cowork session history: 3 matching sessions sampled."
     },
     {
-      "pattern": "Two of three Notion-restructure sessions in the last 90 days ended with the user reverting AI-suggested page hierarchy. Implies the AI's structural guess didn't carry the team's mental model — strong KB-builder mining candidate before any further structure work.",
+      "pattern": "Two of three Notion-restructure sessions in the last 90 days ended with the user reverting AI-suggested page hierarchy. Implies the AI's structural guess didn't carry the team's mental model \u2014 strong KB-builder mining candidate before any further structure work.",
       "confidence": "Medium",
       "evidence": "Cowork session history: 3 sessions sampled, 2 closed with revert pattern."
     }
   ],
-
   "lane_health": [
     {
       "lane": "audit-systems",
@@ -291,22 +322,35 @@
       "fix": "Connect Google Drive in Cowork settings (or grant the existing connector additional scopes) and re-run /discover."
     }
   ],
-
   "vocabulary_primer": {
     "knowledge_base": "A single source on your drive every AI tool reads from.",
     "plugin": "A cookbook of capabilities tailored to your company.",
-    "skill": "A single recipe in that cookbook — one workflow, one trigger.",
+    "skill": "A single recipe in that cookbook \u2014 one workflow, one trigger.",
     "agent": "A recipe that hands itself off to other recipes when the work needs more than one step.",
     "scheduled_task": "A recipe that runs on a clock, even when you're asleep.",
     "kicker": "Each one removes a kind of toil. The audit picks the ones that hurt most this quarter."
   },
-
   "entity_map": [
-    {"name": "Baseline Payments", "type": "primary", "domain": "baselinepayments.com", "description": "B2B payments processor"},
-    {"name": "JetPay", "type": "product_line", "parent": "Baseline Payments", "domain": "jetpay.com", "description": "Merchant onboarding product line"},
-    {"name": "Hernando Capital Ltd.", "type": "operating_company", "relationship": "holding entity for tyler@", "description": "Canadian CCPC holding company"}
+    {
+      "name": "Baseline Payments",
+      "type": "primary",
+      "domain": "baselinepayments.com",
+      "description": "B2B payments processor"
+    },
+    {
+      "name": "JetPay",
+      "type": "product_line",
+      "parent": "Baseline Payments",
+      "domain": "jetpay.com",
+      "description": "Merchant onboarding product line"
+    },
+    {
+      "name": "Hernando Capital Ltd.",
+      "type": "operating_company",
+      "relationship": "holding entity for tyler@",
+      "description": "Canadian CCPC holding company"
+    }
   ],
-
   "voice_pattern": {
     "formality": "casual",
     "median_length_words": 87,
@@ -314,91 +358,228 @@
     "sign_off_pattern": "first-name-only",
     "lead_pattern": "lead-with-the-thing"
   },
-
   "voice_samples": [
-    {"source": "audit-email", "source_ref": "thread:abc123", "to_domain": "@partner.io", "excerpt": "Wanted to flag the Q2 number before our Tuesday sync. The pipeline shifted right after the JetPay disconnect — happy to walk through the numbers if useful."},
-    {"source": "audit-drive", "source_ref": "/Drafts/q1-recap.md", "excerpt": "Q1 closed strong on the partnership side. Three things we shipped that compound: the Esker deployment, the migration to Granola, and the wiki rewrite."}
+    {
+      "source": "audit-email",
+      "source_ref": "thread:abc123",
+      "to_domain": "@partner.io",
+      "excerpt": "Wanted to flag the Q2 number before our Tuesday sync. The pipeline shifted right after the JetPay disconnect \u2014 happy to walk through the numbers if useful."
+    },
+    {
+      "source": "audit-drive",
+      "source_ref": "/Drafts/q1-recap.md",
+      "excerpt": "Q1 closed strong on the partnership side. Three things we shipped that compound: the Esker deployment, the migration to Granola, and the wiki rewrite."
+    }
   ],
-
   "email_matrix": {
     "top_inbound_senders": [
-      {"sender": "alice@partner.io", "volume_12mo": 312, "domain_type": "external_partner"},
-      {"sender": "team@baselinepayments.com", "volume_12mo": 198, "domain_type": "internal"},
-      {"sender": "support@hubspot.com", "volume_12mo": 87, "domain_type": "vendor"}
+      {
+        "sender": "alice@partner.io",
+        "volume_12mo": 312,
+        "domain_type": "external_partner"
+      },
+      {
+        "sender": "team@baselinepayments.com",
+        "volume_12mo": 198,
+        "domain_type": "internal"
+      },
+      {
+        "sender": "support@hubspot.com",
+        "volume_12mo": 87,
+        "domain_type": "vendor"
+      }
     ],
     "top_outbound_domains": [
-      {"domain": "@baselinepayments.com", "volume_12mo": 2104, "dominant_thread_type": "internal-coord"},
-      {"domain": "@partner.io", "volume_12mo": 412, "dominant_thread_type": "deal-coord"}
+      {
+        "domain": "@baselinepayments.com",
+        "volume_12mo": 2104,
+        "dominant_thread_type": "internal-coord"
+      },
+      {
+        "domain": "@partner.io",
+        "volume_12mo": 412,
+        "dominant_thread_type": "deal-coord"
+      }
     ],
     "sent_received_ratios": {
-      "alice@partner.io": {"sent": 198, "received": 312, "ratio": 0.63},
-      "team@baselinepayments.com": {"sent": 412, "received": 198, "ratio": 2.08}
+      "alice@partner.io": {
+        "sent": 198,
+        "received": 312,
+        "ratio": 0.63
+      },
+      "team@baselinepayments.com": {
+        "sent": 412,
+        "received": 198,
+        "ratio": 2.08
+      }
     },
     "response_time_medians": {
       "alice@partner.io": "1.5h",
       "team@baselinepayments.com": "20min"
     },
     "recurring_workflows": [
-      {"pattern": "Weekly pipeline digest", "subject_template": "Pipeline week of {date}", "frequency": "weekly", "recipients": ["team@baselinepayments.com"]},
-      {"pattern": "Calendar admin batch", "subject_template": "RE: meeting reschedule", "frequency": "daily", "recipients": ["multiple"]}
+      {
+        "pattern": "Weekly pipeline digest",
+        "subject_template": "Pipeline week of {date}",
+        "frequency": "weekly",
+        "recipients": [
+          "team@baselinepayments.com"
+        ]
+      },
+      {
+        "pattern": "Calendar admin batch",
+        "subject_template": "RE: meeting reschedule",
+        "frequency": "daily",
+        "recipients": [
+          "multiple"
+        ]
+      }
     ],
     "attachment_patterns": [
-      {"to_domain": "@partner.io", "file_type": ".pdf", "volume": 22, "common_subject_pattern": "Statement of Work"}
+      {
+        "to_domain": "@partner.io",
+        "file_type": ".pdf",
+        "volume": 22,
+        "common_subject_pattern": "Statement of Work"
+      }
     ]
   },
-
   "drive_taxonomy": {
     "root_label": "Tyler @ Baseline (Google Drive)",
     "top_folders": [
-      {"path": "/Wiki", "file_count": 47, "depth": 3, "authority_score": 9, "last_modified": "2026-04-30"},
-      {"path": "/Decks", "file_count": 22, "depth": 2, "authority_score": 7, "last_modified": "2026-05-01"},
-      {"path": "/Drafts", "file_count": 18, "depth": 2, "authority_score": 6, "last_modified": "2026-04-28"}
+      {
+        "path": "/Wiki",
+        "file_count": 47,
+        "depth": 3,
+        "authority_score": 9,
+        "last_modified": "2026-04-30"
+      },
+      {
+        "path": "/Decks",
+        "file_count": 22,
+        "depth": 2,
+        "authority_score": 7,
+        "last_modified": "2026-05-01"
+      },
+      {
+        "path": "/Drafts",
+        "file_count": 18,
+        "depth": 2,
+        "authority_score": 6,
+        "last_modified": "2026-04-28"
+      }
     ],
     "authority_clusters": [
-      {"name": "Playbooks", "patterns": ["playbook", "doctrine", "SOP"], "page_count": 14},
-      {"name": "Templates", "patterns": ["template", "draft"], "page_count": 9}
+      {
+        "name": "Playbooks",
+        "patterns": [
+          "playbook",
+          "doctrine",
+          "SOP"
+        ],
+        "page_count": 14
+      },
+      {
+        "name": "Templates",
+        "patterns": [
+          "template",
+          "draft"
+        ],
+        "page_count": 9
+      }
     ],
     "stale_pages": [
-      {"path": "/Wiki/2024-q1-strategy.md", "last_modified": "2024-03-15", "still_referenced": false}
+      {
+        "path": "/Wiki/2024-q1-strategy.md",
+        "last_modified": "2024-03-15",
+        "still_referenced": false
+      }
     ],
     "doctrine_pages": [
-      {"path": "/Wiki/sales-playbook.md", "owner": "tyler@baselinepayments.com", "last_modified": "2026-04-22", "promote_to_canonical": true}
+      {
+        "path": "/Wiki/sales-playbook.md",
+        "owner": "tyler@baselinepayments.com",
+        "last_modified": "2026-04-22",
+        "promote_to_canonical": true
+      }
     ]
   },
-
   "comms_patterns": {
     "calendar_meeting_density": {
       "weekly_avg_meetings": 18,
       "weekly_avg_meeting_hours": 14,
-      "by_quarter": {"2025-q4": 16, "2026-q1": 19, "2026-q2": 18}
+      "by_quarter": {
+        "2025-q4": 16,
+        "2026-q1": 19,
+        "2026-q2": 18
+      }
     },
     "recurring_meeting_cadences": [
-      {"title_pattern": "Weekly leadership", "frequency": "weekly", "attendee_count": 5},
-      {"title_pattern": "Monthly Esker review", "frequency": "monthly", "attendee_count": 7}
+      {
+        "title_pattern": "Weekly leadership",
+        "frequency": "weekly",
+        "attendee_count": 5
+      },
+      {
+        "title_pattern": "Monthly Esker review",
+        "frequency": "monthly",
+        "attendee_count": 7
+      }
     ],
     "chat_top_spaces": [
-      {"space": "team-leadership", "30d_message_volume": 412, "active_participants": 5},
-      {"space": "engineering", "30d_message_volume": 289, "active_participants": 8}
+      {
+        "space": "team-leadership",
+        "30d_message_volume": 412,
+        "active_participants": 5
+      },
+      {
+        "space": "engineering",
+        "30d_message_volume": 289,
+        "active_participants": 8
+      }
     ],
     "cross_channel_decision_flow": "Decisions surface in chat (40%), formalized in calendar invites (30%), confirmed in meeting summaries (30%)."
   },
-
   "meeting_inventory": {
     "total_meetings_12mo": 142,
     "by_counterparty": [
-      {"counterparty": "Esker", "meeting_count": 8, "cadence": "monthly", "first_seen": "2025-09-12", "last_seen": "2026-04-22"},
-      {"counterparty": "Internal — leadership", "meeting_count": 22, "cadence": "weekly", "first_seen": "2025-05-01", "last_seen": "2026-05-01"}
+      {
+        "counterparty": "Esker",
+        "meeting_count": 8,
+        "cadence": "monthly",
+        "first_seen": "2025-09-12",
+        "last_seen": "2026-04-22"
+      },
+      {
+        "counterparty": "Internal \u2014 leadership",
+        "meeting_count": 22,
+        "cadence": "weekly",
+        "first_seen": "2025-05-01",
+        "last_seen": "2026-05-01"
+      }
     ],
     "by_type": [
-      {"type": "discovery", "count": 18},
-      {"type": "review", "count": 24},
-      {"type": "kickoff", "count": 6}
+      {
+        "type": "discovery",
+        "count": 18
+      },
+      {
+        "type": "review",
+        "count": 24
+      },
+      {
+        "type": "kickoff",
+        "count": 6
+      }
     ],
     "cadence_patterns": [
-      {"pattern": "Every Tuesday with Esker partner team", "frequency": "weekly", "first_observed": "2025-11"}
+      {
+        "pattern": "Every Tuesday with Esker partner team",
+        "frequency": "weekly",
+        "first_observed": "2025-11"
+      }
     ]
   },
-
   "transcript_deep_reads": [
     {
       "recording_id": "fathom-12345",
@@ -410,23 +591,43 @@
       "counterparty": "Esker"
     }
   ],
-
   "web_research": {
     "per_entity_summaries": [
       {
         "entity": "Baseline Payments",
         "description": "B2B payments processor with merchant services + AP/AR automation reseller positioning",
-        "customer_segments": ["mid-market merchants", "Esker AP/AR customers"],
-        "products": ["JetPay merchant onboarding", "Esker partnership", "Direct merchant services"],
-        "recent_moves": [{"date": "2026-03-15", "headline": "Esker partnership formalized", "tier": 3}],
-        "team_signals": ["VP BD: Tyler Massey (LinkedIn)"],
+        "customer_segments": [
+          "mid-market merchants",
+          "Esker AP/AR customers"
+        ],
+        "products": [
+          "JetPay merchant onboarding",
+          "Esker partnership",
+          "Direct merchant services"
+        ],
+        "recent_moves": [
+          {
+            "date": "2026-03-15",
+            "headline": "Esker partnership formalized",
+            "tier": 3
+          }
+        ],
+        "team_signals": [
+          "VP BD: Tyler Massey (LinkedIn)"
+        ],
         "risk_signals": []
       },
       {
         "entity": "JetPay",
         "description": "Merchant-onboarding product line under Baseline Payments umbrella",
-        "customer_segments": ["new SMB merchants", "high-velocity onboarders"],
-        "products": ["Self-serve merchant signup", "Risk-tiered onboarding"],
+        "customer_segments": [
+          "new SMB merchants",
+          "high-velocity onboarders"
+        ],
+        "products": [
+          "Self-serve merchant signup",
+          "Risk-tiered onboarding"
+        ],
         "recent_moves": [],
         "team_signals": [],
         "risk_signals": []
@@ -434,13 +635,29 @@
     ],
     "individual_operator_flag": false
   },
-
   "citations": [
-    {"finding_id": "WEB-01", "url": "https://baselinepayments.com/", "title": "Baseline Payments — Home", "retrieved": "2026-05-02", "tier": 2},
-    {"finding_id": "WEB-01", "url": "https://baselinepayments.com/partners/esker", "title": "Esker Partnership", "retrieved": "2026-05-02", "tier": 2},
-    {"finding_id": "WEB-02", "url": "https://www.linkedin.com/in/tylermassey", "title": "Tyler Massey — LinkedIn", "retrieved": "2026-05-02", "tier": 4}
+    {
+      "finding_id": "WEB-01",
+      "url": "https://baselinepayments.com/",
+      "title": "Baseline Payments \u2014 Home",
+      "retrieved": "2026-05-02",
+      "tier": 2
+    },
+    {
+      "finding_id": "WEB-01",
+      "url": "https://baselinepayments.com/partners/esker",
+      "title": "Esker Partnership",
+      "retrieved": "2026-05-02",
+      "tier": 2
+    },
+    {
+      "finding_id": "WEB-02",
+      "url": "https://www.linkedin.com/in/tylermassey",
+      "title": "Tyler Massey \u2014 LinkedIn",
+      "retrieved": "2026-05-02",
+      "tier": 4
+    }
   ],
-
   "resume_trace": [
     {
       "round": 1,
@@ -455,122 +672,2517 @@
       "round": 1,
       "subagent": "audit-email",
       "session_id": "def-456",
-      "follow_up_prompt": "Your voice_pattern is sparse — pull 5 more sent threads from external counterparties to anchor the formality scoring.",
+      "follow_up_prompt": "Your voice_pattern is sparse \u2014 pull 5 more sent threads from external counterparties to anchor the formality scoring.",
       "refined_finding_summary": "Voice formality confirmed casual across external counterparty threads. Em-dash density 0.4/100w (low). Sign-off pattern consistent first-name-only.",
       "ms": 8200,
       "tokens_est": 9800
     }
   ],
-
   "raw_subagent_dumps": {
     "audit-systems": {
       "_trace": [
-        {"tool": "search_crm_objects", "args_summary": "deals limit:100 props:8 q1-2026", "result_summary": "612 deals, 412 with no close_date", "ms": 2300, "tokens_est": 18400},
-        {"tool": "search_crm_objects", "args_summary": "deals limit:100 props:8 q2-2026", "result_summary": "489 deals, 321 with no close_date", "ms": 2100, "tokens_est": 17200}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "hubspot crm deals contacts pipeline keywords",
+          "result_summary": "Returned data for hubspot crm deals contacts pipeline keywords",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "get_user_details",
+          "args_summary": "include OWNER + USER + ORG",
+          "result_summary": "Returned data for include OWNER + USER + ORG",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "get_organization_details",
+          "args_summary": "include TEAMS + SEATS",
+          "result_summary": "Returned data for include TEAMS + SEATS",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_owners",
+          "args_summary": "limit:50",
+          "result_summary": "Returned data for limit:50",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "deals limit:1 props:7 (probe)",
+          "result_summary": "Returned data for deals limit:1 props:7 (probe)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "deals last 12mo, sorted DESC, limit:100",
+          "result_summary": "Returned data for deals last 12mo, sorted DESC, limit:100",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "pipeline=52441416 AND open=true (Esker pipeline scan)",
+          "result_summary": "Returned data for pipeline=52441416 AND open=true (Esker pipeline scan)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "pipeline=52441416 AND open=true AND closedate NOT_HAS_PROPERTY",
+          "result_summary": "Returned data for pipeline=52441416 AND open=true AND closedate NOT_HAS_PROPER",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "pipeline=52441416 AND open=true AND notes_last_updated < 30d",
+          "result_summary": "Returned data for pipeline=52441416 AND open=true AND notes_last_updated < 30d",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "pipeline=10112334 (DO NOT USE bot signup-intake)",
+          "result_summary": "Returned data for pipeline=10112334 (DO NOT USE bot signup-intake)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "pipeline=2123176 (Adyen invite-tracker zombie)",
+          "result_summary": "Returned data for pipeline=2123176 (Adyen invite-tracker zombie)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "pipeline=753622169 (Direct Merchant)",
+          "result_summary": "Returned data for pipeline=753622169 (Direct Merchant)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "pipeline=753622169 AND open AND notes_last_updated<30d",
+          "result_summary": "Returned data for pipeline=753622169 AND open AND notes_last_updated<30d",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "contacts limit:1 (probe count)",
+          "result_summary": "Returned data for contacts limit:1 (probe count)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "companies limit:1 (probe count)",
+          "result_summary": "Returned data for companies limit:1 (probe count)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "tickets limit:1 (probe count)",
+          "result_summary": "Returned data for tickets limit:1 (probe count)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "deals closed-won AND created>=12mo",
+          "result_summary": "Returned data for deals closed-won AND created>=12mo",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_crm_objects",
+          "args_summary": "deals closed-lost AND created>=12mo",
+          "result_summary": "Returned data for deals closed-lost AND created>=12mo",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-systems",
       "company_name": "Baseline Payments",
-      "connectors_used": ["HubSpot"],
-      "records_analyzed": {"total_records": 1149, "date_range": "2025-05-02 to 2026-05-02"},
+      "connectors_used": [
+        "HubSpot"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
+      },
       "findings": [
-        {"id": "SYS-01", "headline": "Zombie pipelines hold 815/1149 open deals", "severity": "Critical", "confidence": "High", "surprise_factor": "High", "data_source": "HubSpot deals API, pulled 2026-05-02", "recommendation": "Audit HubSpot Workflows; disable any create-deal action targeting DO NOT USE pipelines.", "effort": "Low", "impact": "High", "classification": "internal", "framework_indexes": {"pcf": "3.5.3", "bian": null, "togaf": null, "zachman": null}}
+        {
+          "id": "SYS-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for SYS-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot sys queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SYS-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for SYS-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot sys queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SYS-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for SYS-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot sys queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SYS-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for SYS-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot sys queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SYS-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for SYS-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot sys queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SYS-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for SYS-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot sys queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-systems pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-systems pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-systems workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-systems: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-systems: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
       ]
     },
     "audit-knowledge": {
       "_trace": [
-        {"tool": "notion-search", "args_summary": "query:'' pageSize:25", "result_summary": "47 pages, 15 superseded", "ms": 1800, "tokens_est": 14200}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "notion confluence wiki search fetch pages",
+          "result_summary": "Returned data for notion confluence wiki search fetch pages",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "notion-search",
+          "args_summary": "query=company name, page_size=25",
+          "result_summary": "Returned data for query=company name, page_size=25",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-get-users",
+          "args_summary": "list all users",
+          "result_summary": "Returned data for list all users",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-search",
+          "args_summary": "query=sales playbook OR doctrine OR SOP, last 12mo",
+          "result_summary": "Returned data for query=sales playbook OR doctrine OR SOP, last 12mo",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-search",
+          "args_summary": "query=archived OR deprecated OR DO NOT EDIT",
+          "result_summary": "Returned data for query=archived OR deprecated OR DO NOT EDIT",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-search",
+          "args_summary": "query=customer success OR support docs",
+          "result_summary": "Returned data for query=customer success OR support docs",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-fetch",
+          "args_summary": "page_id=<sales-wiki-landing>",
+          "result_summary": "Returned data for page_id=<sales-wiki-landing>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-fetch",
+          "args_summary": "page_id=<onboarding-checklist>",
+          "result_summary": "Returned data for page_id=<onboarding-checklist>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-search",
+          "args_summary": "query=product spec OR roadmap OR engineering",
+          "result_summary": "Returned data for query=product spec OR roadmap OR engineering",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-search",
+          "args_summary": "query=deal review OR forecast OR pipeline hygiene",
+          "result_summary": "Returned data for query=deal review OR forecast OR pipeline hygiene",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-search",
+          "args_summary": "query=competitor OR battlecard",
+          "result_summary": "Returned data for query=competitor OR battlecard",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-fetch",
+          "args_summary": "page_id=<competitive-intel-page>",
+          "result_summary": "Returned data for page_id=<competitive-intel-page>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-search",
+          "args_summary": "query=meeting notes OR EOW OR weekly review",
+          "result_summary": "Returned data for query=meeting notes OR EOW OR weekly review",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "notion-fetch",
+          "args_summary": "page_id=<weekly-review-template>",
+          "result_summary": "Returned data for page_id=<weekly-review-template>",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-knowledge",
       "company_name": "Baseline Payments",
-      "connectors_used": ["Notion"]
+      "connectors_used": [
+        "Notion"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
+      },
+      "findings": [
+        {
+          "id": "KD-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for KD-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot kd queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "KD-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for KD-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot kd queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "KD-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for KD-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot kd queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "KD-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for KD-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot kd queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "KD-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for KD-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot kd queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "KD-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for KD-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot kd queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-knowledge pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-knowledge pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-knowledge workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-knowledge: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-knowledge: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
+      ]
     },
     "audit-drive": {
       "_trace": [
-        {"tool": "search_files", "args_summary": "all pageSize:50", "result_summary": "127 files surfaced", "ms": 1900, "tokens_est": 12300}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "drive onedrive sharepoint dropbox box files folders",
+          "result_summary": "Returned data for drive onedrive sharepoint dropbox box files folders",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "list_recent_files",
+          "args_summary": "orderBy=lastModified, pageSize=50",
+          "result_summary": "Returned data for orderBy=lastModified, pageSize=50",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_files",
+          "args_summary": "owner=me AND modifiedTime>365d, pageSize=50",
+          "result_summary": "Returned data for owner=me AND modifiedTime>365d, pageSize=50",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_files",
+          "args_summary": "title contains playbook|SOP|doctrine|wiki|CLAUDE.md",
+          "result_summary": "Returned data for title contains playbook|SOP|doctrine|wiki|CLAUDE.md",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_files",
+          "args_summary": "title contains draft|recap|memo|plan",
+          "result_summary": "Returned data for title contains draft|recap|memo|plan",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_files",
+          "args_summary": "title contains pricing OR quote OR proposal",
+          "result_summary": "Returned data for title contains pricing OR quote OR proposal",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_files",
+          "args_summary": "modifiedTime<730d AND owner=me (legacy detection)",
+          "result_summary": "Returned data for modifiedTime<730d AND owner=me (legacy detection)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "read_file_content",
+          "args_summary": "fileId=<duplicate-claude-md-1>",
+          "result_summary": "Returned data for fileId=<duplicate-claude-md-1>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "read_file_content",
+          "args_summary": "fileId=<duplicate-claude-md-2>",
+          "result_summary": "Returned data for fileId=<duplicate-claude-md-2>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "read_file_content",
+          "args_summary": "fileId=<duplicate-claude-md-3>",
+          "result_summary": "Returned data for fileId=<duplicate-claude-md-3>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "read_file_content",
+          "args_summary": "fileId=<sales-playbook>",
+          "result_summary": "Returned data for fileId=<sales-playbook>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "read_file_content",
+          "args_summary": "fileId=<customer-success-handbook>",
+          "result_summary": "Returned data for fileId=<customer-success-handbook>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "get_file_metadata",
+          "args_summary": "fileId=<onboarding-folder>",
+          "result_summary": "Returned data for fileId=<onboarding-folder>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_files",
+          "args_summary": "mimeType=application/pdf, pageSize=20",
+          "result_summary": "Returned data for mimeType=application/pdf, pageSize=20",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-drive",
       "company_name": "Baseline Payments",
-      "connectors_used": ["Google Drive"]
+      "connectors_used": [
+        "Google Drive"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
+      },
+      "findings": [
+        {
+          "id": "DRV-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for DRV-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot drv queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "DRV-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for DRV-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot drv queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "DRV-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for DRV-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot drv queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "DRV-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for DRV-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot drv queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "DRV-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for DRV-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot drv queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "DRV-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for DRV-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot drv queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-drive pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-drive pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-drive workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-drive: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-drive: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
+      ]
     },
     "audit-email": {
       "_trace": [
-        {"tool": "search_threads", "args_summary": "newer_than:30d", "result_summary": "412 threads", "ms": 2400, "tokens_est": 19200}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "gmail outlook email threads draft labels search",
+          "result_summary": "Returned data for gmail outlook email threads draft labels search",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "search_threads",
+          "args_summary": "newer_than:30d pageSize:50",
+          "result_summary": "Returned data for newer_than:30d pageSize:50",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_threads",
+          "args_summary": "from:me newer_than:30d pageSize:30",
+          "result_summary": "Returned data for from:me newer_than:30d pageSize:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_threads",
+          "args_summary": "from:@key-partner.com newer_than:365d",
+          "result_summary": "Returned data for from:@key-partner.com newer_than:365d",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_threads",
+          "args_summary": "from:me to:@key-partner.com newer_than:365d",
+          "result_summary": "Returned data for from:me to:@key-partner.com newer_than:365d",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_threads",
+          "args_summary": "from:donotreply OR no-reply newer_than:90d",
+          "result_summary": "Returned data for from:donotreply OR no-reply newer_than:90d",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "get_thread",
+          "args_summary": "id=<key-partner-thread-1>",
+          "result_summary": "Returned data for id=<key-partner-thread-1>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "get_thread",
+          "args_summary": "id=<key-partner-thread-2>",
+          "result_summary": "Returned data for id=<key-partner-thread-2>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_threads",
+          "args_summary": "from:me has:attachment newer_than:90d",
+          "result_summary": "Returned data for from:me has:attachment newer_than:90d",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_threads",
+          "args_summary": "subject:re subject:fwd newer_than:30d (correction loops)",
+          "result_summary": "Returned data for subject:re subject:fwd newer_than:30d (correction loops)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_labels",
+          "args_summary": "all labels",
+          "result_summary": "Returned data for all labels",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "search_threads",
+          "args_summary": "label:important newer_than:90d",
+          "result_summary": "Returned data for label:important newer_than:90d",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "get_thread",
+          "args_summary": "id=<correction-loop-example>",
+          "result_summary": "Returned data for id=<correction-loop-example>",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-email",
       "company_name": "Baseline Payments",
-      "connectors_used": ["Gmail"]
+      "connectors_used": [
+        "Gmail"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
+      },
+      "findings": [
+        {
+          "id": "EM-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for EM-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot em queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "EM-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for EM-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot em queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "EM-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for EM-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot em queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "EM-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for EM-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot em queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "EM-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for EM-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot em queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "EM-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for EM-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot em queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-email pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-email pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-email workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-email: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-email: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
+      ]
     },
     "audit-comms": {
       "_trace": [
-        {"tool": "list_events", "args_summary": "pageSize:25 q1", "result_summary": "82 events", "ms": 1500, "tokens_est": 11200}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "calendar+chat google_chat list_events list_spaces messages",
+          "result_summary": "Returned data for calendar+chat google_chat list_events list_spaces messages",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "ToolSearch",
+          "args_summary": "select 5 specific calendar+chat tools by name",
+          "result_summary": "Returned data for select 5 specific calendar+chat tools by name",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "list_calendars",
+          "args_summary": "discover calendars",
+          "result_summary": "Returned data for discover calendars",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_spaces",
+          "args_summary": "page_size 50",
+          "result_summary": "Returned data for page_size 50",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_events",
+          "args_summary": "Q1 sample 90d, pageSize 25",
+          "result_summary": "Returned data for Q1 sample 90d, pageSize 25",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_events",
+          "args_summary": "Q2 sample 90d, pageSize 25",
+          "result_summary": "Returned data for Q2 sample 90d, pageSize 25",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_events",
+          "args_summary": "Q3 sample 90d, pageSize 25",
+          "result_summary": "Returned data for Q3 sample 90d, pageSize 25",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_events",
+          "args_summary": "Q4 sample 90d, pageSize 25",
+          "result_summary": "Returned data for Q4 sample 90d, pageSize 25",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_messages",
+          "args_summary": "spaces/<sales-room>, post-90d, page 30 desc",
+          "result_summary": "Returned data for spaces/<sales-room>, post-90d, page 30 desc",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_messages",
+          "args_summary": "spaces/<eng-room>, post-90d, page 30 desc",
+          "result_summary": "Returned data for spaces/<eng-room>, post-90d, page 30 desc",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_messages",
+          "args_summary": "spaces/<exec-channel>, post-90d, page 30 desc",
+          "result_summary": "Returned data for spaces/<exec-channel>, post-90d, page 30 desc",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_messages",
+          "args_summary": "spaces/<dev-channel>, post-90d, page 30 desc",
+          "result_summary": "Returned data for spaces/<dev-channel>, post-90d, page 30 desc",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "list_messages",
+          "args_summary": "spaces/<bigbosses>, post-90d, page 30 desc",
+          "result_summary": "Returned data for spaces/<bigbosses>, post-90d, page 30 desc",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-comms",
       "company_name": "Baseline Payments",
-      "connectors_used": ["Google Calendar", "Google Chat"]
+      "connectors_used": [
+        "Google Calendar",
+        "Google Chat"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
+      },
+      "findings": [
+        {
+          "id": "COM-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for COM-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot com queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "COM-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for COM-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot com queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "COM-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for COM-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot com queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "COM-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for COM-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot com queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "COM-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for COM-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot com queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "COM-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for COM-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot com queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-comms pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-comms pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-comms workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-comms: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-comms: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
+      ]
     },
     "audit-meeting-transcripts": {
       "_trace": [
-        {"tool": "list_meetings", "args_summary": "limit:100", "result_summary": "142 meetings", "ms": 1800, "tokens_est": 8400},
-        {"tool": "get_meeting_summary", "args_summary": "120 calls × ~2K tokens", "result_summary": "240K tokens of summaries", "ms": 28000, "tokens_est": 240000},
-        {"tool": "get_meeting_transcript", "args_summary": "12 high-signal × ~15K tokens", "result_summary": "180K tokens", "ms": 22000, "tokens_est": 180000}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "fathom granola meeting transcript summary recordings",
+          "result_summary": "Returned data for fathom granola meeting transcript summary recordings",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "fathom.list_meetings",
+          "args_summary": "created_after 365d, include_summary=true, max_pages=5",
+          "result_summary": "Returned data for created_after 365d, include_summary=true, max_pages=5",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "granola.list_meetings",
+          "args_summary": "custom 365d, include_summary",
+          "result_summary": "Returned data for custom 365d, include_summary",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.list_meetings",
+          "args_summary": "page 2 cursor, summaries",
+          "result_summary": "Returned data for page 2 cursor, summaries",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.list_meetings",
+          "args_summary": "page 3 cursor, no summary (metadata only)",
+          "result_summary": "Returned data for page 3 cursor, no summary (metadata only)",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.list_meetings",
+          "args_summary": "page 4 cursor, no summary",
+          "result_summary": "Returned data for page 4 cursor, no summary",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.get_meeting_transcript",
+          "args_summary": "id=<deep-1: weekly review>",
+          "result_summary": "Returned data for id=<deep-1: weekly review>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.get_meeting_transcript",
+          "args_summary": "id=<deep-2: partner debrief>",
+          "result_summary": "Returned data for id=<deep-2: partner debrief>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.get_meeting_transcript",
+          "args_summary": "id=<deep-3: kickoff>",
+          "result_summary": "Returned data for id=<deep-3: kickoff>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.get_meeting_transcript",
+          "args_summary": "id=<deep-4: board prep>",
+          "result_summary": "Returned data for id=<deep-4: board prep>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.get_meeting_transcript",
+          "args_summary": "id=<deep-5: 1on1 leadership>",
+          "result_summary": "Returned data for id=<deep-5: 1on1 leadership>",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "fathom.get_meeting_transcript",
+          "args_summary": "id=<deep-6: customer escalation>",
+          "result_summary": "Returned data for id=<deep-6: customer escalation>",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-meeting-transcripts",
       "company_name": "Baseline Payments",
-      "connectors_used": ["Fathom", "Granola"]
+      "connectors_used": [
+        "Fathom",
+        "Granola"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
+      },
+      "findings": [
+        {
+          "id": "MTG-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for MTG-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot mtg queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "MTG-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for MTG-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot mtg queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "MTG-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for MTG-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot mtg queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "MTG-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for MTG-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot mtg queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "MTG-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for MTG-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot mtg queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "MTG-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for MTG-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot mtg queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-meeting-transcripts pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-meeting-transcripts pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-meeting-transcripts workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-meeting-transcripts: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-meeting-transcripts: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
+      ]
     },
     "audit-stack": {
       "_trace": [
-        {"tool": "list_connectors", "args_summary": "all", "result_summary": "11 connectors", "ms": 800, "tokens_est": 4200}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "list_connectors registry mcp suggest",
+          "result_summary": "Returned data for list_connectors registry mcp suggest",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "static_inventory",
+          "args_summary": "pre-detected connectors + plugins from prompt",
+          "result_summary": "Returned data for pre-detected connectors + plugins from prompt",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-stack",
       "company_name": "Baseline Payments",
-      "connectors_used": ["catalog"],
-      "classification_surface": {
-        "HubSpot": "internal",
-        "Gmail": "confidential",
-        "Google Drive": "internal",
-        "Notion": "internal",
-        "Google Calendar": "internal",
-        "Google Chat": "internal",
-        "Fathom": "confidential",
-        "Granola": "confidential"
+      "connectors_used": [
+        "mcp-registry"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
       },
       "findings": [
-        {"id": "STK-01", "headline": "11 connectors visible; Trumpet (digital sales room) unconnected", "recommendation": "Configure Trumpet's native HubSpot integration. 30-min setup."}
+        {
+          "id": "STK-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for STK-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot stk queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "STK-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for STK-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot stk queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "STK-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for STK-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot stk queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "STK-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for STK-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot stk queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "STK-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for STK-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot stk queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "STK-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for STK-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot stk queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-stack pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-stack pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-stack workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-stack: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-stack: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
       ]
     },
     "audit-sessions": {
       "_trace": [
-        {"tool": "list_sessions", "args_summary": "limit:100", "result_summary": "127 sessions", "ms": 600, "tokens_est": 3800},
-        {"tool": "read_transcript", "args_summary": "12 deep-reads × limit:30", "result_summary": "behavioral patterns surfaced", "ms": 14000, "tokens_est": 38000}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "session_info list_sessions read_transcript",
+          "result_summary": "Returned data for session_info list_sessions read_transcript",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "mcp__session_info__list_sessions",
+          "args_summary": "limit:100",
+          "result_summary": "Returned data for limit:100",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<deal-prep-1>, limit:30",
+          "result_summary": "Returned data for session=<deal-prep-1>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<call-summary-1>, limit:30",
+          "result_summary": "Returned data for session=<call-summary-1>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<dossier-build-1>, limit:30",
+          "result_summary": "Returned data for session=<dossier-build-1>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<dossier-build-2>, limit:30",
+          "result_summary": "Returned data for session=<dossier-build-2>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<dossier-build-3>, limit:30",
+          "result_summary": "Returned data for session=<dossier-build-3>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<weekly-prep>, limit:30",
+          "result_summary": "Returned data for session=<weekly-prep>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<email-triage>, limit:30",
+          "result_summary": "Returned data for session=<email-triage>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<notion-restructure>, limit:30",
+          "result_summary": "Returned data for session=<notion-restructure>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<pipeline-review>, limit:30",
+          "result_summary": "Returned data for session=<pipeline-review>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<deal-restage>, limit:30",
+          "result_summary": "Returned data for session=<deal-restage>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<board-prep>, limit:30",
+          "result_summary": "Returned data for session=<board-prep>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<partner-update>, limit:30",
+          "result_summary": "Returned data for session=<partner-update>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<comp-intel>, limit:30",
+          "result_summary": "Returned data for session=<comp-intel>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<onboarding-doc>, limit:30",
+          "result_summary": "Returned data for session=<onboarding-doc>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "mcp__session_info__read_transcript",
+          "args_summary": "session=<press-release-draft>, limit:30",
+          "result_summary": "Returned data for session=<press-release-draft>, limit:30",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-sessions",
       "company_name": "Baseline Payments",
-      "connectors_used": "Cowork session history",
+      "connectors_used": [
+        "session_info"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
+      },
       "findings": [
-        {"id": "SES-01", "headline": "User runs /gtm-wizards:call-prep 14 times in 30 days", "severity": "High", "confidence": "High", "surprise_factor": "Medium", "data_source": "Cowork session history, 14 matching sessions sampled at last-30-message tail", "recommendation": "Convert to a scheduled task that runs Mondays + Wednesdays at 7am.", "effort": "Low", "impact": "High", "classification": "internal"}
+        {
+          "id": "SES-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for SES-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot ses queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SES-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for SES-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot ses queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SES-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for SES-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot ses queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SES-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for SES-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot ses queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SES-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for SES-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot ses queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "SES-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for SES-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot ses queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-sessions pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-sessions pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-sessions workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-sessions: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-sessions: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
       ]
     },
     "audit-web-search": {
       "_trace": [
-        {"tool": "WebSearch", "args_summary": "Baseline Payments company", "result_summary": "8 results, primary domain confirmed", "ms": 4200, "tokens_est": 6800},
-        {"tool": "WebSearch", "args_summary": "Baseline Payments products", "result_summary": "JetPay product line surfaced", "ms": 3800, "tokens_est": 6200},
-        {"tool": "WebFetch", "args_summary": "baselinepayments.com homepage", "result_summary": "Positioning extracted", "ms": 5400, "tokens_est": 8400}
+        {
+          "tool": "ToolSearch",
+          "args_summary": "WebSearch ZoomInfo enrich account_research",
+          "result_summary": "Returned data for WebSearch ZoomInfo enrich account_research",
+          "ms": 800,
+          "tokens_est": 4000
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'crunchbase' OR 'pitchbook'",
+          "result_summary": "Returned data for company name + 'crunchbase' OR 'pitchbook'",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'press release' OR 'news' last 365d",
+          "result_summary": "Returned data for company name + 'press release' OR 'news' last 365d",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'leadership' OR 'team'",
+          "result_summary": "Returned data for company name + 'leadership' OR 'team'",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'pricing' OR 'how it works'",
+          "result_summary": "Returned data for company name + 'pricing' OR 'how it works'",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'reviews' G2 OR Capterra OR TrustRadius",
+          "result_summary": "Returned data for company name + 'reviews' G2 OR Capterra OR TrustRadius",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'careers' OR 'hiring'",
+          "result_summary": "Returned data for company name + 'careers' OR 'hiring'",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'integrations' OR 'partners'",
+          "result_summary": "Returned data for company name + 'integrations' OR 'partners'",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'case study' OR 'customer story'",
+          "result_summary": "Returned data for company name + 'case study' OR 'customer story'",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + competitor 1",
+          "result_summary": "Returned data for company name + competitor 1",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + competitor 2",
+          "result_summary": "Returned data for company name + competitor 2",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + competitor 3",
+          "result_summary": "Returned data for company name + competitor 3",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'acquisition' OR 'M&A'",
+          "result_summary": "Returned data for company name + 'acquisition' OR 'M&A'",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "WebSearch",
+          "args_summary": "company name + 'funding' OR 'series'",
+          "result_summary": "Returned data for company name + 'funding' OR 'series'",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "ZoomInfo.account_research",
+          "args_summary": "company=primary entity",
+          "result_summary": "Returned data for company=primary entity",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "ZoomInfo.contact_research",
+          "args_summary": "company=primary entity, role=CEO",
+          "result_summary": "Returned data for company=primary entity, role=CEO",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "ZoomInfo.contact_research",
+          "args_summary": "company=primary entity, role=CFO",
+          "result_summary": "Returned data for company=primary entity, role=CFO",
+          "ms": 600,
+          "tokens_est": 1500
+        },
+        {
+          "tool": "ZoomInfo.contact_research",
+          "args_summary": "company=primary entity, role=COO",
+          "result_summary": "Returned data for company=primary entity, role=COO",
+          "ms": 600,
+          "tokens_est": 1500
+        }
       ],
       "contract_version": "3.0",
       "subagent": "audit-web-search",
       "company_name": "Baseline Payments",
-      "connectors_used": "Open web (WebSearch + WebFetch)",
+      "connectors_used": [
+        "WebSearch",
+        "ZoomInfo"
+      ],
+      "records_analyzed": {
+        "total_records": 2113,
+        "total_documents": 235,
+        "date_range": "365 days"
+      },
+      "dimension_scores": {
+        "data_accessibility": {
+          "score": 6,
+          "confidence": "High",
+          "rationale": "Connector returned full result sets within budget."
+        },
+        "process_discipline": {
+          "score": 4,
+          "confidence": "High",
+          "rationale": "Patterns of bypass observed across multiple workflows."
+        },
+        "confidentiality_posture": {
+          "score": null,
+          "confidence": null,
+          "rationale": "v0.2-beta \u2014 not scored"
+        }
+      },
       "findings": [
-        {"id": "WEB-01", "headline": "Baseline's public positioning leads with merchant-services + AP/AR automation reseller — not with Esker partnership.", "severity": "Medium", "confidence": "High", "surprise_factor": "Medium", "data_source": "baselinepayments.com (homepage + /partners), retrieved 2026-05-02", "recommendation": "Either elevate Esker partnership to homepage hero (matches internal GTM) OR explicitly position Esker as a back-end capability.", "effort": "Low", "impact": "Medium", "classification": "public"}
+        {
+          "id": "WEB-01",
+          "headline": "Pipeline contamination concentrated in two zombie pipelines",
+          "detail": "Evidence for WEB-01: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot web queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "WEB-02",
+          "headline": "Owner assignment incomplete on 18% of open deals",
+          "detail": "Evidence for WEB-02: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot web queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "WEB-03",
+          "headline": "Stage-time velocity exceeds reasonable bounds in tier-2 pipeline",
+          "detail": "Evidence for WEB-03: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "High",
+          "confidence": "High",
+          "surprise_factor": "High",
+          "data_source": "HubSpot web queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "WEB-04",
+          "headline": "Note hygiene degraded \u2014 65% of open deals untouched in 30 days",
+          "detail": "Evidence for WEB-04: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot web queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Low",
+          "impact": "High",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "WEB-05",
+          "headline": "Forecast credibility is fictitious due to rep abandonment pattern",
+          "detail": "Evidence for WEB-05: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "High",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot web queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        },
+        {
+          "id": "WEB-06",
+          "headline": "Custom property explosion \u2014 247 props but 12 actually queried",
+          "detail": "Evidence for WEB-06: cross-referenced queries against metadata, owner records, and 12-month activity windows. Pattern repeated across ~38% of audited records. Operator overhead bands 2-6 hrs/week. Fix is operationally simple but requires owner sign-off.",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "surprise_factor": "Medium",
+          "data_source": "HubSpot web queries pulled current date; cross-checked against 12-month activity window.",
+          "recommendation": "Schedule a 1-hr admin pass to address root pattern. Document in team CHANGELOG.",
+          "effort": "Medium",
+          "impact": "Medium",
+          "classification": "internal",
+          "framework_indexes": {
+            "pcf": "8.6",
+            "bian": null,
+            "togaf": null,
+            "zachman": null
+          }
+        }
+      ],
+      "behavioral_trace_findings": [
+        {
+          "pattern": "Observed: audit-web-search pattern A \u2014 weekly, 4-week window",
+          "confidence": "High",
+          "evidence": "Calendar + activity logs."
+        },
+        {
+          "pattern": "Observed: audit-web-search pattern B \u2014 owner-specific cluster",
+          "confidence": "Medium",
+          "evidence": "3 owners exhibit same anti-pattern."
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "OPP-01",
+          "headline": "audit-web-search workflow standardization candidate",
+          "why_now": "AI automation mature; 40-60% efficiency gain plausible.",
+          "effort": "Medium",
+          "impact": "High",
+          "confidence": "High",
+          "surprise_factor": "Medium"
+        }
+      ],
+      "coverage_gaps": [
+        {
+          "gap": "audit-web-search: connector scope requires reauth",
+          "impact": "Medium",
+          "fix": "Reauth in Cowork settings."
+        }
+      ],
+      "open_questions": [
+        {
+          "question": "audit-web-search: Auto-apply or human-approve category-X classification?",
+          "recommended_answer": "Auto-apply with 30-day digest review."
+        }
       ]
     }
   }

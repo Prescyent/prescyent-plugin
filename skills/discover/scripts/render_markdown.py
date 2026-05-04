@@ -29,7 +29,7 @@ import os
 import sys
 from pathlib import Path
 
-PLUGIN_VERSION = "0.8.1"
+PLUGIN_VERSION = "0.8.2"
 CONTRACT_VERSION = "3.0"
 
 # Order of subagent appendices in the raw JSON dump section
